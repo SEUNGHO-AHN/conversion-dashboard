@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신규 첫구매 일별 동기비교 대시보드</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0f11;
+    --surface: #16181c;
+    --surface2: #1e2026;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0ef;
+    --text2: #8a8b8e;
+    --text3: #55565a;
+    --jan: #6b7280;
+    --feb: #378ADD;
+    --mar: #1D9E75;
+    --apr: #9b8fe0;
+    --up: #1D9E75;
+    --dn: #e05a5a;
+    --up-bg: rgba(29,158,117,0.12);
+    --dn-bg: rgba(224,90,90,0.12);
+    --up-text: #4ecda4;
+    --dn-text: #f08080;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    min-height: 100vh;
+  }
+  .layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+  }
+  .header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .header-left h1 {
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .header-left p {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+  }
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .seg {
+    display: flex;
+    border: 0.5px solid var(--border2);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .seg button {
+    background: transparent;
+    border: none;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .seg button:not(:last-child) { border-right: 0.5px solid var(--border); }
+  .seg button.active { background: var(--surface2); color: var(--text); font-weight: 500; }
+  .seg button:hover:not(.active) { color: var(--text); }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 10px 10px 0 0;
+  }
+  .kpi.jan::before { background: var(--jan); }
+  .kpi.feb::before { background: var(--feb); }
+  .kpi.mar::before { background: var(--mar); }
+  .kpi.apr::before { background: var(--apr); }
+  .kpi-month {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .kpi.jan .kpi-month { color: var(--jan); }
+  .kpi.feb .kpi-month { color: var(--feb); }
+  .kpi.mar .kpi-month { color: var(--mar); }
+  .kpi.apr .kpi-month { color: var(--apr); }
+  .kpi-val {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+  .kpi-delta {
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+  }
+  .kpi-delta.up { color: var(--up-text); }
+  .kpi-delta.dn { color: var(--dn-text); }
+  .kpi-delta.neu { color: var(--text3); }
+
+  .panel {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .panel-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+  }
+  .leg-dot {
+    width: 18px;
+    height: 2.5px;
+    border-radius: 2px;
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 280px;
+  }
+
+  .tab-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 0.5px solid var(--border2);
+    background: transparent;
+    font-size: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.feb.active { border-color: var(--feb); color: var(--feb); background: rgba(55,138,221,0.1); }
+  .tab-btn.mar.active { border-color: var(--mar); color: var(--mar); background: rgba(29,158,117,0.1); }
+  .tab-btn.apr.active { border-color: var(--apr); color: var(--apr); background: rgba(155,143,224,0.1); }
+
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  th {
+    padding: 9px 12px;
+    text-align: right;
+    color: var(--text2);
+    font-weight: 500;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--surface2);
+    white-space: nowrap;
+  }
+  th:first-child { text-align: left; border-radius: 6px 0 0 0; }
+  th:last-child { border-radius: 0 6px 0 0; }
+  td {
+    padding: 8px 12px;
+    text-align: right;
+    color: var(--text);
+    border-bottom: 0.5px solid var(--border);
+    font-family: 'DM Mono', monospace;
+  }
+  td:first-child {
+    text-align: left;
+    color: var(--text2);
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.025); }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+  }
+  .pill-up { background: var(--up-bg); color: var(--up-text); }
+  .pill-dn { background: var(--dn-bg); color: var(--dn-text); }
+  .pill-neu { background: rgba(255,255,255,0.05); color: var(--text3); }
+  .delta-up { color: var(--up-text); font-weight: 500; }
+  .delta-dn { color: var(--dn-text); font-weight: 500; }
+  .delta-neu { color: var(--text3); }
+
+  @media (max-width: 700px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-val { font-size: 20px; }
+    .header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>신규 첫구매 일별 동기비교</h1>
+      <p>2026.01.01 — 2026.04.03 &nbsp;·&nbsp; 꽃가위 · 모루 유리화기</p>
+    </div>
+    <div class="controls">
+      <div class="seg" id="prod-seg">
+        <button class="active" onclick="setProd('꽃가위',this)">꽃가위</button>
+        <button onclick="setProd('모루 유리화기',this)">모루 유리화기</button>
+      </div>
+      <div class="seg" id="metric-seg">
+        <button class="active" onclick="setMetric('user_cnt',this)">구매자</button>
+        <button onclick="setMetric('order_cnt',this)">주문수</button>
+        <button onclick="setMetric('total_qty',this)">수량</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">월별 동기비교 · 일별 트렌드</span>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="chart-wrap"><canvas id="mc"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header" style="margin-bottom:12px">
+      <span class="panel-title">일별 상세 증감</span>
+    </div>
+    <div class="tab-row" id="month-tabs"></div>
+    <div class="table-wrap"><table id="dt"></table></div>
+  </div>
+
+</div>
+
+<script>
+const RAW=[{"order_date":"2026-01-01","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-01","product_type":"모루 유리화기","total_qty":6,"order_cnt":6,"user_cnt":6},{"order_date":"2026-01-02","product_type":"꽃가위","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-01-02","product_type":"모루 유리화기","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-01-03","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-03","product_type":"모루 유리화기","total_qty":7,"order_cnt":7,"user_cnt":7},{"order_date":"2026-01-04","product_type":"꽃가위","total_qty":5,"order_cnt":5,"user_cnt":4},{"order_date":"2026-01-04","product_type":"모루 유리화기","total_qty":6,"order_cnt":6,"user_cnt":5},{"order_date":"2026-01-05","product_type":"꽃가위","total_qty":6,"order_cnt":6,"user_cnt":6},{"order_date":"2026-01-05","product_type":"모루 유리화기","total_qty":11,"order_cnt":11,"user_cnt":10},{"order_date":"2026-01-06","product_type":"꽃가위","total_qty":4,"order_cnt":4,"user_cnt":2},{"order_date":"2026-01-06","product_type":"모루 유리화기","total_qty":4,"order_cnt":4,"user_cnt":3},{"order_date":"2026-01-07","product_type":"꽃가위","total_qty":5,"order_cnt":5,"user_cnt":4},{"order_date":"2026-01-07","product_type":"모루 유리화기","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-08","product_type":"꽃가위","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-01-08","product_type":"모루 유리화기","total_qty":7,"order_cnt":7,"user_cnt":6},{"order_date":"2026-01-09","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-09","product_type":"모루 유리화기","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-01-10","product_type":"꽃가위","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-01-11","product_type":"꽃가위","total_qty":5,"order_cnt":5,"user_cnt":5},{"order_date":"2026-01-11","product_type":"모루 유리화기","total_qty":5,"order_cnt":5,"user_cnt":5},{"order_date":"2026-01-12","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-12","product_type":"모루 유리화기","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-13","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-13","product_type":"모루 유리화기","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-01-14","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-14","product_type":"모루 유리화기","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-01-15","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-15","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-16","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-16","product_type":"모루 유리화기","total_qty":6,"order_cnt":6,"user_cnt":6},{"order_date":"2026-01-17","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-17","product_type":"모루 유리화기","total_qty":2,"order_cnt":2,"user_cnt":1},{"order_date":"2026-01-18","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-18","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-19","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":1},{"order_date":"2026-01-19","product_type":"모루 유리화기","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-20","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-20","product_type":"모루 유리화기","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-01-21","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":1},{"order_date":"2026-01-21","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-22","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-22","product_type":"모루 유리화기","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-01-23","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-23","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-24","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-24","product_type":"모루 유리화기","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-01-25","product_type":"꽃가위","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-01-25","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-26","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-01-27","product_type":"꽃가위","total_qty":4,"order_cnt":4,"user_cnt":3},{"order_date":"2026-01-27","product_type":"모루 유리화기","total_qty":5,"order_cnt":5,"user_cnt":5},{"order_date":"2026-01-28","product_type":"꽃가위","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-01-28","product_type":"모루 유리화기","total_qty":5,"order_cnt":5,"user_cnt":5},{"order_date":"2026-01-29","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-29","product_type":"모루 유리화기","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-01-30","product_type":"꽃가위","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-01-30","product_type":"모루 유리화기","total_qty":5,"order_cnt":5,"user_cnt":4},{"order_date":"2026-01-31","product_type":"모루 유리화기","total_qty":5,"order_cnt":5,"user_cnt":5},{"order_date":"2026-02-01","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-02-01","product_type":"모루 유리화기","total_qty":5,"order_cnt":5,"user_cnt":4},{"order_date":"2026-02-02","product_type":"꽃가위","total_qty":6,"order_cnt":6,"user_cnt":6},{"order_date":"2026-02-02","product_type":"모루 유리화기","total_qty":5,"order_cnt":5,"user_cnt":4},{"order_date":"2026-02-03","product_type":"꽃가위","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-02-03","product_type":"모루 유리화기","total_qty":11,"order_cnt":9,"user_cnt":9},{"order_date":"2026-02-04","product_type":"꽃가위","total_qty":58,"order_cnt":58,"user_cnt":56},{"order_date":"2026-02-04","product_type":"모루 유리화기","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-02-05","product_type":"꽃가위","total_qty":12,"order_cnt":11,"user_cnt":10},{"order_date":"2026-02-05","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-02-06","product_type":"꽃가위","total_qty":9,"order_cnt":9,"user_cnt":9},{"order_date":"2026-02-06","product_type":"모루 유리화기","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-02-07","product_type":"꽃가위","total_qty":10,"order_cnt":10,"user_cnt":9},{"order_date":"2026-02-07","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-02-08","product_type":"꽃가위","total_qty":11,"order_cnt":11,"user_cnt":11},{"order_date":"2026-02-08","product_type":"모루 유리화기","total_qty":7,"order_cnt":7,"user_cnt":7},{"order_date":"2026-02-09","product_type":"꽃가위","total_qty":11,"order_cnt":11,"user_cnt":11},{"order_date":"2026-02-10","product_type":"꽃가위","total_qty":12,"order_cnt":12,"user_cnt":12},{"order_date":"2026-02-10","product_type":"모루 유리화기","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-02-11","product_type":"꽃가위","total_qty":7,"order_cnt":7,"user_cnt":7},{"order_date":"2026-02-11","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":2},{"order_date":"2026-02-12","product_type":"꽃가위","total_qty":6,"order_cnt":6,"user_cnt":5},{"order_date":"2026-02-12","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-02-13","product_type":"꽃가위","total_qty":2,"order_cnt":2,"user_cnt":1},{"order_date":"2026-02-13","product_type":"모루 유리화기","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-02-14","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-02-14","product_type":"모루 유리화기","total_qty":4,"order_cnt":4,"user_cnt":3},{"order_date":"2026-02-15","product_type":"꽃가위","total_qty":1,"order_cnt":1,"user_cnt":1},{"order_date":"2026-02-15","product_type":"모루 유리화기","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-02-16","product_type":"꽃가위","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-02-16","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-02-17","product_type":"꽃가위","total_qty":9,"order_cnt":9,"user_cnt":8},{"order_date":"2026-02-17","product_type":"모루 유리화기","total_qty":11,"order_cnt":11,"user_cnt":11},{"order_date":"2026-02-18","product_type":"꽃가위","total_qty":10,"order_cnt":10,"user_cnt":10},{"order_date":"2026-02-18","product_type":"모루 유리화기","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-02-19","product_type":"꽃가위","total_qty":10,"order_cnt":10,"user_cnt":10},{"order_date":"2026-02-19","product_type":"모루 유리화기","total_qty":7,"order_cnt":7,"user_cnt":7},{"order_date":"2026-02-20","product_type":"꽃가위","total_qty":8,"order_cnt":8,"user_cnt":7},{"order_date":"2026-02-20","product_type":"모루 유리화기","total_qty":11,"order_cnt":11,"user_cnt":11},{"order_date":"2026-02-21","product_type":"꽃가위","total_qty":6,"order_cnt":6,"user_cnt":6},{"order_date":"2026-02-21","product_type":"모루 유리화기","total_qty":2,"order_cnt":2,"user_cnt":2},{"order_date":"2026-02-22","product_type":"꽃가위","total_qty":7,"order_cnt":7,"user_cnt":7},{"order_date":"2026-02-22","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-02-23","product_type":"꽃가위","total_qty":7,"order_cnt":7,"user_cnt":6},{"order_date":"2026-02-23","product_type":"모루 유리화기","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-02-24","product_type":"꽃가위","total_qty":16,"order_cnt":16,"user_cnt":15},{"order_date":"2026-02-24","product_type":"모루 유리화기","total_qty":14,"order_cnt":14,"user_cnt":14},{"order_date":"2026-02-25","product_type":"꽃가위","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-02-25","product_type":"모루 유리화기","total_qty":7,"order_cnt":7,"user_cnt":6},{"order_date":"2026-02-26","product_type":"꽃가위","total_qty":10,"order_cnt":10,"user_cnt":9},{"order_date":"2026-02-26","product_type":"모루 유리화기","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-02-27","product_type":"꽃가위","total_qty":9,"order_cnt":9,"user_cnt":8},{"order_date":"2026-02-27","product_type":"모루 유리화기","total_qty":11,"order_cnt":11,"user_cnt":11},{"order_date":"2026-02-28","product_type":"꽃가위","total_qty":9,"order_cnt":8,"user_cnt":8},{"order_date":"2026-02-28","product_type":"모루 유리화기","total_qty":3,"order_cnt":3,"user_cnt":3},{"order_date":"2026-03-01","product_type":"꽃가위","total_qty":7,"order_cnt":7,"user_cnt":6},{"order_date":"2026-03-01","product_type":"모루 유리화기","total_qty":17,"order_cnt":17,"user_cnt":17},{"order_date":"2026-03-02","product_type":"꽃가위","total_qty":13,"order_cnt":12,"user_cnt":12},{"order_date":"2026-03-02","product_type":"모루 유리화기","total_qty":23,"order_cnt":23,"user_cnt":22},{"order_date":"2026-03-03","product_type":"꽃가위","total_qty":9,"order_cnt":8,"user_cnt":8},{"order_date":"2026-03-03","product_type":"모루 유리화기","total_qty":14,"order_cnt":14,"user_cnt":14},{"order_date":"2026-03-04","product_type":"꽃가위","total_qty":10,"order_cnt":10,"user_cnt":10},{"order_date":"2026-03-04","product_type":"모루 유리화기","total_qty":15,"order_cnt":15,"user_cnt":15},{"order_date":"2026-03-05","product_type":"꽃가위","total_qty":17,"order_cnt":17,"user_cnt":16},{"order_date":"2026-03-05","product_type":"모루 유리화기","total_qty":22,"order_cnt":22,"user_cnt":21},{"order_date":"2026-03-06","product_type":"꽃가위","total_qty":5,"order_cnt":5,"user_cnt":5},{"order_date":"2026-03-06","product_type":"모루 유리화기","total_qty":10,"order_cnt":10,"user_cnt":9},{"order_date":"2026-03-07","product_type":"꽃가위","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-03-07","product_type":"모루 유리화기","total_qty":18,"order_cnt":18,"user_cnt":17},{"order_date":"2026-03-08","product_type":"꽃가위","total_qty":22,"order_cnt":21,"user_cnt":19},{"order_date":"2026-03-08","product_type":"모루 유리화기","total_qty":29,"order_cnt":29,"user_cnt":28},{"order_date":"2026-03-09","product_type":"꽃가위","total_qty":15,"order_cnt":15,"user_cnt":15},{"order_date":"2026-03-09","product_type":"모루 유리화기","total_qty":15,"order_cnt":15,"user_cnt":15},{"order_date":"2026-03-10","product_type":"꽃가위","total_qty":17,"order_cnt":17,"user_cnt":15},{"order_date":"2026-03-10","product_type":"모루 유리화기","total_qty":25,"order_cnt":25,"user_cnt":25},{"order_date":"2026-03-11","product_type":"꽃가위","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-03-11","product_type":"모루 유리화기","total_qty":10,"order_cnt":10,"user_cnt":10},{"order_date":"2026-03-12","product_type":"꽃가위","total_qty":9,"order_cnt":9,"user_cnt":9},{"order_date":"2026-03-12","product_type":"모루 유리화기","total_qty":35,"order_cnt":35,"user_cnt":32},{"order_date":"2026-03-13","product_type":"꽃가위","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-03-13","product_type":"모루 유리화기","total_qty":19,"order_cnt":19,"user_cnt":19},{"order_date":"2026-03-14","product_type":"꽃가위","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-03-14","product_type":"모루 유리화기","total_qty":23,"order_cnt":23,"user_cnt":23},{"order_date":"2026-03-15","product_type":"꽃가위","total_qty":11,"order_cnt":11,"user_cnt":11},{"order_date":"2026-03-15","product_type":"모루 유리화기","total_qty":21,"order_cnt":21,"user_cnt":20},{"order_date":"2026-03-16","product_type":"꽃가위","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-03-16","product_type":"모루 유리화기","total_qty":25,"order_cnt":25,"user_cnt":24},{"order_date":"2026-03-17","product_type":"꽃가위","total_qty":12,"order_cnt":12,"user_cnt":12},{"order_date":"2026-03-17","product_type":"모루 유리화기","total_qty":26,"order_cnt":26,"user_cnt":25},{"order_date":"2026-03-18","product_type":"꽃가위","total_qty":17,"order_cnt":17,"user_cnt":17},{"order_date":"2026-03-18","product_type":"모루 유리화기","total_qty":29,"order_cnt":29,"user_cnt":29},{"order_date":"2026-03-19","product_type":"꽃가위","total_qty":4,"order_cnt":4,"user_cnt":4},{"order_date":"2026-03-19","product_type":"모루 유리화기","total_qty":18,"order_cnt":18,"user_cnt":16},{"order_date":"2026-03-20","product_type":"꽃가위","total_qty":5,"order_cnt":5,"user_cnt":5},{"order_date":"2026-03-20","product_type":"모루 유리화기","total_qty":25,"order_cnt":24,"user_cnt":24},{"order_date":"2026-03-21","product_type":"꽃가위","total_qty":13,"order_cnt":13,"user_cnt":12},{"order_date":"2026-03-21","product_type":"모루 유리화기","total_qty":20,"order_cnt":20,"user_cnt":20},{"order_date":"2026-03-22","product_type":"꽃가위","total_qty":17,"order_cnt":17,"user_cnt":17},{"order_date":"2026-03-22","product_type":"모루 유리화기","total_qty":32,"order_cnt":32,"user_cnt":32},{"order_date":"2026-03-23","product_type":"꽃가위","total_qty":14,"order_cnt":14,"user_cnt":13},{"order_date":"2026-03-23","product_type":"모루 유리화기","total_qty":40,"order_cnt":28,"user_cnt":25},{"order_date":"2026-03-24","product_type":"꽃가위","total_qty":9,"order_cnt":9,"user_cnt":9},{"order_date":"2026-03-24","product_type":"모루 유리화기","total_qty":21,"order_cnt":21,"user_cnt":21},{"order_date":"2026-03-25","product_type":"꽃가위","total_qty":16,"order_cnt":14,"user_cnt":14},{"order_date":"2026-03-25","product_type":"모루 유리화기","total_qty":29,"order_cnt":29,"user_cnt":28},{"order_date":"2026-03-26","product_type":"꽃가위","total_qty":17,"order_cnt":17,"user_cnt":16},{"order_date":"2026-03-26","product_type":"모루 유리화기","total_qty":26,"order_cnt":26,"user_cnt":26},{"order_date":"2026-03-27","product_type":"꽃가위","total_qty":7,"order_cnt":6,"user_cnt":6},{"order_date":"2026-03-27","product_type":"모루 유리화기","total_qty":20,"order_cnt":20,"user_cnt":19},{"order_date":"2026-03-28","product_type":"꽃가위","total_qty":11,"order_cnt":11,"user_cnt":10},{"order_date":"2026-03-28","product_type":"모루 유리화기","total_qty":20,"order_cnt":20,"user_cnt":18},{"order_date":"2026-03-29","product_type":"꽃가위","total_qty":17,"order_cnt":17,"user_cnt":17},{"order_date":"2026-03-29","product_type":"모루 유리화기","total_qty":35,"order_cnt":35,"user_cnt":33},{"order_date":"2026-03-30","product_type":"꽃가위","total_qty":14,"order_cnt":14,"user_cnt":14},{"order_date":"2026-03-30","product_type":"모루 유리화기","total_qty":17,"order_cnt":17,"user_cnt":17},{"order_date":"2026-03-31","product_type":"꽃가위","total_qty":7,"order_cnt":7,"user_cnt":7},{"order_date":"2026-03-31","product_type":"모루 유리화기","total_qty":29,"order_cnt":29,"user_cnt":28},{"order_date":"2026-04-01","product_type":"꽃가위","total_qty":25,"order_cnt":24,"user_cnt":22},{"order_date":"2026-04-01","product_type":"모루 유리화기","total_qty":23,"order_cnt":23,"user_cnt":22},{"order_date":"2026-04-02","product_type":"꽃가위","total_qty":16,"order_cnt":16,"user_cnt":16},{"order_date":"2026-04-02","product_type":"모루 유리화기","total_qty":32,"order_cnt":32,"user_cnt":32},{"order_date":"2026-04-03","product_type":"꽃가위","total_qty":8,"order_cnt":8,"user_cnt":8},{"order_date":"2026-04-03","product_type":"모루 유리화기","total_qty":8,"order_cnt":8,"user_cnt":8}];
+
+const MONTHS=[
+  {key:'01',label:'1월',cls:'jan',color:'#6b7280'},
+  {key:'02',label:'2월',cls:'feb',color:'#378ADD'},
+  {key:'03',label:'3월',cls:'mar',color:'#1D9E75'},
+  {key:'04',label:'4월',cls:'apr',color:'#9b8fe0'}
+];
+
+let prod='꽃가위', metric='user_cnt', tableMonth='03';
+
+function getMonthData(mKey){
+  const rows=RAW.filter(r=>r.product_type===prod&&r.order_date.startsWith('2026-'+mKey));
+  const map={};
+  rows.forEach(r=>{const d=parseInt(r.order_date.split('-')[2]);map[d]=r[metric]||0;});
+  return map;
+}
+
+function monthTotal(mKey){
+  return RAW.filter(r=>r.product_type===prod&&r.order_date.startsWith('2026-'+mKey)).reduce((s,r)=>s+(r[metric]||0),0);
+}
+
+function pct(a,b){if(!b)return null;return ((a-b)/b*100).toFixed(1);}
+
+function renderKPI(){
+  const totals=MONTHS.map(m=>monthTotal(m.key));
+  const labels=['1월','2월','3월','4월 (진행중)'];
+  document.getElementById('kpi-grid').innerHTML=MONTHS.map((m,i)=>{
+    const t=totals[i];
+    const prev=i>0?totals[i-1]:null;
+    const p=prev!==null?pct(t,prev):null;
+    let dHtml='';
+    if(p!==null){
+      const cl=parseFloat(p)>0?'up':parseFloat(p)<0?'dn':'neu';
+      const sign=parseFloat(p)>0?'+':'';
+      dHtml=`<div class="kpi-delta ${cl}">${sign}${p}% vs ${MONTHS[i-1].label}</div>`;
+    } else {
+      dHtml=`<div class="kpi-delta neu">기준월</div>`;
+    }
+    return `<div class="kpi ${m.cls}">
+      <div class="kpi-month">${labels[i]}</div>
+      <div class="kpi-val">${t.toLocaleString()}</div>
+      ${dHtml}
+    </div>`;
+  }).join('');
+}
+
+let chart=null;
+function renderChart(){
+  const maxDay=31;
+  const labels=Array.from({length:maxDay},(_,i)=>i+1);
+  const datasets=MONTHS.map(m=>{
+    const mdata=getMonthData(m.key);
+    const data=Array.from({length:maxDay},(_,i)=>mdata[i+1]??null);
+    return {label:m.label,data,borderColor:m.color,backgroundColor:m.color+'18',fill:false,tension:0.35,borderWidth:2,pointRadius:2,pointHoverRadius:5,spanGaps:false};
+  });
+  document.getElementById('legend').innerHTML=MONTHS.map(m=>`<span class="leg-item"><span class="leg-dot" style="background:${m.color}"></span>${m.label}</span>`).join('');
+  const ctx=document.getElementById('mc').getContext('2d');
+  if(chart)chart.destroy();
+  chart=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#1e2026',
+          borderColor:'rgba(255,255,255,0.1)',
+          borderWidth:1,
+          titleColor:'#8a8b8e',
+          bodyColor:'#f0f0ef',
+          callbacks:{
+            title:i=>`${i[0].label}일`,
+            label:c=>`${c.dataset.label}: ${c.raw??'-'}`
+          }
+        }
+      },
+      scales:{
+        x:{
+          ticks:{font:{size:10,family:'DM Mono, monospace'},color:'#55565a',maxTicksLimit:16},
+          grid:{color:'rgba(255,255,255,0.04)'},
+          border:{color:'rgba(255,255,255,0.07)'}
+        },
+        y:{
+          ticks:{font:{size:10,family:'DM Mono, monospace'},color:'#55565a'},
+          grid:{color:'rgba(255,255,255,0.04)'},
+          border:{color:'rgba(255,255,255,0.07)'}
+        }
+      }
+    }
+  });
+}
+
+function renderTable(){
+  const tabs=document.getElementById('month-tabs');
+  tabs.innerHTML=['02','03','04'].map(k=>{
+    const m=MONTHS.find(x=>x.key===k);
+    const prevIdx=MONTHS.findIndex(x=>x.key===k)-1;
+    const prev=MONTHS[prevIdx];
+    const isActive=tableMonth===k;
+    return `<button class="tab-btn ${m.cls}${isActive?' active':''}" onclick="setTableMonth('${k}')">${prev.label} → ${m.label}</button>`;
+  }).join('');
+
+  const curM=MONTHS.find(x=>x.key===tableMonth);
+  const prevKey=MONTHS[MONTHS.findIndex(x=>x.key===tableMonth)-1].key;
+  const prevM=MONTHS.find(x=>x.key===prevKey);
+  const curData=getMonthData(tableMonth);
+  const prevData=getMonthData(prevKey);
+  const allDays=[...new Set([...Object.keys(curData),...Object.keys(prevData)].map(Number))].sort((a,b)=>a-b);
+
+  const metricLabel={'user_cnt':'구매자','order_cnt':'주문수','total_qty':'수량'}[metric];
+
+  document.getElementById('dt').innerHTML=`
+    <thead><tr>
+      <th>날짜</th>
+      <th style="color:${prevM.color}">${prevM.label} ${metricLabel}</th>
+      <th style="color:${curM.color}">${curM.label} ${metricLabel}</th>
+      <th>증감</th>
+      <th>증감률</th>
+    </tr></thead>
+    <tbody>${allDays.map(d=>{
+      const c=curData[d]??null;
+      const p=prevData[d]??null;
+      const diff=(c!==null&&p!==null)?c-p:null;
+      const rate=(c!==null&&p!==null&&p!==0)?((diff/p)*100).toFixed(1):null;
+      let diffHtml='—', rateHtml='—';
+      if(diff!==null){
+        const cl=diff>0?'delta-up':diff<0?'delta-dn':'delta-neu';
+        const sign=diff>0?'+':'';
+        diffHtml=`<span class="${cl}">${sign}${diff}</span>`;
+        if(rate!==null){
+          const pcl=diff>0?'pill-up':diff<0?'pill-dn':'pill-neu';
+          const ps=diff>0?'+':'';
+          rateHtml=`<span class="pill ${pcl}">${ps}${rate}%</span>`;
+        }
+      }
+      const dateStr=`${tableMonth==='04'?'4':''}${tableMonth==='03'?'3':''}${tableMonth==='02'?'2':''}월 ${d}일`;
+      return `<tr>
+        <td>${tableMonth}월 ${String(d).padStart(2,'0')}일</td>
+        <td>${p??'—'}</td>
+        <td>${c??'—'}</td>
+        <td>${diffHtml}</td>
+        <td>${rateHtml}</td>
+      </tr>`;
+    }).join('')}</tbody>`;
+}
+
+function setProd(p,el){
+  prod=p;
+  document.querySelectorAll('#prod-seg button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function setMetric(m,el){
+  metric=m;
+  document.querySelectorAll('#metric-seg button').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function setTableMonth(m){
+  tableMonth=m;
+  renderTable();
+}
+function render(){renderKPI();renderChart();renderTable();}
+render();
+</script>
+</body>
+</html>
