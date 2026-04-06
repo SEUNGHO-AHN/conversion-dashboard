@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>배너 효율 분석기</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Pretendard:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e0ddd5;
+    --border2: #ccc9be;
+    --text: #1a1917;
+    --text2: #6b6860;
+    --text3: #9c9a93;
+    --green: #1a6e4a;
+    --green-bg: #e8f5ee;
+    --amber: #7a4f00;
+    --amber-bg: #fff3d6;
+    --red: #8b2020;
+    --red-bg: #fdeaea;
+    --accent: #2a5ef7;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Pretendard', -apple-system, sans-serif;
+    --radius: 8px;
+    --radius-lg: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── UPLOAD SCREEN ── */
+  #upload-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .app-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .app-heading {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .app-sub {
+    font-size: 14px;
+    color: var(--text2);
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    max-width: 640px;
+    margin-bottom: 24px;
+  }
+
+  .upload-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    position: relative;
+  }
+
+  .upload-card:hover { border-color: var(--border2); background: var(--surface2); }
+  .upload-card.required-card { grid-column: 1 / -1; }
+
+  .upload-card input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+
+  .card-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .card-status {
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border2);
+    flex-shrink: 0;
+  }
+
+  .status-dot.loaded { background: var(--green); }
+
+  .upload-card.done { border-color: #b8dfc9; background: #f6fdf9; }
+  .upload-card.done .card-tag { color: var(--green); }
+
+  .analyze-btn {
+    background: var(--text);
+    color: #fff;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 40px;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.12s;
+    letter-spacing: -0.01em;
+  }
+
+  .analyze-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .analyze-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  .hint {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text3);
+    text-align: center;
+  }
+
+  /* ── DASHBOARD ── */
+  #dashboard { display: none; }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .topbar-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+
+  .topbar-reset {
+    margin-left: auto;
+    background: none;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 6px 12px;
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .topbar-reset:hover { border-color: var(--text); color: var(--text); }
+
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 28px 60px;
+  }
+
+  /* summary cards */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .metric {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 6px;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .metric-value {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .metric-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 3px;
+  }
+
+  /* controls */
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 180px;
+    max-width: 260px;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    padding: 8px 12px 8px 32px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .search-wrap input:focus { border-color: var(--border2); }
+
+  .search-icon {
+    position: absolute;
+    left: 10px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  select {
+    padding: 8px 12px;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    padding-right: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239c9a93' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color 0.15s;
+  }
+
+  select:focus { border-color: var(--border2); }
+
+  .count-label {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* table */
+  .tbl-wrap {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .tbl-scroll { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    table-layout: fixed;
+  }
+
+  thead {
+    background: var(--surface2);
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  th {
+    padding: 10px 12px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition: color 0.15s;
+    position: relative;
+  }
+
+  th:hover, th.sorted { color: var(--text); }
+
+  th.num { text-align: right; }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 0.5px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  td.num { text-align: right; font-family: var(--mono); font-size: 12px; }
+  td.date-col { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+  .banner-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .badge-high { background: var(--green-bg); color: var(--green); }
+  .badge-mid  { background: var(--amber-bg); color: var(--amber); }
+  .badge-low  { background: var(--red-bg);   color: var(--red); }
+
+  .bar-wrap { display: flex; align-items: center; gap: 7px; }
+  .bar-bg {
+    flex: 1; height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    min-width: 40px;
+    overflow: hidden;
+  }
+  .bar-fill { height: 5px; border-radius: 3px; background: #1a6e4a; transition: width 0.3s; }
+
+  /* pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    border-top: 0.5px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .pg-btn {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 5px 12px;
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .pg-btn:hover { border-color: var(--border2); color: var(--text); }
+  .pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .pg-info {
+    flex: 1;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* empty */
+  .empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text3);
+    font-size: 13px;
+  }
+
+  /* legend */
+  .legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  @media (max-width: 640px) {
+    .upload-grid { grid-template-columns: 1fr; }
+    .upload-card.required-card { grid-column: 1; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    .main { padding: 20px 16px 60px; }
+    .topbar { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ UPLOAD SCREEN ═══════════════════ -->
+<div id="upload-screen">
+  <p class="app-title">Honestflower · Analytics</p>
+  <h1 class="app-heading">배너 효율 분석기</h1>
+  <p class="app-sub">CSV 파일을 업로드하면 세션 대비 배너 효율을 자동으로 계산해요</p>
+
+  <div class="upload-grid">
+    <!-- 배너 효율 -->
+    <div class="upload-card required-card" id="card-banner">
+      <input type="file" accept=".csv" id="file-banner" onchange="handleFile('banner', this)">
+      <p class="card-tag">필수 · 배너 데이터</p>
+      <p class="card-title">배너 효율 CSV</p>
+      <p class="card-desc">id, subject, view_count, started_at, ended_at, exposure_days, daily_avg_views 컬럼 포함</p>
+      <div class="card-status">
+        <span class="status-dot" id="dot-banner"></span>
+        <span id="label-banner">파일을 선택하거나 드래그하세요</span>
+      </div>
+    </div>
+
+    <!-- 1월 세션 -->
+    <div class="upload-card" id="card-s1">
+      <input type="file" accept=".csv" id="file-s1" onchange="handleFile('s1', this)">
+      <p class="card-tag">선택 · 세션 데이터</p>
+      <p class="card-title">1월 세션수 CSV</p>
+      <p class="card-desc">GA4 날짜별 세션 (20260101 형식)</p>
+      <div class="card-status">
+        <span class="status-dot" id="dot-s1"></span>
+        <span id="label-s1">파일을 선택하세요</span>
+      </div>
+    </div>
+
+    <!-- 2월 세션 -->
+    <div class="upload-card" id="card-s2">
+      <input type="file" accept=".csv" id="file-s2" onchange="handleFile('s2', this)">
+      <p class="card-tag">선택 · 세션 데이터</p>
+      <p class="card-title">2월 세션수 CSV</p>
+      <p class="card-desc">GA4 날짜별 세션 (20260201 형식)</p>
+      <div class="card-status">
+        <span class="status-dot" id="dot-s2"></span>
+        <span id="label-s2">파일을 선택하세요</span>
+      </div>
+    </div>
+
+    <!-- 3·4월 세션 -->
+    <div class="upload-card" id="card-s3">
+      <input type="file" accept=".csv" id="file-s3" onchange="handleFile('s3', this)">
+      <p class="card-tag">선택 · 세션 데이터</p>
+      <p class="card-title">3·4월 세션수 CSV</p>
+      <p class="card-desc">GA4 날짜별 세션 (20260301 형식)</p>
+      <div class="card-status">
+        <span class="status-dot" id="dot-s3"></span>
+        <span id="label-s3">파일을 선택하세요</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="analyze-btn" id="analyze-btn" disabled onclick="analyze()">분석 시작</button>
+  <p class="hint">세션 CSV가 없으면 배너 조회수만 보여요 · 세션이 있어야 CTR 계산 가능</p>
+</div>
+
+<!-- ═══════════════════ DASHBOARD ═══════════════════ -->
+<div id="dashboard">
+  <div class="topbar">
+    <span class="topbar-title">배너 효율 분석</span>
+    <span id="topbar-range" style="font-size:12px;color:var(--text3);font-family:'DM Mono',monospace"></span>
+    <button class="topbar-reset" onclick="reset()">↩ 파일 다시 업로드</button>
+  </div>
+  <div class="main">
+    <div class="summary-grid" id="summary-grid"></div>
+
+    <div class="legend">
+      <span style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;">CTR 기준</span>
+      <span class="legend-item"><span class="badge badge-high">20%+</span> 높음</span>
+      <span class="legend-item"><span class="badge badge-mid">5–20%</span> 보통</span>
+      <span class="legend-item"><span class="badge badge-low">&lt;5%</span> 낮음</span>
+      <span style="font-size:11px;color:var(--text3);margin-left:auto">CTR = 배너 조회수 ÷ 기간 총 세션</span>
+    </div>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search" placeholder="배너명 검색..." oninput="page=0;render()">
+      </div>
+      <select id="monthFilter" onchange="page=0;render()">
+        <option value="">전체 월</option>
+      </select>
+      <select id="ctrFilter" onchange="page=0;render()">
+        <option value="">CTR 전체</option>
+        <option value="high">높음 (≥20%)</option>
+        <option value="mid">보통 (5–20%)</option>
+        <option value="low">낮음 (&lt;5%)</option>
+        <option value="none">세션 없음</option>
+      </select>
+      <span class="count-label" id="count-label"></span>
+    </div>
+
+    <div class="tbl-wrap">
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:190px" onclick="sortBy('subject')">배너명 <span id="arr-subject"></span></th>
+              <th style="width:105px" onclick="sortBy('started_at')" class="num">노출 기간 <span id="arr-started_at"></span></th>
+              <th style="width:56px" onclick="sortBy('exposure_days')" class="num">노출일 <span id="arr-exposure_days"></span></th>
+              <th style="width:74px" onclick="sortBy('view_count')" class="num">배너조회 <span id="arr-view_count"></span></th>
+              <th style="width:130px" onclick="sortBy('daily_avg_views')" class="sorted">일평균조회 <span id="arr-daily_avg_views">↓</span></th>
+              <th style="width:80px" onclick="sortBy('total_sessions')" class="num">기간세션 <span id="arr-total_sessions"></span></th>
+              <th style="width:82px" onclick="sortBy('daily_sessions')" class="num">일평균세션 <span id="arr-daily_sessions"></span></th>
+              <th style="width:90px" onclick="sortBy('ctr')">CTR <span id="arr-ctr"></span></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button class="pg-btn" id="prev-btn" onclick="prevPage()">← 이전</button>
+        <span class="pg-info" id="pg-info"></span>
+        <button class="pg-btn" id="next-btn" onclick="nextPage()">다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──
+const state = { banner: null, sessions: {} };
+let allData = [];
+let sortKey = 'daily_avg_views', sortDir = -1, page = 0;
+const PAGE = 25;
+
+// ── FILE PARSING ──
+function parseCSV(text) {
+  const lines = text.split('\n');
+  const rows = [];
+  let headers = null;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const cols = parseCSVLine(line);
+    if (!headers) { headers = cols.map(c => c.trim()); continue; }
+    if (cols.length < headers.length) continue;
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (cols[i] || '').trim());
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function parseCSVLine(line) {
+  const result = []; let cur = ''; let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; continue; }
+    if (c === ',' && !inQ) { result.push(cur); cur = ''; continue; }
+    cur += c;
+  }
+  result.push(cur);
+  return result;
+}
+
+function parseSessionCSV(text) {
+  const lines = text.split('\n');
+  const map = {};
+  let dataStarted = false;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    if (line.startsWith('날짜,')) { dataStarted = true; continue; }
+    if (!dataStarted) continue;
+    const parts = line.split(',');
+    const dateStr = (parts[0] || '').trim();
+    if (!/^\d{8}$/.test(dateStr)) continue;
+    const sessions = parseInt(parts[1]) || 0;
+    const y = dateStr.slice(0,4), m = dateStr.slice(4,6), d = dateStr.slice(6,8);
+    map[`${y}-${m}-${d}`] = sessions;
+  }
+  return map;
+}
+
+// ── FILE UPLOAD ──
+function handleFile(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    if (key === 'banner') {
+      state.banner = parseCSV(text);
+      setCardDone('banner', file.name);
+    } else {
+      const map = parseSessionCSV(text);
+      state.sessions = { ...state.sessions, ...map };
+      setCardDone(key, file.name);
+    }
+    document.getElementById('analyze-btn').disabled = !state.banner;
+  };
+  reader.readAsText(file, 'utf-8');
+}
+
+function setCardDone(key, filename) {
+  document.getElementById('dot-' + key).classList.add('loaded');
+  document.getElementById('label-' + key).textContent = filename;
+  document.getElementById('card-' + key).classList.add('done');
+}
+
+// ── ANALYSIS ──
+function analyze() {
+  const rows = state.banner;
+  if (!rows || !rows.length) return;
+
+  const hasSessions = Object.keys(state.sessions).length > 0;
+
+  allData = rows.map(r => {
+    const subject = (r.subject || '').replace(/\\r\\n|\r\n|\n/g, ' ').trim();
+    const started = r.started_at ? r.started_at.slice(0,10) : '';
+    const ended = r.ended_at ? r.ended_at.slice(0,10) : '';
+    const exposure_days = parseFloat(r.exposure_days) || 0;
+    const view_count = parseInt(r.view_count) || 0;
+    const daily_avg_views = parseFloat(r.daily_avg_views) || 0;
+
+    let total_sessions = null, daily_sessions = null, ctr = null;
+    if (hasSessions && started && ended) {
+      total_sessions = 0;
+      let d = new Date(started);
+      const end = new Date(ended);
+      while (d <= end) {
+        const key = d.toISOString().slice(0,10);
+        total_sessions += state.sessions[key] || 0;
+        d.setDate(d.getDate() + 1);
+      }
+      daily_sessions = exposure_days > 0 ? Math.round(total_sessions / exposure_days) : 0;
+      ctr = total_sessions > 0 ? parseFloat((view_count / total_sessions * 100).toFixed(2)) : null;
+    }
+
+    return {
+      id: r.id,
+      subject: subject || `(제목없음) ${r.id}`,
+      started_at: started,
+      ended_at: ended,
+      exposure_days,
+      view_count,
+      daily_avg_views,
+      total_sessions,
+      daily_sessions,
+      ctr
+    };
+  });
+
+  // build month filter options
+  const months = [...new Set(allData.map(d => d.started_at.slice(0,7)).filter(Boolean))].sort();
+  const sel = document.getElementById('monthFilter');
+  sel.innerHTML = '<option value="">전체 월</option>';
+  months.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m.replace('-', '년 ') + '월';
+    sel.appendChild(opt);
+  });
+
+  // date range for topbar
+  const starts = allData.map(d => d.started_at).filter(Boolean).sort();
+  const ends = allData.map(d => d.ended_at).filter(Boolean).sort();
+  if (starts.length) {
+    document.getElementById('topbar-range').textContent =
+      `${starts[0]} ~ ${ends[ends.length-1]}`;
+  }
+
+  document.getElementById('upload-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  sortKey = 'daily_avg_views'; sortDir = -1; page = 0;
+  render();
+}
+
+// ── RENDER ──
+function filtered() {
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  const m = document.getElementById('monthFilter').value;
+  const c = document.getElementById('ctrFilter').value;
+
+  return allData.filter(d => {
+    if (q && !d.subject.toLowerCase().includes(q)) return false;
+    if (m && !d.started_at.startsWith(m)) return false;
+    if (c === 'high' && (d.ctr === null || d.ctr < 20)) return false;
+    if (c === 'mid'  && (d.ctr === null || d.ctr < 5 || d.ctr >= 20)) return false;
+    if (c === 'low'  && (d.ctr === null || d.ctr >= 5)) return false;
+    if (c === 'none' && d.ctr !== null) return false;
+    return true;
+  }).sort((a, b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (av === null) av = sortDir === -1 ? -Infinity : Infinity;
+    if (bv === null) bv = sortDir === -1 ? -Infinity : Infinity;
+    if (typeof av === 'string') return sortDir * av.localeCompare(bv);
+    return sortDir * (av - bv);
+  });
+}
+
+function render() {
+  const rows = filtered();
+  const totalViews = rows.reduce((s, d) => s + d.view_count, 0);
+  const totalSessions = rows.filter(d => d.total_sessions !== null).reduce((s, d) => s + d.total_sessions, 0);
+  const avgCtr = totalSessions > 0 ? (totalViews / totalSessions * 100) : null;
+  const maxDav = Math.max(...rows.map(d => d.daily_avg_views), 1);
+  const hasSessions = allData.some(d => d.total_sessions !== null);
+
+  // summary
+  document.getElementById('summary-grid').innerHTML = `
+    <div class="metric">
+      <div class="metric-label">배너 수</div>
+      <div class="metric-value">${rows.length}</div>
+      <div class="metric-sub">개 배너</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">총 배너 조회</div>
+      <div class="metric-value">${totalViews.toLocaleString()}</div>
+      <div class="metric-sub">view_count 합계</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">기간 총 세션</div>
+      <div class="metric-value">${hasSessions ? totalSessions.toLocaleString() : '—'}</div>
+      <div class="metric-sub">${hasSessions ? 'GA4 세션 합계' : '세션 CSV 없음'}</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">평균 CTR</div>
+      <div class="metric-value">${avgCtr !== null ? avgCtr.toFixed(1) + '%' : '—'}</div>
+      <div class="metric-sub">${avgCtr !== null ? '조회 / 세션' : '세션 필요'}</div>
+    </div>
+  `;
+
+  // sort arrows
+  ['subject','started_at','exposure_days','view_count','daily_avg_views','total_sessions','daily_sessions','ctr'].forEach(k => {
+    const el = document.getElementById('arr-' + k);
+    if (el) el.textContent = sortKey === k ? (sortDir === -1 ? '↓' : '↑') : '';
+    const th = el?.parentElement;
+    if (th) th.classList.toggle('sorted', sortKey === k);
+  });
+
+  document.getElementById('count-label').textContent = `${rows.length}개`;
+
+  // paginate
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE));
+  if (page >= totalPages) page = totalPages - 1;
+  const paged = rows.slice(page * PAGE, (page + 1) * PAGE);
+
+  if (!paged.length) {
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="8" class="empty">검색 결과가 없어요</td></tr>';
+  } else {
+    document.getElementById('tbody').innerHTML = paged.map(d => {
+      const pct = Math.round(d.daily_avg_views / maxDav * 100);
+      const dateStr = d.started_at && d.ended_at
+        ? `${d.started_at.slice(5)}~${d.ended_at.slice(5)}`
+        : '—';
+      const ctrBadge = d.ctr === null
+        ? `<span style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">—</span>`
+        : d.ctr >= 20
+          ? `<span class="badge badge-high">${d.ctr.toFixed(1)}%</span>`
+          : d.ctr >= 5
+            ? `<span class="badge badge-mid">${d.ctr.toFixed(1)}%</span>`
+            : `<span class="badge badge-low">${d.ctr.toFixed(1)}%</span>`;
+
+      return `<tr>
+        <td><div class="banner-name" title="${d.subject}">${d.subject}</div></td>
+        <td class="date-col num">${dateStr}</td>
+        <td class="num">${d.exposure_days}일</td>
+        <td class="num">${d.view_count.toLocaleString()}</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+            <span style="font-family:'DM Mono',monospace;font-size:12px;min-width:34px;text-align:right">${Math.round(d.daily_avg_views)}</span>
+          </div>
+        </td>
+        <td class="num">${d.total_sessions !== null ? d.total_sessions.toLocaleString() : '—'}</td>
+        <td class="num">${d.daily_sessions !== null ? d.daily_sessions.toLocaleString() : '—'}</td>
+        <td>${ctrBadge}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('pg-info').textContent = `${page + 1} / ${totalPages}`;
+  document.getElementById('prev-btn').disabled = page === 0;
+  document.getElementById('next-btn').disabled = page >= totalPages - 1;
+}
+
+function sortBy(key) {
+  if (sortKey === key) sortDir *= -1;
+  else { sortKey = key; sortDir = -1; }
+  page = 0;
+  render();
+}
+
+function prevPage() { if (page > 0) { page--; render(); } }
+function nextPage() { const r = filtered(); if ((page+1)*PAGE < r.length) { page++; render(); } }
+
+function reset() {
+  state.banner = null; state.sessions = {};
+  allData = []; page = 0;
+  ['banner','s1','s2','s3'].forEach(k => {
+    document.getElementById('dot-'+k).classList.remove('loaded');
+    document.getElementById('card-'+k).classList.remove('done');
+    document.getElementById('label-'+k).textContent = k === 'banner' ? '파일을 선택하거나 드래그하세요' : '파일을 선택하세요';
+    document.getElementById('file-'+k).value = '';
+  });
+  document.getElementById('analyze-btn').disabled = true;
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('upload-screen').style.display = 'flex';
+}
+
+// drag-and-drop on upload cards
+document.querySelectorAll('.upload-card').forEach(card => {
+  card.addEventListener('dragover', e => { e.preventDefault(); card.style.background = 'var(--surface2)'; });
+  card.addEventListener('dragleave', () => { card.style.background = ''; });
+  card.addEventListener('drop', e => {
+    e.preventDefault();
+    card.style.background = '';
+    const input = card.querySelector('input[type="file"]');
+    const file = e.dataTransfer.files[0];
+    if (file && input) {
+      const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+      input.dispatchEvent(new Event('change'));
+    }
+  });
+});
+</script>
+</body>
+</html>
