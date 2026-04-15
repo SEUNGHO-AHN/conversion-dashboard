@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>부모님께 어떤 꽃이 어울릴까? | 어니스트플라워</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════
+   CONFIG ZONE
+   색상 · 폰트 · 여백은 이 :root 블록만 수정하면 됩니다
+═══════════════════════════════════════════════════════ */
+:root {
+  /* ─ Colors ─ */
+  --bg:         #FAF8F3;       /* 전체 배경 */
+  --surface:    #FFFFFF;       /* 카드 배경 */
+  --rose:       #C2786C;       /* 메인 강조 (버튼·선택·배지) */
+  --rose-lt:    #FDF4F2;       /* 강조 연한 배경 */
+  --rose-dk:    #9E5C52;       /* 강조 어두운 (hover) */
+  --green:      #4A6B40;       /* 구매 CTA · 체크 */
+  --green-lt:   #ECF3E8;       /* 체크 배경 */
+  --text:       #1C1814;       /* 본문 */
+  --text-2:     #5C5448;       /* 서브 텍스트 */
+  --text-3:     #9C9080;       /* 뮤트 텍스트 */
+  --border:     #EAE2D6;       /* 기본 테두리 */
+  --border-2:   #D8CFC0;       /* 강조 테두리 */
+
+  /* ─ Typography ─ */
+  --serif:  'Cormorant Garamond', 'Nanum Myeongjo', Georgia, serif;
+  --sans:   'Noto Sans KR', 'Apple SD Gothic Neo', -apple-system, sans-serif;
+
+  /* ─ Layout ─ */
+  --px:     20px;
+  --r-card: 16px;
+  --r-pill: 100px;
+}
+
+/* ─ Reset ─ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+button { font-family: var(--sans); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+a { -webkit-tap-highlight-color: transparent; }
+
+/* ─ Screen toggle ─ */
+.screen { display: none; min-height: 100dvh; }
+.screen.active { display: block; animation: scr-in .35s cubic-bezier(.22,.68,0,1.1); }
+@keyframes scr-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ─ Utility ─ */
+.brand {
+  font-family: var(--serif);
+  font-size: 10px; letter-spacing: .32em;
+  color: var(--green); text-transform: uppercase; font-weight: 400;
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   SCREEN 1 — START
+═══════════════════════════════════════════════════════ */
+#screen-start .inner {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100dvh;
+  padding: 52px var(--px) 64px;
+  text-align: center;
+}
+
+.start-deco {
+  display: flex; gap: 9px;
+  margin-bottom: 36px; align-items: flex-end;
+}
+.deco-bubble {
+  border-radius: 50%; border: 1px solid var(--border);
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+  transition: transform .32s cubic-bezier(.34,1.56,.64,1);
+}
+.deco-bubble:hover { transform: scale(1.14) rotate(-8deg); }
+
+.start-title {
+  font-family: var(--serif);
+  font-size: 34px; font-weight: 300; line-height: 1.35;
+  color: var(--text); margin-bottom: 18px;
+}
+.start-sub {
+  font-size: 14px; color: var(--text-2); line-height: 1.9;
+  margin-bottom: 14px; max-width: 272px; font-weight: 300;
+}
+.start-helper {
+  font-size: 12px; color: var(--text-3); line-height: 1.75;
+  padding: 12px 18px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r-card);
+  max-width: 272px; margin-bottom: 44px;
+}
+
+.btn-start {
+  background: var(--rose); color: #fff; border: none;
+  padding: 16px 60px; font-size: 15px;
+  letter-spacing: .14em; font-weight: 400;
+  border-radius: var(--r-pill);
+  transition: all .14s;
+}
+.btn-start:hover { background: var(--rose-dk); transform: translateY(-1px); }
+.btn-start:active { transform: scale(.97); }
+
+
+/* ═══════════════════════════════════════════════════════
+   SCREEN 2 — QUIZ
+═══════════════════════════════════════════════════════ */
+.quiz-header {
+  position: sticky; top: 0; z-index: 20;
+  background: var(--bg);
+  padding: 18px var(--px) 14px;
+  border-bottom: 1px solid var(--border);
+}
+.quiz-header-row {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 14px;
+}
+.quiz-step {
+  font-size: 12px; color: var(--text-3); font-weight: 300; letter-spacing: .04em;
+}
+.quiz-step b { color: var(--text); font-weight: 500; }
+
+.prog-track { width: 100%; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.prog-fill  { height: 100%; background: var(--rose); border-radius: 2px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+.quiz-body { padding: 28px var(--px) 128px; }
+
+.q-title {
+  font-family: var(--serif);
+  font-size: 24px; font-weight: 300; line-height: 1.45;
+  color: var(--text); margin-bottom: 24px;
+}
+
+.opt-list { display: flex; flex-direction: column; gap: 10px; }
+
+.opt-card {
+  width: 100%; background: var(--surface);
+  border: 1.5px solid var(--border); border-radius: var(--r-card);
+  padding: 15px 18px; cursor: pointer;
+  display: flex; align-items: center; gap: 13px;
+  transition: border-color .14s, background .14s;
+  text-align: left;
+}
+.opt-card:hover  { border-color: var(--rose); background: var(--rose-lt); }
+.opt-card.sel    { border-color: var(--rose); background: var(--rose-lt); }
+
+.opt-radio {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid var(--border-2); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .14s; background: var(--surface);
+}
+.opt-card.sel .opt-radio { background: var(--rose); border-color: var(--rose); }
+.opt-radio-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #fff; opacity: 0; transition: opacity .14s;
+}
+.opt-card.sel .opt-radio-dot { opacity: 1; }
+
+.opt-text { font-size: 14px; color: var(--text); line-height: 1.5; font-weight: 300; }
+.opt-card.sel .opt-text { color: var(--rose-dk); font-weight: 400; }
+
+/* Nav bar */
+.quiz-nav {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px;
+  padding: 14px var(--px) 30px;
+  background: var(--bg); border-top: 1px solid var(--border);
+  display: flex; gap: 10px; z-index: 30;
+}
+.btn-prev {
+  background: transparent; color: var(--text-3);
+  border: 1.5px solid var(--border);
+  padding: 14px 22px; font-size: 14px; font-weight: 300;
+  border-radius: var(--r-pill); flex-shrink: 0;
+  transition: all .13s;
+}
+.btn-prev:hover:not(:disabled) { border-color: var(--text-3); color: var(--text-2); }
+.btn-prev:disabled { opacity: .3; cursor: default; }
+
+.btn-next {
+  flex: 1; background: var(--rose); color: #fff; border: none;
+  padding: 14px; font-size: 14px; font-weight: 400;
+  letter-spacing: .1em; border-radius: var(--r-pill);
+  transition: all .13s;
+}
+.btn-next:hover:not(:disabled) { background: var(--rose-dk); }
+.btn-next:active:not(:disabled) { transform: scale(.98); }
+.btn-next:disabled { background: var(--border); color: var(--text-3); cursor: default; }
+
+
+/* ═══════════════════════════════════════════════════════
+   SCREEN 3 — RESULT
+═══════════════════════════════════════════════════════ */
+.result-top {
+  padding: 28px var(--px) 22px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.result-eyebrow {
+  font-family: var(--serif); font-style: italic;
+  font-size: 13px; color: var(--text-3); margin-bottom: 8px;
+}
+.result-title {
+  font-family: var(--serif);
+  font-size: 26px; font-weight: 300; line-height: 1.45; color: var(--text);
+}
+
+/* Main card */
+.main-wrap { padding: 22px var(--px) 0; }
+.main-card {
+  background: var(--surface);
+  border-radius: 20px; border: 1px solid var(--border);
+  overflow: hidden; position: relative;
+}
+.main-badge {
+  position: absolute; top: 13px; left: 13px; z-index: 2;
+  background: var(--rose); color: #fff;
+  font-size: 10px; letter-spacing: .14em; font-weight: 500;
+  padding: 4px 12px; border-radius: var(--r-pill);
+}
+.main-img {
+  width: 100%; aspect-ratio: 4/3;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+.main-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.main-img .svg-ph { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.main-img .svg-ph svg { width: 150px; height: 150px; }
+
+.main-info { padding: 18px 20px 20px; }
+.main-name { font-size: 18px; font-weight: 500; color: var(--text); margin-bottom: 10px; }
+.price-row  { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.price-disc { font-size: 21px; font-weight: 500; color: var(--rose-dk); }
+.price-orig { font-size: 14px; color: var(--text-3); text-decoration: line-through; }
+.disc-badge {
+  font-size: 12px; color: var(--rose); font-weight: 500;
+  background: var(--rose-lt); padding: 2px 8px; border-radius: 6px;
+}
+.ship-note { font-size: 12px; color: var(--text-3); font-weight: 300; }
+
+/* Rec section */
+.rec-section { padding: 20px var(--px); }
+
+.main-desc {
+  font-size: 14px; color: var(--text-2); line-height: 1.9; font-weight: 300;
+  padding: 16px 18px; border-left: 3px solid var(--rose);
+  background: var(--surface); border-radius: 0 var(--r-card) var(--r-card) 0;
+  margin-bottom: 22px;
+}
+
+.sec-label {
+  font-size: 11px; letter-spacing: .12em; color: var(--text-3);
+  font-weight: 500; text-transform: uppercase; margin-bottom: 12px;
+}
+.reasons-list { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px; }
+.reasons-list li {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 14px; color: var(--text-2); font-weight: 300; line-height: 1.6;
+}
+.chk {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--green-lt); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+
+.tags-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+.tag {
+  font-size: 12px; color: var(--green); background: var(--green-lt);
+  padding: 5px 13px; border-radius: var(--r-pill); font-weight: 400;
+}
+
+.sit-copy {
+  font-size: 13px; color: var(--text-3); line-height: 1.9; font-weight: 300;
+  padding: 16px 18px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r-card);
+}
+
+/* CTAs */
+.result-cta { padding: 0 var(--px) 0; display: flex; flex-direction: column; gap: 10px; }
+.btn-buy {
+  width: 100%; background: var(--green); color: #fff; border: none;
+  padding: 16px; font-size: 15px; letter-spacing: .1em; font-weight: 400;
+  border-radius: var(--r-pill); transition: all .13s;
+}
+.btn-buy:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-buy:active { transform: scale(.98); }
+
+.btn-retry {
+  width: 100%; background: transparent; color: var(--text-3);
+  border: 1.5px solid var(--border);
+  padding: 14px; font-size: 14px; font-weight: 300; letter-spacing: .06em;
+  border-radius: var(--r-pill); transition: all .13s;
+}
+.btn-retry:hover { border-color: var(--text-3); color: var(--text-2); }
+
+.section-divider { height: 1px; background: var(--border); margin: 28px var(--px); }
+
+/* Sub recommendations */
+.sub-section { padding: 0 var(--px) 56px; }
+.sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sub-card {
+  background: var(--surface); border-radius: var(--r-card);
+  border: 1px solid var(--border); overflow: hidden;
+  display: block; text-decoration: none;
+  transition: border-color .14s, transform .12s;
+}
+.sub-card:hover { border-color: var(--rose); transform: translateY(-2px); }
+.sub-img {
+  aspect-ratio: 1; display: flex; align-items: center;
+  justify-content: center; overflow: hidden;
+}
+.sub-img svg { width: 72px; height: 72px; }
+.sub-img img { width: 100%; height: 100%; object-fit: cover; }
+.sub-info { padding: 10px 12px 13px; border-top: 1px solid #F5EEE6; }
+.sub-name { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 3px; line-height: 1.35; }
+.sub-price { font-size: 13px; color: var(--rose-dk); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     SCREEN 1 · 시작
+══════════════════════════════ -->
+<section id="screen-start" class="screen active">
+  <div class="inner">
+    <div class="brand" style="margin-bottom:34px;">Honest Flower</div>
+    <div class="start-deco" id="start-deco"></div>
+    <h1 class="start-title">부모님께<br>어떤 꽃이<br>어울릴까?</h1>
+    <p class="start-sub">몇 가지 질문에 답하면<br>부모님께 잘 어울리는<br>시즌 꽃을 추천해드려요.</p>
+    <div class="start-helper">직접 들고 갈지, 미리 보내드릴지에 따라<br>추천 상품이 달라져요.</div>
+    <button class="btn-start" onclick="startQuiz()">추천 받기</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SCREEN 2 · 질문
+══════════════════════════════ -->
+<section id="screen-quiz" class="screen">
+  <div class="quiz-header">
+    <div class="quiz-header-row">
+      <div class="brand">Honest Flower</div>
+      <div class="quiz-step"><b id="qs-cur">1</b> / <span id="qs-tot">5</span></div>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="q-prog"></div></div>
+  </div>
+  <div class="quiz-body">
+    <h2 class="q-title" id="q-title"></h2>
+    <div class="opt-list" id="q-opts"></div>
+  </div>
+  <div class="quiz-nav">
+    <button class="btn-prev" id="btn-prev" onclick="prevQ()" disabled>이전</button>
+    <button class="btn-next" id="btn-next" onclick="nextQ()" disabled>다음</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SCREEN 3 · 결과
+══════════════════════════════ -->
+<section id="screen-result" class="screen">
+  <!-- 상단 결과 헤더 -->
+  <div class="result-top">
+    <div class="brand" style="margin-bottom:18px;">Honest Flower</div>
+    <div class="result-eyebrow">어니스트의 추천</div>
+    <div class="result-title" id="r-title"></div>
+  </div>
+
+  <!-- 메인 상품 카드 -->
+  <div class="main-wrap">
+    <div class="main-card">
+      <div class="main-badge">BEST PICK ①</div>
+      <!-- 이미지: products[id].imageUrl 에 실제 URL 입력하면 자동으로 표시됩니다 -->
+      <div class="main-img" id="r-img-wrap"></div>
+      <div class="main-info">
+        <div class="main-name" id="r-name"></div>
+        <div class="price-row">
+          <span class="price-disc" id="r-disc-price"></span>
+          <span class="price-orig" id="r-orig-price"></span>
+          <span class="disc-badge" id="r-disc-rate"></span>
+        </div>
+        <div class="ship-note" id="r-ship"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 추천 본문 -->
+  <div class="rec-section">
+    <div class="main-desc" id="r-desc"></div>
+    <div class="sec-label">추천 이유</div>
+    <ul class="reasons-list" id="r-reasons"></ul>
+    <div class="tags-row" id="r-tags"></div>
+    <div class="sit-copy" id="r-situation"></div>
+  </div>
+
+  <!-- CTA 버튼 -->
+  <div class="result-cta">
+    <button class="btn-buy" id="r-btn-buy">이 상품 보러 가기</button>
+    <button class="btn-retry" onclick="restartQuiz()">다시 추천받기</button>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- 서브 추천 2개 -->
+  <div class="sub-section">
+    <div class="sec-label" style="margin-bottom:14px;">이런 상품도 어울릴 수 있어요</div>
+    <div class="sub-grid" id="r-sub-grid"></div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════
+     JavaScript
+══════════════════════════════ -->
+<script>
+
+/* ─────────────────────────────────────────────
+   CONFIG  ← 쉽게 변경 가능한 설정값
+───────────────────────────────────────────── */
+const CONFIG = {
+  // true  → 선택 즉시 자동으로 다음 문항
+  // false → 선택 후 '다음' 버튼 클릭 필요
+  autoAdvance: false,
+};
+
+/* ─────────────────────────────────────────────
+   DATA · 상품 정보
+   imageUrl : 실제 CDN URL 입력 (비워두면 SVG 일러스트 표시)
+   productUrl: 상품 상세 페이지 URL
+───────────────────────────────────────────── */
+const PRODUCTS = {
+  centerpiece: {
+    id: 'centerpiece',
+    name: '피움 센터피스',
+    priceOriginal: '54,900원',
+    priceDiscounted: '48,400원',
+    discountRate: '12%',
+    shippingNote: '정상판매가',
+    imageUrl: '',       // ← 실제 이미지 URL 입력
+    productUrl: 'https://honestflower.kr/shops/centerpiece_pium',
+    shortDescription: '부모님 댁에 바로 놓기 좋아 편안하고 실용적으로 마음을 전할 수 있는 꽃이에요.',
+    svgType: 'centerpiece',
+    bgColor: '#F4F0F8',
+    svgColor: '#8070B0',
+    tags: ['배송 선물 추천', '집에 두기 좋음', '실용적인 선물', '부모님 함께 보기 좋음'],
+  },
+  wrinkle_red: {
+    id: 'wrinkle_red',
+    name: '히고미 링클레드 꽃다발',
+    priceOriginal: '36,900원',
+    priceDiscounted: '32,400원',
+    discountRate: '12%',
+    shippingNote: '정상판매가',
+    imageUrl: '',
+    productUrl: '#',
+    shortDescription: '가볍게 준비해도 충분히 화사해서 센스 있는 시즌 선물로 잘 어울려요.',
+    svgType: 'carnation',
+    bgColor: '#FBF0F3',
+    svgColor: '#C84060',
+    tags: ['부담 적은 선물', '화사한 무드', '가볍게 선물하기 좋음', '센스 있는 선택'],
+  },
+  peony: {
+    id: 'peony',
+    name: '히고미 작약 꽃다발',
+    priceOriginal: '45,900원',
+    priceDiscounted: '40,400원',
+    discountRate: '12%',
+    shippingNote: '정상판매가',
+    imageUrl: '',
+    productUrl: 'https://honestflower.kr/shops/bouquet_hugmepeony',
+    shortDescription: '은은하게 사랑스럽고 계절감이 느껴져 엄마께 드리는 선물로 특히 잘 어울려요.',
+    svgType: 'peony',
+    bgColor: '#FBF0F5',
+    svgColor: '#C06080',
+    tags: ['엄마 선물 추천', '감성적인 무드', '부드러운 분위기', '계절감 있는 꽃'],
+  },
+  premium_bouquet: {
+    id: 'premium_bouquet',
+    name: '프리미엄 꽃다발',
+    priceOriginal: '73,900원',
+    priceDiscounted: '64,900원',
+    discountRate: '12%',
+    shippingNote: '정상판매가',
+    imageUrl: '',
+    productUrl: 'https://honestflower.kr/shops/bouquet_stillspring',
+    shortDescription: '볼륨감과 존재감이 있어 직접 들고 가는 선물로 특히 만족도가 높은 꽃이에요.',
+    svgType: 'bouquet',
+    bgColor: '#EEF5F0',
+    svgColor: '#488060',
+    tags: ['직접 전달 추천', '풍성한 꽃다발', '존재감 있는 선물', '특별한 날 추천'],
+  },
+  premium_basket: {
+    id: 'premium_basket',
+    name: '프리미엄 화병구니',
+    priceOriginal: '99,000원',
+    priceDiscounted: '86,900원',
+    discountRate: '12%',
+    shippingNote: '정상판매가',
+    imageUrl: '',
+    productUrl: 'https://honestflower.kr/shops/premium_basket_26',
+    shortDescription: '풍성함과 고급스러움이 한눈에 느껴져 부모님께 드리는 메인 선물로 손색 없는 구성이에요.',
+    svgType: 'basket',
+    bgColor: '#FBF4EA',
+    svgColor: '#B87840',
+    tags: ['고급스러운 선물', '격식 있는 자리', '풍성한 구성', '메인 선물 추천'],
+  },
+};
+
+/* ─────────────────────────────────────────────
+   DATA · 결과 카피
+───────────────────────────────────────────── */
+const RESULT_COPY = {
+  centerpiece: {
+    resultTitle: '멀리 있어도 마음은\n가까이 전하고 싶다면',
+    reasons: [
+      '받자마자 바로 두기 좋은 형태예요',
+      '부모님 두 분이 함께 보기에도 잘 어울려요',
+      '배송으로 보내기에도 부담이 적어요',
+    ],
+    situationCopy: '직접 가지 못해도 마음을 제대로 전하고 싶을 때, 받는 순간부터 편하게 즐길 수 있는 선물을 찾고 있다면 추천해요.',
+    subs: ['premium_basket', 'wrinkle_red'],
+  },
+  wrinkle_red: {
+    resultTitle: '부담은 덜고,\n마음은 예쁘게 전하고 싶다면',
+    reasons: [
+      '가격 부담이 비교적 적어요',
+      '화사한 인상을 주기 좋아요',
+      '첫 선물이나 가벼운 선물로도 잘 어울려요',
+    ],
+    situationCopy: '너무 무겁지 않게 챙기고 싶지만, 그래도 보기 좋고 예쁜 선물을 고르고 싶다면 추천해요.',
+    subs: ['peony', 'centerpiece'],
+  },
+  peony: {
+    resultTitle: '다정하고 부드러운\n마음을 전하고 싶다면',
+    reasons: [
+      '부드럽고 감성적인 무드가 있어요',
+      '계절감을 느끼기 좋은 꽃다발이에요',
+      '따뜻하고 사랑스러운 인상을 전하기 좋아요',
+    ],
+    situationCopy: '감사한 마음을 다정하게 표현하고 싶을 때, 조금 더 감성적이고 사랑스러운 느낌의 꽃을 찾는다면 추천해요.',
+    subs: ['wrinkle_red', 'premium_bouquet'],
+  },
+  premium_bouquet: {
+    resultTitle: '직접 전하는 순간까지\n선물답게 보여주고 싶다면',
+    reasons: [
+      '풍성해서 선물답게 보여요',
+      '직접 전할 때 존재감이 확실해요',
+      '사진으로 남겨도 예쁘게 보이기 좋아요',
+    ],
+    situationCopy: '이번엔 직접 들고 가서 제대로 챙겨드리고 싶고, 보는 순간 선물답게 느껴지는 꽃을 찾는다면 추천해요.',
+    subs: ['premium_basket', 'peony'],
+  },
+  premium_basket: {
+    resultTitle: '가장 정성스럽고\n격식 있는 선물을 찾는다면',
+    reasons: [
+      '고급스럽고 풍성한 인상이 강해요',
+      '양가 부모님이나 특별한 자리에 잘 어울려요',
+      '정성껏 준비한 느낌을 확실히 줘요',
+    ],
+    situationCopy: '이번 선물은 조금 더 제대로 준비하고 싶고, 한눈에 봐도 특별한 느낌을 주는 꽃을 찾는다면 추천해요.',
+    subs: ['premium_bouquet', 'centerpiece'],
+  },
+};
+
+/* ─────────────────────────────────────────────
+   DATA · 질문
+───────────────────────────────────────────── */
+const QUESTIONS = [
+  {
+    id: 'delivery',
+    title: '이번 선물은 어떻게 전할 예정인가요?',
+    options: [
+      { value: 'send_ahead', label: '미리 보내드릴 거예요' },
+      { value: 'bring_myself', label: '직접 들고 갈 거예요' },
+      { value: 'not_sure',   label: '아직 고민 중이에요' },
+    ],
+  },
+  {
+    id: 'style',
+    title: '부모님은 어떤 스타일을 더 좋아하실 것 같나요?',
+    options: [
+      { value: 'bright',    label: '화사하고 보기만 해도 기분 좋은 느낌' },
+      { value: 'soft',      label: '은은하고 부드러운 감성' },
+      { value: 'rich',      label: '풍성하고 특별한 선물 같은 느낌' },
+      { value: 'practical', label: '집에 두기 편하고 실용적인 느낌' },
+    ],
+  },
+  {
+    id: 'priority',
+    title: '이번 선물에서 가장 중요한 건 뭐예요?',
+    options: [
+      { value: 'budget',  label: '가격 부담이 적었으면 좋겠어요' },
+      { value: 'sense',   label: '예쁘고 센스 있어 보였으면 좋겠어요' },
+      { value: 'special', label: '풍성하고 특별해 보였으면 좋겠어요' },
+      { value: 'easy',    label: '받자마자 바로 즐기기 편했으면 좋겠어요' },
+    ],
+  },
+  {
+    id: 'recipient',
+    title: '누구께 더 잘 어울리는 선물인가요?',
+    options: [
+      { value: 'mother',           label: '엄마께 더 잘 어울렸으면 해요' },
+      { value: 'parents_together', label: '아빠도 함께 보실 선물이에요' },
+      { value: 'both',             label: '부모님 두 분께 함께 드릴 거예요' },
+      { value: 'formal',           label: '양가 부모님이나 더 중요한 자리예요' },
+    ],
+  },
+  {
+    id: 'mood',
+    title: '이번 선물의 무드는 어느 쪽에 가깝나요?',
+    options: [
+      { value: 'light_pretty', label: '부담 없이, 하지만 예쁘게' },
+      { value: 'loving',       label: '사랑스럽고 다정하게' },
+      { value: 'heartfelt',    label: '정성껏 준비한 느낌으로' },
+      { value: 'luxury',       label: '고급스럽고 제대로' },
+    ],
+  },
+];
+
+/* ─────────────────────────────────────────────
+   SCORING MAP  (스펙 §6 그대로)
+───────────────────────────────────────────── */
+const SCORING = {
+  delivery: {
+    send_ahead:   { centerpiece:3, premium_basket:2, wrinkle_red:1 },
+    bring_myself: { premium_bouquet:3, peony:2, wrinkle_red:2 },
+    not_sure:     { centerpiece:1, wrinkle_red:1, peony:1, premium_bouquet:1, premium_basket:1 },
+  },
+  style: {
+    bright:    { centerpiece:2, wrinkle_red:3 },
+    soft:      { peony:3, centerpiece:1 },
+    rich:      { premium_bouquet:2, premium_basket:3 },
+    practical: { centerpiece:3, premium_basket:1 },
+  },
+  priority: {
+    budget:  { wrinkle_red:3, peony:1 },
+    sense:   { peony:2, premium_bouquet:2, wrinkle_red:1 },
+    special: { premium_basket:3, premium_bouquet:2 },
+    easy:    { centerpiece:3, premium_basket:1 },
+  },
+  recipient: {
+    mother:           { peony:3, wrinkle_red:1 },
+    parents_together: { centerpiece:3, premium_basket:1 },
+    both:             { premium_bouquet:2, centerpiece:2 },
+    formal:           { premium_basket:3, premium_bouquet:1 },
+  },
+  mood: {
+    light_pretty: { wrinkle_red:3, peony:1 },
+    loving:       { peony:3, wrinkle_red:1 },
+    heartfelt:    { premium_bouquet:2, centerpiece:2 },
+    luxury:       { premium_basket:3, premium_bouquet:2 },
+  },
+};
+
+/* Tie-break priority (스펙 §7) */
+const TIE_BREAK = ['premium_basket','premium_bouquet','centerpiece','peony','wrinkle_red'];
+
+/* ─────────────────────────────────────────────
+   STATE
+───────────────────────────────────────────── */
+let STATE = { currentQ: 0, answers: {} };
+
+/* ─────────────────────────────────────────────
+   LOGIC · 점수 계산 & 정렬
+───────────────────────────────────────────── */
+function calcResults() {
+  const scores = Object.fromEntries(Object.keys(PRODUCTS).map(id => [id, 0]));
+
+  Object.entries(STATE.answers).forEach(([qId, val]) => {
+    const map = SCORING[qId]?.[val];
+    if (!map) return;
+    Object.entries(map).forEach(([pid, pts]) => { if (pid in scores) scores[pid] += pts; });
+  });
+
+  return Object.entries(scores)
+    .sort(([a, sa], [b, sb]) => {
+      if (sb !== sa) return sb - sa;
+      return TIE_BREAK.indexOf(a) - TIE_BREAK.indexOf(b);
+    })
+    .map(([id, score]) => ({ id, score }));
+}
+
+/* ─────────────────────────────────────────────
+   SVG 일러스트 생성
+───────────────────────────────────────────── */
+function lighten(hex, t) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  const mix=(c)=>Math.min(255,Math.round(t>0?c+(255-c)*t:c*(1+t)));
+  return `#${mix(r).toString(16).padStart(2,'0')}${mix(g).toString(16).padStart(2,'0')}${mix(b).toString(16).padStart(2,'0')}`;
+}
+
+function svgPeony(c, s=100) {
+  const x=s/2, y=s/2, R=s*.22;
+  const layers=[{r:R,n:9,o:0},{r:R*.7,n:8,o:22},{r:R*.44,n:7,o:14},{r:R*.22,n:6,o:8}];
+  let d=`<svg viewBox="0 0 ${s} ${s}" fill="none" xmlns="http://www.w3.org/2000/svg">`;
+  layers.forEach(({r,n,o},li) => {
+    Array.from({length:n},(_,i)=>o+i*(360/n)).forEach(a => {
+      d+=`<ellipse cx="${x}" cy="${y-r}" rx="${Math.max(s*.068-li*s*.009,s*.03)}" ry="${Math.max(r*.94,s*.04)}" fill="${li<2?lighten(c,.3):c}" transform="rotate(${a},${x},${y})" opacity="${li<2?.7:.88}"/>`;
+    });
+  });
+  d+=`<circle cx="${x}" cy="${y}" r="${s*.058}" fill="${c}"/>`;
+  if(s>60){
+    d+=`<line x1="${x}" y1="${y+s*.2}" x2="${x}" y2="${y+s*.44}" stroke="#5C8045" stroke-width="${s*.028}" stroke-linecap="round"/>`;
+    d+=`<path d="M${x},${y+s*.33} C${x-s*.11},${y+s*.27} ${x-s*.16},${y+s*.33} ${x-s*.1},${y+s*.39}Z" fill="#5C8045"/>`;
+  }
+  return d+`</svg>`;
+}
+
+function svgCarnation(c, s=100) {
+  const x=s/2, y=s/2, r1=s*.22, r2=s*.15;
+  let d=`<svg viewBox="0 0 ${s} ${s}" fill="none" xmlns="http://www.w3.org/2000/svg">`;
+  [10,8].forEach((n,pass) => {
+    const r=pass===0?r1:r2, col=pass===0?lighten(c,.35):c, op=pass===0?.76:.9;
+    Array.from({length:n},(_,i)=>(pass===0?0:22)+i*(360/n)).forEach(a => {
+      const rad=a*Math.PI/180, m20=(a-20)*Math.PI/180, p20=(a+20)*Math.PI/180;
+      const rl=r*(pass===0?.63:.6);
+      d+=`<path d="M${x},${y} C${x+rl*Math.cos(m20)},${y+rl*Math.sin(m20)} ${x+r*Math.cos(rad)},${y+r*Math.sin(rad)} ${x+rl*Math.cos(p20)},${y+rl*Math.sin(p20)}Z" fill="${col}" opacity="${op}"/>`;
+    });
+  });
+  d+=`<circle cx="${x}" cy="${y}" r="${s*.05}" fill="${c}"/>`;
+  if(s>60){
+    d+=`<line x1="${x}" y1="${y+s*.2}" x2="${x}" y2="${y+s*.44}" stroke="#5C8045" stroke-width="${s*.028}" stroke-linecap="round"/>`;
+    d+=`<path d="M${x},${y+s*.33} C${x-s*.1},${y+s*.27} ${x-s*.16},${y+s*.33} ${x-s*.1},${y+s*.39}Z" fill="#5C8045"/>`;
+  }
+  return d+`</svg>`;
+}
+
+function svgCenterpiece(c, s=100) {
+  const cx=s/2;
+  let d=`<svg viewBox="0 0 ${s} ${s}" fill="none" xmlns="http://www.w3.org/2000/svg">`;
+  // 화병
+  d+=`<path d="M${cx-s*.12},${s*.62} L${cx-s*.09},${s*.9} Q${cx},${s*.95} ${cx+s*.09},${s*.9} L${cx+s*.12},${s*.62}Z" fill="${lighten(c,.48)}" stroke="${lighten(c,.2)}" stroke-width="1"/>`;
+  d+=`<ellipse cx="${cx}" cy="${s*.62}" rx="${s*.1}" ry="${s*.024}" fill="${lighten(c,.35)}"/>`;
+  // 꽃 3송이
+  [{x:cx-s*.11,y:s*.39},{x:cx,y:s*.27},{x:cx+s*.11,y:s*.39}].forEach(({x,y},fi) => {
+    const r=s*(.1+fi%2*.01), fc=fi===1?lighten(c,.25):c;
+    Array.from({length:6},(_,i)=>i*60).forEach(a=>{
+      d+=`<ellipse cx="${x}" cy="${y-r*.6}" rx="${r*.36}" ry="${r*.6}" fill="${fc}" transform="rotate(${a},${x},${y})" opacity="0.82"/>`;
+    });
+    d+=`<circle cx="${x}" cy="${y}" r="${r*.27}" fill="${fi===1?c:lighten(c,.15)}"/>`;
+  });
+  // 줄기
+  [[cx-s*.11,s*.5,cx-s*.06,s*.62],[cx,s*.37,cx,s*.62],[cx+s*.11,s*.5,cx+s*.06,s*.62]].forEach(([x1,y1,x2,y2],i)=>{
+    d+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#6A9050" stroke-width="${s*.02}" stroke-linecap="round"/>`;
+  });
+  return d+`</svg>`;
+}
+
+function svgBouquet(c, s=100) {
+  const cx=s/2;
+  let d=`<svg viewBox="0 0 ${s} ${s}" fill="none" xmlns="http://www.w3.org/2000/svg">`;
+  // 포장지
+  d+=`<path d="M${cx-s*.15},${s*.62} L${cx-s*.07},${s*.9} L${cx+s*.07},${s*.9} L${cx+s*.15},${s*.62}Z" fill="${lighten(c,.52)}"/>`;
+  // 리본
+  d+=`<path d="M${cx},${s*.62} C${cx-s*.13},${s*.55} ${cx-s*.17},${s*.6} ${cx},${s*.59} C${cx+s*.17},${s*.6} ${cx+s*.13},${s*.55} ${cx},${s*.62}Z" fill="${c}" opacity="0.65"/>`;
+  // 꽃 클러스터 5개
+  [{x:cx-s*.11,y:s*.38},{x:cx,y:s*.26},{x:cx+s*.11,y:s*.38},{x:cx-s*.05,y:s*.5},{x:cx+s*.05,y:s*.5}].forEach(({x,y},fi)=>{
+    const r=s*(.105-fi*s*.0003), fc=fi%2===0?c:lighten(c,.25);
+    Array.from({length:6},(_,i)=>i*60).forEach(a=>{
+      d+=`<ellipse cx="${x}" cy="${y-r*.68}" rx="${r*.36}" ry="${r*.68}" fill="${fc}" transform="rotate(${a},${x},${y})" opacity="0.8"/>`;
+    });
+    d+=`<circle cx="${x}" cy="${y}" r="${r*.26}" fill="${fi%2===0?lighten(c,-.08):c}"/>`;
+  });
+  return d+`</svg>`;
+}
+
+function svgBasket(c, s=100) {
+  const cx=s/2;
+  let d=`<svg viewBox="0 0 ${s} ${s}" fill="none" xmlns="http://www.w3.org/2000/svg">`;
+  // 바구니 몸체
+  d+=`<path d="M${cx-s*.22},${s*.56} L${cx-s*.18},${s*.88} Q${cx},${s*.94} ${cx+s*.18},${s*.88} L${cx+s*.22},${s*.56}Z" fill="#C4984A" opacity="0.68"/>`;
+  // 가로줄 (바구니 패턴)
+  [.63,.7,.77,.84].forEach(t=>{
+    d+=`<line x1="${cx-s*.22+s*.02*((t-.56)/.32)}" y1="${s*t}" x2="${cx+s*.22-s*.02*((t-.56)/.32)}" y2="${s*t}" stroke="#9A7030" stroke-width="${s*.007}" opacity="0.45"/>`;
+  });
+  // 손잡이
+  d+=`<path d="M${cx-s*.14},${s*.56} C${cx-s*.2},${s*.38} ${cx+s*.2},${s*.38} ${cx+s*.14},${s*.56}" stroke="#9A7030" stroke-width="${s*.025}" fill="none" stroke-linecap="round"/>`;
+  // 꽃 5송이
+  [{x:cx-s*.12,y:s*.41},{x:cx,y:s*.31},{x:cx+s*.12,y:s*.41},{x:cx-s*.05,y:s*.52},{x:cx+s*.05,y:s*.51}].forEach(({x,y},fi)=>{
+    const r=s*(.105-fi*.004), fc=fi%2===0?c:lighten(c,.28);
+    Array.from({length:fi<3?6:5},(_,i)=>i*(360/(fi<3?6:5))).forEach(a=>{
+      d+=`<ellipse cx="${x}" cy="${y-r*.64}" rx="${r*.35}" ry="${r*.64}" fill="${fc}" transform="rotate(${a},${x},${y})" opacity="0.82"/>`;
+    });
+    d+=`<circle cx="${x}" cy="${y}" r="${r*.25}" fill="${fi%2===0?lighten(c,-.06):lighten(c,.14)}"/>`;
+  });
+  // 그린
+  d+=`<path d="M${cx-s*.06},${s*.5} C${cx-s*.17},${s*.43} ${cx-s*.21},${s*.47} ${cx-s*.14},${s*.52}Z" fill="#5C8045" opacity="0.55"/>`;
+  d+=`<path d="M${cx+s*.06},${s*.5} C${cx+s*.17},${s*.43} ${cx+s*.21},${s*.47} ${cx+s*.14},${s*.52}Z" fill="#5C8045" opacity="0.55"/>`;
+  return d+`</svg>`;
+}
+
+function getProductSVG(p, size=100) {
+  const t = p.svgType, c = p.svgColor;
+  if (t==='peony')       return svgPeony(c, size);
+  if (t==='carnation')   return svgCarnation(c, size);
+  if (t==='centerpiece') return svgCenterpiece(c, size);
+  if (t==='bouquet')     return svgBouquet(c, size);
+  if (t==='basket')      return svgBasket(c, size);
+  return svgPeony(c, size);
+}
+
+/* ─────────────────────────────────────────────
+   RENDER · 시작 화면 데코
+───────────────────────────────────────────── */
+function renderStartDeco() {
+  const row = document.getElementById('start-deco');
+  const sizes = [34,40,46,40,34];
+  Object.values(PRODUCTS).forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'deco-bubble';
+    el.style.cssText = `width:${sizes[i]}px;height:${sizes[i]}px;background:${p.bgColor};`;
+    el.innerHTML = getProductSVG(p, sizes[i]);
+    row.appendChild(el);
+  });
+}
+
+/* ─────────────────────────────────────────────
+   RENDER · 질문 화면
+───────────────────────────────────────────── */
+function renderQuiz() {
+  const q = QUESTIONS[STATE.currentQ];
+  const total = QUESTIONS.length;
+  const cur = STATE.currentQ + 1;
+
+  document.getElementById('qs-cur').textContent = cur;
+  document.getElementById('qs-tot').textContent = total;
+  document.getElementById('q-prog').style.width = `${(cur/total)*100}%`;
+  document.getElementById('q-title').textContent = q.title;
+
+  const saved = STATE.answers[q.id];
+  const container = document.getElementById('q-opts');
+  container.innerHTML = '';
+
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-card' + (saved === opt.value ? ' sel' : '');
+    btn.innerHTML = `
+      <div class="opt-radio"><div class="opt-radio-dot"></div></div>
+      <span class="opt-text">${opt.label}</span>
+    `;
+    btn.addEventListener('click', () => onSelectOption(q.id, opt.value, btn));
+    container.appendChild(btn);
+  });
+
+  document.getElementById('btn-prev').disabled = STATE.currentQ === 0;
+  document.getElementById('btn-next').disabled = !saved;
+  document.getElementById('btn-next').textContent =
+    STATE.currentQ === total - 1 ? '결과 보기' : '다음';
+}
+
+function onSelectOption(qId, value, clickedBtn) {
+  STATE.answers[qId] = value;
+  document.querySelectorAll('#q-opts .opt-card').forEach(c => c.classList.remove('sel'));
+  clickedBtn.classList.add('sel');
+  document.getElementById('btn-next').disabled = false;
+  if (CONFIG.autoAdvance) setTimeout(nextQ, 340);
+}
+
+/* ─────────────────────────────────────────────
+   RENDER · 결과 화면
+───────────────────────────────────────────── */
+function renderResult() {
+  const ranked = calcResults();
+  const mainId = ranked[0].id;
+  const p = PRODUCTS[mainId];
+  const copy = RESULT_COPY[mainId];
+
+  // 결과 타이틀
+  document.getElementById('r-title').innerHTML =
+    copy.resultTitle.replace(/\n/g, '<br>');
+
+  // 메인 상품 이미지 (imageUrl 있으면 img, 없으면 SVG)
+  const wrap = document.getElementById('r-img-wrap');
+  wrap.style.background = p.bgColor;
+  if (p.imageUrl) {
+    wrap.innerHTML = `<img src="${p.imageUrl}" alt="${p.name}">`;
+  } else {
+    wrap.innerHTML = `<div class="svg-ph">${getProductSVG(p, 150)}</div>`;
+  }
+
+  // 상품 정보
+  document.getElementById('r-name').textContent = p.name;
+  document.getElementById('r-disc-price').textContent = p.priceDiscounted;
+  document.getElementById('r-orig-price').textContent = p.priceOriginal;
+  document.getElementById('r-disc-rate').textContent = `-${p.discountRate}`;
+  document.getElementById('r-ship').textContent = p.shippingNote;
+
+  // 설명
+  document.getElementById('r-desc').textContent = p.shortDescription;
+
+  // 추천 이유
+  const reasonEl = document.getElementById('r-reasons');
+  reasonEl.innerHTML = '';
+  copy.reasons.forEach(r => {
+    reasonEl.innerHTML += `
+      <li>
+        <div class="chk">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M2.5 5.5L4.8 8L8.5 3" stroke="#4A6B40" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>${r}</span>
+      </li>`;
+  });
+
+  // 태그
+  const tagsEl = document.getElementById('r-tags');
+  tagsEl.innerHTML = '';
+  p.tags.forEach(t => {
+    tagsEl.innerHTML += `<span class="tag">${t}</span>`;
+  });
+
+  // 상황 카피
+  document.getElementById('r-situation').textContent = copy.situationCopy;
+
+  // CTA
+  const buyBtn = document.getElementById('r-btn-buy');
+  buyBtn.onclick = () => {
+    if (p.productUrl && p.productUrl !== '#') window.location.href = p.productUrl;
+  };
+
+  // 서브 추천
+  const subGrid = document.getElementById('r-sub-grid');
+  subGrid.innerHTML = '';
+  copy.subs.forEach(sid => {
+    const sp = PRODUCTS[sid];
+    const imgHTML = sp.imageUrl
+      ? `<img src="${sp.imageUrl}" alt="${sp.name}">`
+      : getProductSVG(sp, 80);
+    subGrid.innerHTML += `
+      <a class="sub-card" href="${sp.productUrl || '#'}"
+        onclick="if(!this.href||this.href==='#')return false;">
+        <div class="sub-img" style="background:${sp.bgColor};">${imgHTML}</div>
+        <div class="sub-info">
+          <div class="sub-name">${sp.name}</div>
+          <div class="sub-price">${sp.priceDiscounted}</div>
+        </div>
+      </a>`;
+  });
+}
+
+/* ─────────────────────────────────────────────
+   NAVIGATION
+───────────────────────────────────────────── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function startQuiz() {
+  STATE = { currentQ: 0, answers: {} };
+  showScreen('screen-quiz');
+  renderQuiz();
+}
+
+function nextQ() {
+  const q = QUESTIONS[STATE.currentQ];
+  if (!STATE.answers[q.id]) return;
+
+  if (STATE.currentQ < QUESTIONS.length - 1) {
+    STATE.currentQ++;
+    renderQuiz();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  } else {
+    showScreen('screen-result');
+    renderResult();
+  }
+}
+
+function prevQ() {
+  if (STATE.currentQ > 0) {
+    STATE.currentQ--;
+    renderQuiz();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+}
+
+function restartQuiz() {
+  STATE = { currentQ: 0, answers: {} };
+  showScreen('screen-start');
+}
+
+/* ─────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────── */
+renderStartDeco();
+
+</script>
+</body>
+</html>
