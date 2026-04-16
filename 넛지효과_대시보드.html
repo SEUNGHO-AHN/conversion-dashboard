@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>넛지효과 대시보드</title>
+<style>
+:root{--bg:#f0f2f5;--card:#fff;--txt:#1e293b;--txt2:#64748b;--c1:#6366f1;--c2:#f59e0b;--c3:#10b981;--c4:#ef4444;--pos:#10b981;--neg:#ef4444;--gap:16px;--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+.wrap{max-width:1400px;margin:0 auto;padding:var(--gap)}
+.hdr{background:linear-gradient(135deg,#0f172a,#1e293b);color:#f8fafc;padding:22px 28px;border-radius:var(--r);margin-bottom:var(--gap);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.hdr h1{font-size:20px;font-weight:700;margin-bottom:3px}
+.hdr p{font-size:12px;color:rgba(255,255,255,.5)}
+.badge{display:flex;align-items:center;gap:8px;background:#f59e0b;color:#1a1a1a;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700}
+.dot{width:8px;height:8px;background:#fff;border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.cmp-tabs{background:var(--card);border-radius:var(--r);padding:18px 24px;margin-bottom:var(--gap);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.cmp-tabs h3{font-size:12px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{padding:10px 18px;border-radius:8px;border:2px solid #e2e8f0;background:transparent;cursor:pointer;font-size:13px;font-weight:600;color:var(--txt2);transition:all .15s;line-height:1.4;text-align:center}
+.tab:hover{border-color:var(--c1);color:var(--c1);background:#eff1ff}
+.tab.active{border-color:var(--c1);background:var(--c1);color:#fff}
+.tab .ts{display:block;font-size:10px;font-weight:500;opacity:.8;margin-top:2px}
+.alert{border-radius:var(--r);padding:13px 18px;margin-bottom:var(--gap);display:flex;align-items:center;gap:12px;font-size:13px}
+.alert.pos{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1.5px solid #86efac;color:#166534}
+.alert.neg{background:linear-gradient(135deg,#fef2f2,#fee2e2);border:1.5px solid #fca5a5;color:#991b1b}
+.alert.neu{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fbbf24;color:#92400e}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--gap);margin-bottom:var(--gap)}
+.kpi{background:var(--card);border-radius:var(--r);padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-top:3px solid}
+.kpi-lbl{font-size:11px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.kpi-val{font-size:26px;font-weight:800;line-height:1;margin-bottom:4px}
+.kpi-chg{font-size:12px;font-weight:600}
+.kpi-sub{font-size:11px;color:var(--txt2);margin-top:3px}
+.up{color:var(--pos)}.dn{color:var(--neg)}.flat{color:var(--txt2)}
+.split-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-bottom:var(--gap)}
+.split-card{border-radius:var(--r);padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.split-card.before{background:#f8fafc;border:2px solid #e2e8f0}
+.split-card.after{background:#f0fdf4;border:2px solid #86efac}
+.split-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--txt2)}
+.split-title span{padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.tag-b{background:#e2e8f0;color:#475569}.tag-a{background:#dcfce7;color:#166534}
+.met-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.met{text-align:center;padding:12px 6px;background:rgba(255,255,255,.8);border-radius:8px}
+.met .val{font-size:20px;font-weight:800}
+.after .met .val{color:var(--pos)}
+.met .lbl{font-size:11px;color:var(--txt2);margin-top:2px}
+.insi{border-radius:8px;padding:10px 14px;margin-top:12px;font-size:12px;line-height:1.6}
+.insi.pos{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.insi.neg{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412}
+.insi.neu{background:#f8fafc;border:1px solid #e2e8f0;color:#475569}
+.sec{font-size:12px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin:4px 0 var(--gap);display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:#e2e8f0}
+.chart-full{background:var(--card);border-radius:var(--r);padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:var(--gap)}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-bottom:var(--gap)}
+.chart-card{background:var(--card);border-radius:var(--r);padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.ct{font-size:14px;font-weight:700;margin-bottom:3px}
+.cs{font-size:11px;color:var(--txt2);margin-bottom:12px}
+canvas{display:block;width:100%!important}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--txt2)}
+.ld{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+.tbl-wrap{background:var(--card);border-radius:var(--r);padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,.06);overflow-x:auto;margin-bottom:var(--gap)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:9px 12px;border-bottom:2px solid #e2e8f0;color:var(--txt2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#f8fafc}
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:700}
+.pu{background:#dcfce7;color:#166634}.pd{background:#fee2e2;color:#991b1b}.pf{background:#f1f5f9;color:#475569}
+.footer{text-align:center;padding:12px;color:var(--txt2);font-size:11px}
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.kpi-row{grid-template-columns:repeat(2,1fr)}.split-row,.chart-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hdr">
+  <div><h1>🎯 넛지효과 대시보드</h1><p>신규 가입자 당일 구매 &amp; 구매전환율 분석 · 데이터 기준: 2026-04-15</p></div>
+  <div class="badge"><span class="dot"></span>4월 1일 신규 넛지 업데이트</div>
+</header>
+
+<div class="cmp-tabs">
+  <h3>🔀 비교 기간 선택</h3>
+  <div class="tabs">
+    <button class="tab" onclick="setMode('mar_all')" id="tab-mar_all">전월 전체<span class="ts">3월 전체 vs 4월 1~15일</span></button>
+    <button class="tab active" onclick="setMode('mar_15')" id="tab-mar_15">전월 동기 ⭐<span class="ts">3월 1~15일 vs 4월 1~15일</span></button>
+    <button class="tab" onclick="setMode('mar_late')" id="tab-mar_late">직전 2주<span class="ts">3월 16~31일 vs 4월 1~15일</span></button>
+    <button class="tab" onclick="setMode('week')" id="tab-week">주차 비교<span class="ts">4월 1주차 vs 4월 2주차</span></button>
+  </div>
+</div>
+
+<div class="alert" id="alert-box"></div>
+<section class="kpi-row" id="kpi-row"></section>
+
+<div class="sec">기간 상세 비교</div>
+<div class="split-row" id="split-row"></div>
+
+<div class="sec">일별 전환율 추이</div>
+<div class="chart-full">
+  <div class="ct" id="trend-title">📈 일별 가입자 수 &amp; 당일 구매전환율</div>
+  <div class="cs" id="trend-sub"></div>
+  <div class="legend">
+    <div class="li"><div class="ld" style="background:#94a3b8"></div><span id="leg-b">비교 기간</span></div>
+    <div class="li"><div class="ld" style="background:#6366f1"></div><span id="leg-a">대상 기간</span></div>
+    <div class="li"><div class="ld" style="background:#f59e0b;height:3px;margin-top:5px"></div><span>전환율 (전)</span></div>
+    <div class="li"><div class="ld" style="background:#10b981;height:3px;margin-top:5px"></div><span>전환율 (후)</span></div>
+  </div>
+  <canvas id="c-trend" height="290"></canvas>
+</div>
+
+<div class="sec">채널별 분석</div>
+<div class="chart-row">
+  <div class="chart-card">
+    <div class="ct">📊 채널별 당일 전환율 비교</div>
+    <div class="cs" id="ch-sub"></div>
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#94a3b8"></div><span id="leg-b2">전</span></div>
+      <div class="li"><div class="ld" style="background:#6366f1"></div><span id="leg-a2">후</span></div>
+    </div>
+    <canvas id="c-ch" height="240"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="ct">📉 채널별 전환율 변화량</div>
+    <div class="cs" id="diff-sub">전환율 증감(%p) · 초록=개선 / 빨강=하락</div>
+    <canvas id="c-diff" height="240"></canvas>
+  </div>
+</div>
+
+<div class="sec">채널별 상세 데이터</div>
+<div class="tbl-wrap">
+  <div class="ct">📋 채널별 전후 비교</div>
+  <div class="cs" style="margin-bottom:14px" id="tbl-sub"></div>
+  <table><thead id="tbl-head"></thead><tbody id="tbl-body"></tbody></table>
+</div>
+<div class="footer">넛지효과 대시보드 · 데이터 기준: 2026-04-15 · 외부 라이브러리 없음</div>
+</div>
+<script>
+const CH_KO=['Meta광고','네이버','직접','인스타','구글','상품페이지','초대코드'];
+const P={
+  apr:{s:1999,b:690,c:34.52,avg:133.3,
+    ch_c:[26.99,47.20,34.25,34.55,40.00,47.54,23.40],ch_s:[793,375,327,246,70,61,47],
+    daily:[{d:"04-01",s:113,c:39.82},{d:"04-02",s:93,c:34.41},{d:"04-03",s:66,c:31.82},{d:"04-04",s:108,c:25.93},{d:"04-05",s:181,c:32.60},{d:"04-06",s:145,c:37.24},{d:"04-07",s:154,c:38.31},{d:"04-08",s:134,c:43.28},{d:"04-09",s:134,c:29.85},{d:"04-10",s:115,c:28.70},{d:"04-11",s:125,c:20.00},{d:"04-12",s:180,c:39.44},{d:"04-13",s:145,c:30.34},{d:"04-14",s:117,c:39.32},{d:"04-15",s:189,c:39.68}]},
+  w1:{s:860,b:298,c:34.65,avg:122.9,
+    ch_c:[28.31,45.91,34.15,38.02,29.73,56.52,12.90],ch_s:[325,159,123,121,37,23,31],
+    daily:[{d:"04-01",s:113,c:39.82},{d:"04-02",s:93,c:34.41},{d:"04-03",s:66,c:31.82},{d:"04-04",s:108,c:25.93},{d:"04-05",s:181,c:32.60},{d:"04-06",s:145,c:37.24},{d:"04-07",s:154,c:38.31}]},
+  w2:{s:1139,b:392,c:34.42,avg:142.4,
+    ch_c:[26.07,48.15,34.31,31.20,51.52,42.11,43.75],ch_s:[468,216,204,125,33,38,16],
+    daily:[{d:"04-08",s:134,c:43.28},{d:"04-09",s:134,c:29.85},{d:"04-10",s:115,c:28.70},{d:"04-11",s:125,c:20.00},{d:"04-12",s:180,c:39.44},{d:"04-13",s:145,c:30.34},{d:"04-14",s:117,c:39.32},{d:"04-15",s:189,c:39.68}]},
+  mar_all:{s:3534,b:1076,c:30.45,avg:114.0,
+    ch_c:[23.98,50.68,21.71,37.55,44.44,48.15,20.59],ch_s:[1847,517,516,229,99,108,102],
+    daily:[{d:"03-01",s:89,c:28.09},{d:"03-02",s:98,c:41.84},{d:"03-03",s:64,c:32.81},{d:"03-04",s:102,c:33.33},{d:"03-05",s:130,c:33.85},{d:"03-06",s:105,c:20.00},{d:"03-07",s:113,c:19.47},{d:"03-08",s:163,c:28.22},{d:"03-09",s:111,c:29.73},{d:"03-10",s:126,c:38.89},{d:"03-11",s:102,c:18.63},{d:"03-12",s:162,c:29.63},{d:"03-13",s:144,c:22.22},{d:"03-14",s:158,c:24.68},{d:"03-15",s:165,c:20.00},{d:"03-16",s:106,c:28.30},{d:"03-17",s:109,c:33.94},{d:"03-18",s:122,c:35.25},{d:"03-19",s:99,c:26.26},{d:"03-20",s:97,c:35.05},{d:"03-21",s:125,c:28.00},{d:"03-22",s:139,c:34.53},{d:"03-23",s:105,c:33.33},{d:"03-24",s:101,c:38.61},{d:"03-25",s:122,c:31.97},{d:"03-26",s:97,c:43.30},{d:"03-27",s:89,c:28.09},{d:"03-28",s:88,c:28.41},{d:"03-29",s:127,c:40.94},{d:"03-30",s:74,c:28.38},{d:"03-31",s:102,c:37.25}]},
+  mar_15:{s:1832,b:507,c:27.67,avg:122.1,
+    ch_c:[20.87,47.77,19.26,31.63,48.15,41.79,17.24],ch_s:[963,247,270,98,54,67,58],
+    daily:[{d:"03-01",s:89,c:28.09},{d:"03-02",s:98,c:41.84},{d:"03-03",s:64,c:32.81},{d:"03-04",s:102,c:33.33},{d:"03-05",s:130,c:33.85},{d:"03-06",s:105,c:20.00},{d:"03-07",s:113,c:19.47},{d:"03-08",s:163,c:28.22},{d:"03-09",s:111,c:29.73},{d:"03-10",s:126,c:38.89},{d:"03-11",s:102,c:18.63},{d:"03-12",s:162,c:29.63},{d:"03-13",s:144,c:22.22},{d:"03-14",s:158,c:24.68},{d:"03-15",s:165,c:20.00}]},
+  mar_late:{s:1702,b:569,c:33.43,avg:106.4,
+    ch_c:[27.38,53.33,24.39,41.98,40.00,58.54,25.00],ch_s:[884,270,246,131,45,41,44],
+    daily:[{d:"03-16",s:106,c:28.30},{d:"03-17",s:109,c:33.94},{d:"03-18",s:122,c:35.25},{d:"03-19",s:99,c:26.26},{d:"03-20",s:97,c:35.05},{d:"03-21",s:125,c:28.00},{d:"03-22",s:139,c:34.53},{d:"03-23",s:105,c:33.33},{d:"03-24",s:101,c:38.61},{d:"03-25",s:122,c:31.97},{d:"03-26",s:97,c:43.30},{d:"03-27",s:89,c:28.09},{d:"03-28",s:88,c:28.41},{d:"03-29",s:127,c:40.94},{d:"03-30",s:74,c:28.38},{d:"03-31",s:102,c:37.25}]}
+};
+const MODES={
+  mar_all:{bk:'mar_all',ak:'apr',bLbl:'3월 전체',aLbl:'4월 1~15일',bP:'3/1~3/31',aP:'4/1~4/15',note:'⚠️ 기간 길이 다름 (31일 vs 15일). 일 평균 기준으로 해석 권장.'},
+  mar_15:{bk:'mar_15',ak:'apr',bLbl:'3월 1~15일',aLbl:'4월 1~15일',bP:'3/1~3/15',aP:'4/1~4/15',note:'✅ 동일 기간(15일) 비교 — 넛지 효과 측정에 가장 적합'},
+  mar_late:{bk:'mar_late',ak:'apr',bLbl:'3월 16~31일',aLbl:'4월 1~15일',bP:'3/16~3/31',aP:'4/1~4/15',note:'✅ 업데이트 직전 vs 직후 비교'},
+  week:{bk:'w1',ak:'w2',bLbl:'4월 1주차(1~7일)',aLbl:'4월 2주차(8~15일)',bP:'4/1~4/7',aP:'4/8~4/15',note:'📊 넛지 첫 주 vs 두 번째 주 — 효과 지속성 확인'}
+};
+let CUR='mar_15';
+const DPR=window.devicePixelRatio||1;
+
+function mc(id,h){
+  const el=document.getElementById(id);
+  const w=el.parentElement.clientWidth-48;
+  el.width=w*DPR;el.height=h*DPR;
+  el.style.width=w+'px';el.style.height=h+'px';
+  const c=el.getContext('2d');c.scale(DPR,DPR);
+  return{ctx:c,W:w,H:h};
+}
+
+function drawBarGroup(id,h,labels,bData,aData,bColor,aColor){
+  const{ctx,W,H}=mc(id,h);
+  const p={t:24,r:16,b:58,l:46};
+  const cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const n=labels.length,grpW=cW/n,bw=grpW*0.28;
+  [0,20,40,60].forEach(v=>{
+    const y=p.t+cH-(v/65)*cH;
+    ctx.strokeStyle='#f1f5f9';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.l+cW,y);ctx.stroke();
+    ctx.fillStyle='#94a3b8';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillText(v+'%',p.l-4,y+3);
+  });
+  labels.forEach((lbl,i)=>{
+    const cx=p.l+i*grpW+grpW/2;
+    [[bData[i],bColor,cx-bw-2],[aData[i],aColor,cx+2]].forEach(([v,col,x])=>{
+      const bh=Math.max(0,(v/65)*cH);
+      ctx.fillStyle=col;
+      ctx.beginPath();ctx.moveTo(x+3,p.t+cH-bh);ctx.lineTo(x+bw-3,p.t+cH-bh);
+      ctx.quadraticCurveTo(x+bw,p.t+cH-bh,x+bw,p.t+cH-bh+3);
+      ctx.lineTo(x+bw,p.t+cH);ctx.lineTo(x,p.t+cH);ctx.lineTo(x,p.t+cH-bh+3);
+      ctx.quadraticCurveTo(x,p.t+cH-bh,x+3,p.t+cH-bh);ctx.closePath();ctx.fill();
+      if(bh>14){ctx.fillStyle='#374151';ctx.font='9px sans-serif';ctx.textAlign='center';ctx.fillText(v.toFixed(0)+'%',x+bw/2,p.t+cH-bh-3);}
+    });
+    ctx.fillStyle='#64748b';ctx.font='10px sans-serif';ctx.textAlign='center';
+    const half=Math.ceil(lbl.length/2);
+    if(lbl.length>4){ctx.fillText(lbl.slice(0,half),cx,p.t+cH+14);ctx.fillText(lbl.slice(half),cx,p.t+cH+25);}
+    else ctx.fillText(lbl,cx,p.t+cH+14);
+  });
+}
+
+function drawDiff(id,h,labels,diffs){
+  const{ctx,W,H}=mc(id,h);
+  const p={t:20,r:16,b:58,l:50};
+  const cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const n=labels.length,bw=(cW/n)*0.55;
+  const maxA=Math.max(...diffs.map(Math.abs),8);
+  const zero=p.t+cH/2;
+  ctx.strokeStyle='#94a3b8';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(p.l,zero);ctx.lineTo(p.l+cW,zero);ctx.stroke();
+  [-maxA*0.6,maxA*0.6].forEach(v=>{
+    const y=zero-(v/maxA)*(cH/2);
+    ctx.strokeStyle='#f1f5f9';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.l+cW,y);ctx.stroke();
+    ctx.fillStyle='#94a3b8';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillText((v>0?'+':'')+v.toFixed(0)+'%p',p.l-4,y+3);
+  });
+  ctx.fillStyle='#94a3b8';ctx.font='10px sans-serif';ctx.textAlign='right';ctx.fillText('0',p.l-4,zero+3);
+  diffs.forEach((d,i)=>{
+    const x=p.l+i*(cW/n)+(cW/n-bw)/2;
+    const bh=Math.abs(d)/maxA*(cH/2);
+    const y=d>=0?zero-bh:zero;
+    const col=d>=0?'#10b981':'#ef4444';
+    ctx.fillStyle=col+'66';ctx.strokeStyle=col;ctx.lineWidth=1.5;
+    ctx.beginPath();
+    if(d>=0){ctx.moveTo(x+3,y);ctx.lineTo(x+bw-3,y);ctx.quadraticCurveTo(x+bw,y,x+bw,y+3);ctx.lineTo(x+bw,y+bh);ctx.lineTo(x,y+bh);ctx.lineTo(x,y+3);ctx.quadraticCurveTo(x,y,x+3,y);}
+    else{ctx.moveTo(x,y);ctx.lineTo(x+bw,y);ctx.lineTo(x+bw,y+bh-3);ctx.quadraticCurveTo(x+bw,y+bh,x+bw-3,y+bh);ctx.lineTo(x+3,y+bh);ctx.quadraticCurveTo(x,y+bh,x,y+bh-3);}
+    ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.fillStyle=d>=0?'#065f46':'#991b1b';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+    ctx.fillText((d>0?'+':'')+d.toFixed(1)+'%p',x+bw/2,d>=0?y-4:y+bh+13);
+    ctx.fillStyle='#64748b';ctx.font='10px sans-serif';ctx.textAlign='center';
+    const cx2=x+bw/2,half=Math.ceil(labels[i].length/2);
+    if(labels[i].length>4){ctx.fillText(labels[i].slice(0,half),cx2,p.t+cH+14);ctx.fillText(labels[i].slice(half),cx2,p.t+cH+25);}
+    else ctx.fillText(labels[i],cx2,p.t+cH+14);
+  });
+}
+
+function drawTrend(bD,aD,bLbl,aLbl){
+  const{ctx,W,H}=mc('c-trend',290);
+  const p={t:32,r:24,b:42,l:48};
+  const cW=W-p.l-p.r,cH=H-p.t-p.b;
+  const all=[...bD,...aD],n=all.length;
+  const maxS=Math.max(...all.map(r=>r.s));
+  const maxC=55,xSp=cW/(n-1||1),bw=xSp*0.65;
+  [0,10,20,30,40,50].forEach(v=>{
+    const y=p.t+cH-(v/maxC)*cH;
+    ctx.strokeStyle='#f1f5f9';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(p.l,y);ctx.lineTo(p.l+cW,y);ctx.stroke();
+    ctx.fillStyle='#94a3b8';ctx.font='10px sans-serif';ctx.textAlign='right';
+    ctx.fillText(v+'%',p.l-4,y+3);
+  });
+  all.forEach((r,i)=>{
+    const isA=i>=bD.length,x=p.l+i*xSp-bw/2,bh=(r.s/maxS)*cH;
+    ctx.fillStyle=isA?'#6366f133':'#94a3b833';
+    ctx.fillRect(x,p.t+cH-bh,bw,bh);
+  });
+  const bAvg=bD.reduce((s,r)=>s+r.c,0)/(bD.length||1);
+  const aAvg=aD.reduce((s,r)=>s+r.c,0)/(aD.length||1);
+  function refLine(avg,i1,i2,col){
+    const y=p.t+cH-(avg/maxC)*cH,x1=p.l+i1*xSp,x2=p.l+i2*xSp;
+    ctx.save();ctx.setLineDash([5,4]);ctx.strokeStyle=col+'88';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y);ctx.stroke();ctx.restore();
+    ctx.fillStyle=col;ctx.font='bold 9px sans-serif';ctx.textAlign='right';
+    ctx.fillText('평균 '+avg.toFixed(1)+'%',x2,y-3);
+  }
+  if(bD.length)refLine(bAvg,0,bD.length-1,'#f59e0b');
+  if(aD.length)refLine(aAvg,bD.length,n-1,'#10b981');
+  function drawL(data,si,col){
+    ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.beginPath();
+    data.forEach((r,i)=>{const x=p.l+(si+i)*xSp,y=p.t+cH-(r.c/maxC)*cH;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.stroke();
+    data.forEach((r,i)=>{const x=p.l+(si+i)*xSp,y=p.t+cH-(r.c/maxC)*cH;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();});
+  }
+  drawL(bD,0,'#f59e0b');drawL(aD,bD.length,'#10b981');
+  if(bD.length&&aD.length){
+    const sx=p.l+(bD.length-0.5)*xSp;
+    ctx.save();ctx.setLineDash([6,4]);ctx.strokeStyle='#ef4444';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(sx,p.t);ctx.lineTo(sx,p.t+cH);ctx.stroke();ctx.restore();
+    ctx.fillStyle='#ef4444';ctx.fillRect(sx+2,p.t,6,16);
+  }
+  ctx.fillStyle='#f59e0b';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  if(bD.length)ctx.fillText(bLbl,p.l+(bD.length/2-0.5)*xSp,p.t-14);
+  ctx.fillStyle='#10b981';
+  if(aD.length)ctx.fillText(aLbl,p.l+(bD.length+(aD.length/2-0.5))*xSp,p.t-14);
+  ctx.fillStyle='#94a3b8';ctx.font='9px sans-serif';ctx.textAlign='center';
+  all.forEach((r,i)=>{if(i%Math.max(1,Math.floor(n/12))===0||i===n-1)ctx.fillText(r.d,p.l+i*xSp,p.t+cH+14);});
+}
+
+function setMode(m){
+  CUR=m;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+m).classList.add('active');
+  render();
+}
+
+function render(){
+  const m=MODES[CUR],B=P[m.bk],A=P[m.ak];
+  const diff=+(A.c-B.c).toFixed(2),sign=diff>0?'+':'';
+  const alertCls=diff>2?'pos':diff<-1?'neg':'neu';
+  const icon=diff>2?'📈':diff<-1?'📉':'➡️';
+  document.getElementById('alert-box').className='alert '+alertCls;
+  document.getElementById('alert-box').innerHTML=`<span style="font-size:20px">${icon}</span><div><strong>${m.bLbl}</strong> ${B.c}% → <strong>${m.aLbl}</strong> ${A.c}% &nbsp; 변화량: <strong>${sign}${diff}%p</strong><br><small>${m.note}</small></div>`;
+
+  document.getElementById('leg-b').textContent=m.bLbl;
+  document.getElementById('leg-a').textContent=m.aLbl;
+  document.getElementById('leg-b2').textContent=m.bLbl;
+  document.getElementById('leg-a2').textContent=m.aLbl;
+  document.getElementById('trend-sub').textContent=m.bLbl+' (주황) vs '+m.aLbl+' (초록) · 막대: 가입자 수';
+  document.getElementById('ch-sub').textContent=m.bLbl+' vs '+m.aLbl;
+  document.getElementById('tbl-sub').textContent=m.bLbl+' vs '+m.aLbl;
+
+  const kpiConf=[
+    {lbl:'당일 전환율 (후)',val:A.c+'%',chg:sign+diff+'%p',sub:m.aLbl,col:'#6366f1',up:diff>=0},
+    {lbl:'신규 가입자 (후)',val:A.s.toLocaleString()+'명',chg:'일평균 '+A.avg+'명',sub:m.aLbl,col:'#f59e0b',up:null},
+    {lbl:'당일 전환율 (전)',val:B.c+'%',chg:'일평균 '+B.avg+'명',sub:m.bLbl,col:'#94a3b8',up:null},
+    {lbl:'전환율 변화량',val:sign+diff+'%p',chg:diff>0?'개선':diff<0?'하락':'변화없음',sub:m.bLbl+' 대비',col:diff>0?'#10b981':diff<0?'#ef4444':'#94a3b8',up:diff>=0},
+    {lbl:'구매자 수 (후)',val:A.b.toLocaleString()+'명',chg:A.c+'% 전환',sub:m.aLbl,col:'#06b6d4',up:null}
+  ];
+  document.getElementById('kpi-row').innerHTML=kpiConf.map(k=>`<div class="kpi" style="border-top-color:${k.col}"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-val">${k.val}</div><div class="kpi-chg ${k.up===null?'flat':k.up?'up':'dn'}">${k.up===true?'▲ ':k.up===false?'▼ ':''}${k.chg}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
+
+  const maxDiff=Math.max(...CH_KO.map((_,i)=>Math.abs(A.ch_c[i]-B.ch_c[i])));
+  const topCh=CH_KO[A.ch_c.indexOf(Math.max(...A.ch_c))];
+  const mostImp=CH_KO[CH_KO.map((_,i)=>(A.ch_c[i]-B.ch_c[i])).indexOf(Math.max(...CH_KO.map((_,i)=>(A.ch_c[i]-B.ch_c[i]))))];
+  const insightCls=diff>2?'pos':diff<-1?'neg':'neu';
+  document.getElementById('split-row').innerHTML=`
+  <div class="split-card before">
+    <div class="split-title">📅 ${m.bLbl} <span class="tag-b">${m.bP}</span></div>
+    <div class="met-grid">
+      <div class="met"><div class="val">${B.s.toLocaleString()}</div><div class="lbl">신규 가입자</div></div>
+      <div class="met"><div class="val">${B.b.toLocaleString()}</div><div class="lbl">당일 구매자</div></div>
+      <div class="met"><div class="val">${B.c}%</div><div class="lbl">당일 전환율</div></div>
+      <div class="met"><div class="val">${B.avg}명</div><div class="lbl">일 평균 가입</div></div>
+    </div>
+  </div>
+  <div class="split-card after">
+    <div class="split-title">🚀 ${m.aLbl} <span class="tag-a">${m.aP}</span></div>
+    <div class="met-grid">
+      <div class="met"><div class="val">${A.s.toLocaleString()}</div><div class="lbl">신규 가입자</div></div>
+      <div class="met"><div class="val">${A.b.toLocaleString()}</div><div class="lbl">당일 구매자</div></div>
+      <div class="met"><div class="val">${A.c}%</div><div class="lbl">당일 전환율</div></div>
+      <div class="met"><div class="val">${A.avg}명</div><div class="lbl">일 평균 가입</div></div>
+    </div>
+    <div class="insi ${insightCls}">💡 <strong>${m.bLbl} 대비 전환율 ${sign}${diff}%p</strong>. 가장 개선된 채널: <strong>${mostImp}</strong> (+${Math.max(...CH_KO.map((_,i)=>(A.ch_c[i]-B.ch_c[i]))).toFixed(1)}%p). 최고 전환 채널: <strong>${topCh}</strong> (${Math.max(...A.ch_c).toFixed(1)}%)</div>
+  </div>`;
+
+  drawTrend(B.daily,A.daily,m.bLbl,m.aLbl);
+  drawBarGroup('c-ch',240,CH_KO,B.ch_c,A.ch_c,'#94a3b8aa','#6366f1aa');
+  drawDiff('c-diff',240,CH_KO,CH_KO.map((_,i)=>+(A.ch_c[i]-B.ch_c[i]).toFixed(2)));
+
+  document.getElementById('tbl-head').innerHTML='<tr><th>채널</th><th>가입(전)</th><th>전환율(전)</th><th>가입(후)</th><th>전환율(후)</th><th>변화량</th></tr>';
+  document.getElementById('tbl-body').innerHTML=CH_KO.map((_,i)=>({n:CH_KO[i],bs:B.ch_s[i],bc:B.ch_c[i],as:A.ch_s[i],ac:A.ch_c[i],d:+(A.ch_c[i]-B.ch_c[i]).toFixed(2)})).sort((a,b)=>b.as-a.as).map(r=>{
+    const pc=r.d>1?'pu':r.d<-1?'pd':'pf',s=r.d>0?'+':'';
+    return`<tr><td><strong>${r.n}</strong></td><td>${r.bs.toLocaleString()}명</td><td>${r.bc.toFixed(1)}%</td><td>${r.as.toLocaleString()}명</td><td>${r.ac.toFixed(1)}%</td><td><span class="pill ${pc}">${s}${r.d}%p</span></td></tr>`;
+  }).join('');
+}
+
+// Tooltip
+(function(){
+  const cv=document.getElementById('c-trend');
+  const tt=document.createElement('div');
+  tt.style.cssText='position:fixed;background:#1e293b;color:#f8fafc;padding:10px 14px;border-radius:8px;font-size:12px;pointer-events:none;display:none;z-index:999;line-height:1.8;box-shadow:0 4px 12px rgba(0,0,0,.3)';
+  document.body.appendChild(tt);
+  cv.addEventListener('mousemove',e=>{
+    const m=MODES[CUR],B=P[m.bk],A=P[m.ak],all=[...B.daily,...A.daily];
+    const rect=cv.getBoundingClientRect(),cW=rect.width-72,xSp=cW/(all.length-1||1);
+    const i=Math.round((e.clientX-rect.left-48)/xSp);
+    if(i>=0&&i<all.length){
+      const r=all[i],isA=i>=B.daily.length;
+      tt.innerHTML=`<strong>${r.d}</strong><br>가입자: <strong>${r.s}명</strong><br>전환율: <strong style="color:${isA?'#10b981':'#f59e0b'}">${r.c}%</strong>`;
+      tt.style.display='block';tt.style.left=(e.clientX+14)+'px';tt.style.top=(e.clientY-30)+'px';
+    }
+  });
+  cv.addEventListener('mouseleave',()=>tt.style.display='none');
+})();
+
+window.addEventListener('load',render);
+window.addEventListener('resize',()=>{clearTimeout(window._rt);window._rt=setTimeout(render,200);});
+</script>
+</body>
+</html>
