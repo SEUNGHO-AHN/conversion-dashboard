@@ -547,6 +547,23 @@ body {
     </div>
 
     <div class="sidebar-section">
+      <div class="sidebar-section-title">마케팅</div>
+      <div class="sidebar-group expanded" id="grp-marketing">
+        <div class="sidebar-group-header" onclick="toggleGroup('grp-marketing')">
+          <span class="grp-icon">📢</span>
+          <span>배너 성과</span>
+          <span class="grp-arrow">›</span>
+        </div>
+        <div class="sidebar-items">
+          <div class="sidebar-item" id="nav-banner-perf" onclick="navigateTo('banner-perf')">
+            <span class="item-dot"></span>
+            배너 효율 현황
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
       <div class="sidebar-section-title">도구</div>
       <div class="sidebar-group expanded" id="grp-tools">
         <div class="sidebar-group-header" onclick="toggleGroup('grp-tools')">
@@ -864,6 +881,68 @@ body {
   </div>
 </div>
 
+
+<!-- ===== 배너 효율 ===== -->
+<div id="panel-banner-perf" class="panel">
+  <div class="section-label">배너 효율 현황 — 2026년 (세션 기준: 4/13~5/10)</div>
+
+  <div class="kpi-grid kpi-grid-4">
+    <div class="kpi n"><div class="lbl">총 배너 수</div><div class="val">131</div><div class="sub">분석 기간 전체</div></div>
+    <div class="kpi n"><div class="lbl">총 배너 조회</div><div class="val">92,022</div><div class="sub">view_count 합계</div></div>
+    <div class="kpi n"><div class="lbl">일평균 세션</div><div class="val">1,672</div><div class="sub">4/13~5/10 기준</div></div>
+    <div class="kpi n">
+      <div class="lbl">CTR 분포</div>
+      <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
+        <span style="background:var(--green-light);color:var(--green);padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600">20%+ · 8개</span>
+        <span style="background:var(--amber-light);color:var(--amber);padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600">5~20% · 43개</span>
+        <span style="background:var(--red-light);color:var(--red);padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600">&lt;5% · 80개</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="card-title">배너별 효율 상세</div>
+    <div class="card-sub">CTR = 배너 조회수 ÷ 노출 기간 세션수 / 세션 기준: 일평균 1,672명</div>
+
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <div style="position:relative;flex:1;min-width:160px;max-width:260px">
+        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-tertiary);font-size:13px;pointer-events:none">🔍</span>
+        <input type="text" id="bSearch" placeholder="배너명 검색..." oninput="bPage=0;renderBanner()"
+          style="width:100%;padding:7px 12px 7px 32px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:13px;outline:none">
+      </div>
+      <select id="bCtrFilter" onchange="bPage=0;renderBanner()"
+        style="padding:7px 28px 7px 12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:13px;outline:none;cursor:pointer;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239c9a93' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center">
+        <option value="">CTR 전체</option>
+        <option value="high">높음 (≥20%)</option>
+        <option value="mid">보통 (5~20%)</option>
+        <option value="low">낮음 (&lt;5%)</option>
+      </select>
+      <span id="bCountLabel" style="margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)"></span>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table class="tbl" id="bTbl">
+        <thead>
+          <tr>
+            <th style="min-width:200px" onclick="bSort('subject')">배너명 <span id="bArr-subject"></span></th>
+            <th style="width:100px;text-align:right" onclick="bSort('started')">노출기간 <span id="bArr-started"></span></th>
+            <th style="width:50px;text-align:right" onclick="bSort('exp')">노출일 <span id="bArr-exp"></span></th>
+            <th style="width:70px;text-align:right" onclick="bSort('views')">조회수 <span id="bArr-views"></span></th>
+            <th style="width:130px" onclick="bSort('dav')">일평균조회 <span id="bArr-dav">↓</span></th>
+            <th style="width:90px;text-align:center" onclick="bSort('ctr')">CTR <span id="bArr-ctr"></span></th>
+          </tr>
+        </thead>
+        <tbody id="bTbody"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:0.5px solid var(--border);background:var(--surface-2);border-radius:0 0 var(--radius-lg) var(--radius-lg)">
+      <button id="bPrev" onclick="bPrevPage()" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer">← 이전</button>
+      <span id="bPgInfo" style="flex:1;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)"></span>
+      <button id="bNext" onclick="bNextPage()" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer">다음 →</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- /main -->
 
 <footer class="footer">
@@ -885,15 +964,19 @@ function toggleGroup(id) {
   document.getElementById(id).classList.toggle('expanded');
 }
 function navigateTo(page) {
-  // 현재는 어버이날 기획전만 존재 — 추후 페이지 추가 시 분기 처리
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  document.getElementById('nav-' + page).classList.add('active');
+  const navEl = document.getElementById('nav-' + page);
+  if(navEl) navEl.classList.add('active');
   closeSidebar();
-  // 첫 탭(퍼널 개요)으로 리셋
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel-funnel-overview').classList.add('active');
-  document.querySelector('.nav-tab').classList.add('active');
+  if(page === 'banner-perf'){
+    document.getElementById('panel-banner-perf').classList.add('active');
+    document.querySelector('.nav-tab[onclick*="banner-perf"]').classList.add('active');
+  } else {
+    document.getElementById('panel-funnel-overview').classList.add('active');
+    document.querySelector('.nav-tab').classList.add('active');
+  }
 }
 
 // NAV TABS
@@ -902,6 +985,7 @@ function showPanel(n) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + n).classList.add('active');
   event.target.classList.add('active');
+  if(n === 'banner-perf') renderBanner();
 }
 
 // ESC 닫기
@@ -1183,6 +1267,91 @@ allDates.forEach(date=>{
   tbody.appendChild(tr);
 });
 tbl.appendChild(tbody);
+
+// ── BANNER EFFICIENCY ──
+const bannerData = [{"subject": "가재열 파머스초이스", "started": "2026-05-06", "ended": "2026-05-07", "exp": 1, "views": 3264, "dav": 3264.0, "dsess": 1672, "ctr": 195.2}, {"subject": "24시간 블루 특가", "started": "2026-03-19", "ended": "2026-03-20", "exp": 1, "views": 629, "dav": 629.0, "dsess": 1672, "ctr": 37.62}, {"subject": "봄을 깨우는 찬란한 노랑 지금은 미모사 시즌", "started": "2026-03-04", "ended": "2026-03-06", "exp": 1, "views": 497, "dav": 497.0, "dsess": 1672, "ctr": 29.72}, {"subject": "봄꽃 페어링 혜택", "started": "2026-03-06", "ended": "2026-03-07", "exp": 1, "views": 467, "dav": 467.0, "dsess": 1672, "ctr": 27.93}, {"subject": "\"프리미엄\" 꽃바구니", "started": "2026-04-08", "ended": "2026-05-31", "exp": 53, "views": 18250, "dav": 344.3, "dsess": 1672, "ctr": 38.98}, {"subject": "지난주 품절 다시 들어왔어요", "started": "2026-03-20", "ended": "2026-03-25", "exp": 4, "views": 1300, "dav": 325.0, "dsess": 1672, "ctr": 19.44}, {"subject": "올해 마지막 튤립 UP TO ~60%", "started": "2026-03-24", "ended": "2026-03-27", "exp": 3, "views": 955, "dav": 318.3, "dsess": 1672, "ctr": 19.04}, {"subject": "오후 1시까지 주문하면 내일 새벽 도착!", "started": "2026-05-03", "ended": "2026-05-04", "exp": 1, "views": 292, "dav": 292.0, "dsess": 1672, "ctr": 17.46}, {"subject": "올해 마지막, 스위트피", "started": "2026-03-16", "ended": "2026-03-20", "exp": 4, "views": 917, "dav": 229.2, "dsess": 1672, "ctr": 13.71}, {"subject": "기다림 끝에 찾아온  산당화", "started": "2026-01-23", "ended": "2026-01-29", "exp": 5, "views": 1083, "dav": 216.6, "dsess": 1672, "ctr": 12.95}, {"subject": "이번주 추천 꽃 ~60% OFF", "started": "2026-04-27", "ended": "2026-05-04", "exp": 6, "views": 1296, "dav": 216.0, "dsess": 1672, "ctr": 11.07}, {"subject": "수입 꽃 컬렉션", "started": "2026-01-23", "ended": "2026-01-25", "exp": 1, "views": 213, "dav": 213.0, "dsess": 1672, "ctr": 12.74}, {"subject": "선물 페스타", "started": "2026-02-03", "ended": "2026-02-17", "exp": 13, "views": 2673, "dav": 205.6, "dsess": 1672, "ctr": 12.3}, {"subject": "겨울 장미 특가전", "started": "2026-01-17", "ended": "2026-01-25", "exp": 7, "views": 1342, "dav": 191.7, "dsess": 1672, "ctr": 11.47}, {"subject": "오늘 주문하면 연휴 전 새벽 도착해요", "started": "2026-02-12", "ended": "2026-02-13", "exp": 1, "views": 187, "dav": 187.0, "dsess": 1672, "ctr": 11.18}, {"subject": "프리미엄 로즈 기획전 위시리스트 적립금 이벤트 중", "started": "2026-03-07", "ended": "2026-03-30", "exp": 22, "views": 3713, "dav": 168.8, "dsess": 1672, "ctr": 10.09}, {"subject": "새봄맞이 공간 스타일링", "started": "2026-02-20", "ended": "2026-03-15", "exp": 22, "views": 3661, "dav": 166.4, "dsess": 1672, "ctr": 9.95}, {"subject": "1월에 아름답게 피어나는 꽃", "started": "2026-01-13", "ended": "2026-01-20", "exp": 7, "views": 1132, "dav": 161.7, "dsess": 1672, "ctr": 9.67}, {"subject": "겨울 꽃가지  인테리어 기획전", "started": "2026-01-20", "ended": "2026-01-27", "exp": 7, "views": 1033, "dav": 147.6, "dsess": 1672, "ctr": 8.83}, {"subject": "이번주 추천꽃 3종 모두 50% 할인", "started": "2026-04-06", "ended": "2026-04-13", "exp": 6, "views": 837, "dav": 139.5, "dsess": 1672, "ctr": 50.06}, {"subject": "봄 한가운데, 라일락을 데려올 시간", "started": "2026-04-01", "ended": "2026-04-15", "exp": 14, "views": 1928, "dav": 137.7, "dsess": 1672, "ctr": 38.43}, {"subject": "보라덕후 모여라", "started": "2026-04-02", "ended": "2026-04-03", "exp": 1, "views": 135, "dav": 135.0, "dsess": 1672, "ctr": 8.07}, {"subject": "작약 큐레이션 ~ 58% OFF", "started": "2026-04-06", "ended": "2026-05-03", "exp": 26, "views": 3423, "dav": 131.7, "dsess": 1672, "ctr": 9.75}, {"subject": "올해 첫 시작 프리미엄 로즈 몽생미셸", "started": "2026-02-28", "ended": "2026-03-02", "exp": 1, "views": 129, "dav": 129.0, "dsess": 1672, "ctr": 7.71}, {"subject": "베스트 추천 3종", "started": "2026-02-24", "ended": "2026-03-02", "exp": 5, "views": 643, "dav": 128.6, "dsess": 1672, "ctr": 7.69}, {"subject": "새해를 밝히는 옐로우 플라워 기획전", "started": "2026-01-07", "ended": "2026-01-14", "exp": 7, "views": 863, "dav": 123.3, "dsess": 1672, "ctr": 7.37}, {"subject": "튤립 스타일링 추천 top7", "started": "2026-01-30", "ended": "2026-02-01", "exp": 1, "views": 119, "dav": 119.0, "dsess": 1672, "ctr": 7.12}, {"subject": "2월의 플로픽 이번 주 주문 마감이에요", "started": "2026-02-23", "ended": "2026-02-27", "exp": 4, "views": 473, "dav": 118.2, "dsess": 1672, "ctr": 7.07}, {"subject": "오늘, 마지막", "started": "2026-03-03", "ended": "2026-03-11", "exp": 8, "views": 927, "dav": 115.9, "dsess": 1672, "ctr": 6.93}, {"subject": "good goodbye 봄꽃 나무 고별전", "started": "2026-03-18", "ended": "2026-03-25", "exp": 6, "views": 657, "dav": 109.5, "dsess": 1672, "ctr": 6.55}, {"subject": "베스트 추천 3종", "started": "2026-02-09", "ended": "2026-02-16", "exp": 6, "views": 621, "dav": 103.5, "dsess": 1672, "ctr": 6.19}, {"subject": "꽃보다 오래,  숲보다 가깝게", "started": "2026-03-27", "ended": "2026-04-10", "exp": 13, "views": 1345, "dav": 103.5, "dsess": 1672, "ctr": 6.19}, {"subject": "1월 베스트 아이템 +15% 쿠폰", "started": "2026-01-27", "ended": "2026-02-03", "exp": 7, "views": 717, "dav": 102.4, "dsess": 1672, "ctr": 6.13}, {"subject": "무스카리 화병세트 단 3일간, 특가!", "started": "2026-02-23", "ended": "2026-02-26", "exp": 2, "views": 202, "dav": 101.0, "dsess": 1672, "ctr": 6.04}, {"subject": "nan", "started": "2026-04-08", "ended": "2026-05-10", "exp": 32, "views": 3192, "dav": 99.8, "dsess": 1672, "ctr": 6.82}, {"subject": "특가로 만나는 이번주의 꽃", "started": "2026-02-02", "ended": "2026-02-09", "exp": 7, "views": 683, "dav": 97.6, "dsess": 1672, "ctr": 5.84}, {"subject": "마음을 전하는, 프리미엄 꽃바구니", "started": "2026-05-06", "ended": "2026-05-09", "exp": 2, "views": 193, "dav": 96.5, "dsess": 1672, "ctr": 3.85}, {"subject": "nan", "started": "2026-02-01", "ended": "2026-02-07", "exp": 5, "views": 478, "dav": 95.6, "dsess": 1672, "ctr": 5.72}, {"subject": "nan", "started": "2026-01-30", "ended": "2026-02-04", "exp": 5, "views": 475, "dav": 95.0, "dsess": 1672, "ctr": 5.68}, {"subject": "nan", "started": "2026-02-04", "ended": "2026-02-05", "exp": 1, "views": 95, "dav": 95.0, "dsess": 1672, "ctr": 5.68}, {"subject": "이번주 입고된 수입 꽃 컬렉션", "started": "2026-02-23", "ended": "2026-02-27", "exp": 4, "views": 378, "dav": 94.5, "dsess": 1672, "ctr": 5.65}, {"subject": "nan", "started": "2026-02-03", "ended": "2026-02-10", "exp": 6, "views": 562, "dav": 93.7, "dsess": 1672, "ctr": 5.6}, {"subject": "봄을 데려오는 향기 스위트피", "started": "2026-01-12", "ended": "2026-01-16", "exp": 4, "views": 352, "dav": 88.0, "dsess": 1672, "ctr": 5.26}, {"subject": "금주의 추천 3종", "started": "2026-01-27", "ended": "2026-02-02", "exp": 5, "views": 436, "dav": 87.2, "dsess": 1672, "ctr": 5.21}, {"subject": "베스트 추천 3종", "started": "2026-03-02", "ended": "2026-03-09", "exp": 6, "views": 513, "dav": 85.5, "dsess": 1672, "ctr": 5.11}, {"subject": "금주의 추천 3종  ~28% 할인", "started": "2026-01-06", "ended": "2026-01-12", "exp": 6, "views": 511, "dav": 85.2, "dsess": 1672, "ctr": 5.09}, {"subject": "이번 주 추천 3종 최대 50% 할인", "started": "2026-03-23", "ended": "2026-03-30", "exp": 6, "views": 504, "dav": 84.0, "dsess": 1672, "ctr": 5.02}, {"subject": "이번주 추천 꽃 ~48% OFF", "started": "2026-04-20", "ended": "2026-04-27", "exp": 6, "views": 483, "dav": 80.5, "dsess": 1672, "ctr": 4.13}, {"subject": "봄을 기다리며", "started": "2026-02-18", "ended": "2026-02-22", "exp": 3, "views": 233, "dav": 77.7, "dsess": 1672, "ctr": 4.64}, {"subject": "이번 주 추천 3종", "started": "2026-03-09", "ended": "2026-03-16", "exp": 6, "views": 450, "dav": 75.0, "dsess": 1672, "ctr": 4.49}, {"subject": "2026 첫, 산당화", "started": "2026-01-30", "ended": "2026-02-02", "exp": 3, "views": 223, "dav": 74.3, "dsess": 1672, "ctr": 4.45}, {"subject": "nan", "started": "2026-02-03", "ended": "2026-02-06", "exp": 2, "views": 148, "dav": 74.0, "dsess": 1672, "ctr": 4.43}, {"subject": "올해 첫 치자꽃  프리오더 오픈 · 15% 할인", "started": "2026-04-10", "ended": "2026-04-14", "exp": 4, "views": 294, "dav": 73.5, "dsess": 1672, "ctr": 8.79}, {"subject": "금주의 추천 3종 ~50% 할인", "started": "2026-01-12", "ended": "2026-01-19", "exp": 6, "views": 415, "dav": 69.2, "dsess": 1672, "ctr": 4.14}, {"subject": "nan", "started": "2026-02-17", "ended": "2026-02-21", "exp": 3, "views": 207, "dav": 69.0, "dsess": 1672, "ctr": 4.13}, {"subject": "베스트 추천 3종", "started": "2026-02-16", "ended": "2026-02-23", "exp": 7, "views": 480, "dav": 68.6, "dsess": 1672, "ctr": 4.1}, {"subject": "화사한 봄날의 일상", "started": "2026-03-13", "ended": "2026-04-05", "exp": 22, "views": 1348, "dav": 61.3, "dsess": 1672, "ctr": 3.66}, {"subject": "땅속에서 준비된 겨울 꽃", "started": "2026-01-31", "ended": "2026-02-10", "exp": 10, "views": 596, "dav": 59.6, "dsess": 1672, "ctr": 3.56}, {"subject": "뽀얀 복숭아 피치 튤립", "started": "2026-01-07", "ended": "2026-01-08", "exp": 1, "views": 59, "dav": 59.0, "dsess": 1672, "ctr": 3.53}, {"subject": "프리지아 사면 화병이 무료", "started": "2026-01-13", "ended": "2026-01-15", "exp": 2, "views": 111, "dav": 55.5, "dsess": 1672, "ctr": 3.32}, {"subject": "nan", "started": "2026-01-05", "ended": "2026-01-09", "exp": 4, "views": 220, "dav": 55.0, "dsess": 1672, "ctr": 3.29}, {"subject": "겨울에 즐기는 꽃가지", "started": "2026-01-28", "ended": "2026-02-28", "exp": 30, "views": 1629, "dav": 54.3, "dsess": 1672, "ctr": 3.25}, {"subject": "nan", "started": "2026-02-23", "ended": "2026-02-27", "exp": 3, "views": 155, "dav": 51.7, "dsess": 1672, "ctr": 3.09}, {"subject": "우리집, 봄맞이 파스텔 스타일링", "started": "2026-03-02", "ended": "2026-03-06", "exp": 3, "views": 151, "dav": 50.3, "dsess": 1672, "ctr": 3.01}, {"subject": "꽃도, 다다익선", "started": "2026-02-03", "ended": "2026-02-21", "exp": 18, "views": 877, "dav": 48.7, "dsess": 1672, "ctr": 2.91}, {"subject": "1월 베스트 아이템", "started": "2026-01-27", "ended": "2026-02-03", "exp": 7, "views": 339, "dav": 48.4, "dsess": 1672, "ctr": 2.9}, {"subject": "금주의 추천 3종  ~36% 할인", "started": "2026-01-20", "ended": "2026-01-26", "exp": 5, "views": 241, "dav": 48.2, "dsess": 1672, "ctr": 2.88}, {"subject": "nan", "started": "2026-02-22", "ended": "2026-02-28", "exp": 5, "views": 238, "dav": 47.6, "dsess": 1672, "ctr": 2.85}, {"subject": "봄맞이 집들이 꽃", "started": "2026-04-03", "ended": "2026-04-17", "exp": 14, "views": 654, "dav": 46.7, "dsess": 1672, "ctr": 7.82}, {"subject": "봄꽃나무 고별전", "started": "2026-03-19", "ended": "2026-03-24", "exp": 5, "views": 232, "dav": 46.4, "dsess": 1672, "ctr": 2.77}, {"subject": "내 취향 복숭아 찾기", "started": "2026-02-06", "ended": "2026-03-05", "exp": 26, "views": 1202, "dav": 46.2, "dsess": 1672, "ctr": 2.76}, {"subject": "손질해 보내드리는,  플로리스트픽", "started": "2026-03-01", "ended": "2026-05-31", "exp": 90, "views": 4143, "dav": 46.0, "dsess": 1672, "ctr": 8.85}, {"subject": "마카롱 처럼 달콤한 봄의 컬러", "started": "2026-03-10", "ended": "2026-03-13", "exp": 2, "views": 91, "dav": 45.5, "dsess": 1672, "ctr": 2.72}, {"subject": "우리집에 봄이 왔어요", "started": "2026-02-20", "ended": "2026-03-15", "exp": 22, "views": 994, "dav": 45.2, "dsess": 1672, "ctr": 2.7}, {"subject": "가든로즈 스타일링", "started": "2026-03-10", "ended": "2026-03-12", "exp": 2, "views": 89, "dav": 44.5, "dsess": 1672, "ctr": 2.66}, {"subject": "집에서 만나는 시즌 한정 수입 꽃", "started": "2026-03-30", "ended": "2026-04-03", "exp": 4, "views": 175, "dav": 43.8, "dsess": 1672, "ctr": 2.62}, {"subject": "nan", "started": "2026-01-29", "ended": "2026-01-31", "exp": 1, "views": 42, "dav": 42.0, "dsess": 1672, "ctr": 2.51}, {"subject": "nan", "started": "2026-02-17", "ended": "2026-02-21", "exp": 3, "views": 121, "dav": 40.3, "dsess": 1672, "ctr": 2.41}, {"subject": "nan", "started": "2026-02-10", "ended": "2026-02-13", "exp": 2, "views": 80, "dav": 40.0, "dsess": 1672, "ctr": 2.39}, {"subject": "계절을 채우는  수국 컬렉션", "started": "2026-05-08", "ended": "2026-05-15", "exp": 7, "views": 278, "dav": 39.7, "dsess": 1672, "ctr": 8.31}, {"subject": "아름답게 피어나는 꽃", "started": "2026-01-13", "ended": "2026-01-20", "exp": 7, "views": 272, "dav": 38.9, "dsess": 1672, "ctr": 2.32}, {"subject": "우리집을 감도있게, 에포크 화병 기획전", "started": "2026-01-17", "ended": "2026-01-22", "exp": 4, "views": 141, "dav": 35.2, "dsess": 1672, "ctr": 2.11}, {"subject": "어니스트에서 만나는 튤립 컬렉션", "started": "2026-01-05", "ended": "2026-01-17", "exp": 12, "views": 401, "dav": 33.4, "dsess": 1672, "ctr": 2.0}, {"subject": "드디어 작약! 한정수량 입고", "started": "2026-03-18", "ended": "2026-03-31", "exp": 12, "views": 395, "dav": 32.9, "dsess": 1672, "ctr": 1.97}, {"subject": "nan", "started": "2026-01-13", "ended": "2026-01-16", "exp": 2, "views": 64, "dav": 32.0, "dsess": 1672, "ctr": 1.91}, {"subject": "베스트 추천 3종", "started": "2026-03-30", "ended": "2026-04-06", "exp": 6, "views": 192, "dav": 32.0, "dsess": 1672, "ctr": 1.91}, {"subject": "nan", "started": "2026-02-24", "ended": "2026-02-27", "exp": 2, "views": 63, "dav": 31.5, "dsess": 1672, "ctr": 1.88}, {"subject": "옐로우 플라워 기획전", "started": "2026-01-07", "ended": "2026-01-14", "exp": 7, "views": 210, "dav": 30.0, "dsess": 1672, "ctr": 1.79}, {"subject": "달콤한 기억, 스위트피", "started": "2026-02-09", "ended": "2026-02-13", "exp": 4, "views": 117, "dav": 29.2, "dsess": 1672, "ctr": 1.75}, {"subject": "오늘의 기분,  거베라로 골라보세요", "started": "2026-03-27", "ended": "2026-04-11", "exp": 14, "views": 397, "dav": 28.4, "dsess": 1672, "ctr": 1.7}, {"subject": "nan", "started": "2026-01-16", "ended": "2026-01-23", "exp": 6, "views": 168, "dav": 28.0, "dsess": 1672, "ctr": 1.67}, {"subject": "nan", "started": "2026-02-06", "ended": "2026-02-10", "exp": 3, "views": 80, "dav": 26.7, "dsess": 1672, "ctr": 1.59}, {"subject": "이벤트 수선화 10+5", "started": "2026-03-03", "ended": "2026-03-06", "exp": 3, "views": 75, "dav": 25.0, "dsess": 1672, "ctr": 1.5}, {"subject": "첫 주문은 무료배송으로", "started": "2026-04-17", "ended": "2026-05-09", "exp": 21, "views": 522, "dav": 24.9, "dsess": 1672, "ctr": 1.42}, {"subject": "플랫화이트 도자화기", "started": "2026-01-20", "ended": "2026-01-24", "exp": 3, "views": 73, "dav": 24.3, "dsess": 1672, "ctr": 1.46}, {"subject": "꽃가지 인테리어", "started": "2026-01-20", "ended": "2026-01-27", "exp": 7, "views": 169, "dav": 24.1, "dsess": 1672, "ctr": 1.44}, {"subject": "nan", "started": "2026-01-13", "ended": "2026-01-16", "exp": 2, "views": 48, "dav": 24.0, "dsess": 1672, "ctr": 1.44}, {"subject": "복숭아 큐레이션", "started": "2026-03-30", "ended": "2026-04-11", "exp": 12, "views": 286, "dav": 23.8, "dsess": 1672, "ctr": 1.43}, {"subject": "봄빛 가득한 꽃들의 무드", "started": "2026-01-31", "ended": "2026-02-07", "exp": 6, "views": 139, "dav": 23.2, "dsess": 1672, "ctr": 1.39}, {"subject": "스위트피 하나로  달라지는 공간", "started": "2026-01-13", "ended": "2026-01-16", "exp": 2, "views": 46, "dav": 23.0, "dsess": 1672, "ctr": 1.38}, {"subject": "향기의 정석 히아신스", "started": "2026-01-13", "ended": "2026-01-16", "exp": 2, "views": 44, "dav": 22.0, "dsess": 1672, "ctr": 1.32}, {"subject": "nan", "started": "2026-02-21", "ended": "2026-03-02", "exp": 9, "views": 196, "dav": 21.8, "dsess": 1672, "ctr": 1.3}, {"subject": "nan", "started": "2026-01-27", "ended": "2026-01-28", "exp": 1, "views": 21, "dav": 21.0, "dsess": 1672, "ctr": 1.26}, {"subject": "봄을 초대하는 꽃가지", "started": "2026-02-21", "ended": "2026-03-05", "exp": 12, "views": 250, "dav": 20.8, "dsess": 1672, "ctr": 1.25}, {"subject": "가든파티 기획전", "started": "2026-05-09", "ended": "2026-05-31", "exp": 21, "views": 420, "dav": 20.0, "dsess": 1672, "ctr": 25.12}, {"subject": "nan", "started": "2026-01-13", "ended": "2026-01-16", "exp": 2, "views": 39, "dav": 19.5, "dsess": 1672, "ctr": 1.17}, {"subject": "봄맞이  장미 특가전", "started": "2026-03-30", "ended": "2026-04-10", "exp": 11, "views": 208, "dav": 18.9, "dsess": 1672, "ctr": 1.13}, {"subject": "플로리스트픽,  꽃 + 화병 세트", "started": "2026-03-23", "ended": "2026-05-31", "exp": 68, "views": 1235, "dav": 18.2, "dsess": 1672, "ctr": 2.64}, {"subject": "플라워 럭키박스", "started": "2026-03-16", "ended": "2026-05-31", "exp": 75, "views": 1326, "dav": 17.7, "dsess": 1672, "ctr": 2.83}, {"subject": "향기로운 우리집", "started": "2026-02-10", "ended": "2026-02-13", "exp": 3, "views": 52, "dav": 17.3, "dsess": 1672, "ctr": 1.04}, {"subject": "수국 컬렉션", "started": "2026-04-15", "ended": "2026-05-15", "exp": 30, "views": 498, "dav": 16.6, "dsess": 1672, "ctr": 1.19}, {"subject": "3만명이 선택한 럭키박스", "started": "2026-01-30", "ended": "2026-02-28", "exp": 29, "views": 472, "dav": 16.3, "dsess": 1672, "ctr": 0.97}, {"subject": "봄꽃나무 고별전", "started": "2026-03-18", "ended": "2026-03-25", "exp": 7, "views": 111, "dav": 15.9, "dsess": 1672, "ctr": 0.95}, {"subject": "nan", "started": "2026-01-30", "ended": "2026-02-02", "exp": 3, "views": 43, "dav": 14.3, "dsess": 1672, "ctr": 0.86}, {"subject": "달콤한 추억 밥티시아", "started": "2026-05-08", "ended": "2026-05-15", "exp": 7, "views": 100, "dav": 14.3, "dsess": 1672, "ctr": 2.99}, {"subject": "눈길이 머무는 공간", "started": "2026-02-09", "ended": "2026-02-15", "exp": 5, "views": 71, "dav": 14.2, "dsess": 1672, "ctr": 0.85}, {"subject": "겹튤립  신상 컬러 입고!", "started": "2026-01-13", "ended": "2026-01-16", "exp": 2, "views": 27, "dav": 13.5, "dsess": 1672, "ctr": 0.81}, {"subject": "체리블라썸", "started": "2026-04-10", "ended": "2026-04-15", "exp": 5, "views": 64, "dav": 12.8, "dsess": 1672, "ctr": 1.28}, {"subject": "사일런트 바, 매주 금/토/일 라이팅룸에서", "started": "2026-02-27", "ended": "2026-03-31", "exp": 32, "views": 377, "dav": 11.8, "dsess": 1672, "ctr": 0.7}, {"subject": "신상 입고 은방울 수선화", "started": "2026-04-03", "ended": "2026-04-07", "exp": 3, "views": 34, "dav": 11.3, "dsess": 1672, "ctr": 0.68}, {"subject": "산지에서 갓 따온 제철 프리지아", "started": "2026-02-12", "ended": "2026-02-28", "exp": 16, "views": 176, "dav": 11.0, "dsess": 1672, "ctr": 0.66}, {"subject": "EVENT 친구추천 더블적립", "started": "2026-03-31", "ended": "2026-04-16", "exp": 15, "views": 120, "dav": 8.0, "dsess": 1672, "ctr": 1.79}, {"subject": "nan", "started": "2026-01-29", "ended": "2026-01-31", "exp": 1, "views": 8, "dav": 8.0, "dsess": 1672, "ctr": 0.48}, {"subject": "우리집 주인공 자리", "started": "2026-02-18", "ended": "2026-02-23", "exp": 4, "views": 30, "dav": 7.5, "dsess": 1672, "ctr": 0.45}, {"subject": "nan", "started": "2026-03-27", "ended": "2026-04-03", "exp": 6, "views": 42, "dav": 7.0, "dsess": 1672, "ctr": 0.42}, {"subject": "기념일 등록하면 10% 쿠폰 최대 5장", "started": "2026-04-17", "ended": "2026-05-31", "exp": 44, "views": 284, "dav": 6.5, "dsess": 1672, "ctr": 0.74}, {"subject": "nan", "started": "2026-04-06", "ended": "2026-05-03", "exp": 26, "views": 166, "dav": 6.4, "dsess": 1672, "ctr": 0.47}, {"subject": "nan", "started": "2026-02-02", "ended": "2026-02-08", "exp": 5, "views": 27, "dav": 5.4, "dsess": 1672, "ctr": 0.32}, {"subject": "nan", "started": "2026-03-01", "ended": "2026-03-10", "exp": 9, "views": 33, "dav": 3.7, "dsess": 1672, "ctr": 0.22}, {"subject": "사일런트바, 지금 예약해 보세요", "started": "2026-01-08", "ended": "2026-09-30", "exp": 264, "views": 396, "dav": 1.5, "dsess": 1672, "ctr": 0.85}, {"subject": "친구 초대하면 친구도 나도 2,000원", "started": "2026-04-17", "ended": "2026-05-31", "exp": 44, "views": 1, "dav": 0.0, "dsess": 1672, "ctr": 0.0}];
+
+let bSortKey = 'dav', bSortDir = -1, bPage = 0;
+const B_PAGE = 20;
+
+function bFiltered() {
+  const q = (document.getElementById('bSearch')?.value || '').toLowerCase();
+  const c = document.getElementById('bCtrFilter')?.value || '';
+  return bannerData.filter(d => {
+    if(d.subject === 'nan') return false;
+    if(q && !d.subject.toLowerCase().includes(q)) return false;
+    if(c === 'high' && (d.ctr === null || d.ctr < 20)) return false;
+    if(c === 'mid'  && (d.ctr === null || d.ctr < 5 || d.ctr >= 20)) return false;
+    if(c === 'low'  && (d.ctr === null || d.ctr >= 5)) return false;
+    return true;
+  }).sort((a,b) => {
+    let av = a[bSortKey], bv = b[bSortKey];
+    if(av === null) av = bSortDir === -1 ? -Infinity : Infinity;
+    if(bv === null) bv = bSortDir === -1 ? -Infinity : Infinity;
+    if(typeof av === 'string') return bSortDir * av.localeCompare(bv);
+    return bSortDir * (av - bv);
+  });
+}
+
+function renderBanner() {
+  const rows = bFiltered();
+  const maxDav = Math.max(...rows.map(r => r.dav), 1);
+  document.getElementById('bCountLabel').textContent = rows.length + '개';
+
+  ['subject','started','exp','views','dav','ctr'].forEach(k => {
+    const el = document.getElementById('bArr-' + k);
+    if(el) el.textContent = bSortKey === k ? (bSortDir === -1 ? '↓' : '↑') : '';
+  });
+
+  const total = Math.max(1, Math.ceil(rows.length / B_PAGE));
+  if(bPage >= total) bPage = total - 1;
+  const paged = rows.slice(bPage * B_PAGE, (bPage+1) * B_PAGE);
+
+  const tbody = document.getElementById('bTbody');
+  if(!tbody) return;
+
+  tbody.innerHTML = paged.map(d => {
+    const pct = Math.round(d.dav / maxDav * 100);
+    const dateStr = d.started && d.ended ? d.started.slice(5) + '~' + d.ended.slice(5) : '—';
+    const ctrBadge = d.ctr === null ? '<span style="color:var(--text-tertiary);font-size:11px">—</span>'
+      : d.ctr >= 20 ? '<span style="background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">' + d.ctr.toFixed(1) + '%</span>'
+      : d.ctr >= 5  ? '<span style="background:var(--amber-light);color:var(--amber);padding:2px 8px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">' + d.ctr.toFixed(1) + '%</span>'
+      : '<span style="background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">' + d.ctr.toFixed(1) + '%</span>';
+    return '<tr>'
+      + '<td><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;font-weight:500" title="'+d.subject+'">'+d.subject+'</div></td>'
+      + '<td style="text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)">'+dateStr+'</td>'
+      + '<td style="text-align:right;font-family:var(--font-mono);font-size:12px">'+d.exp+'일</td>'
+      + '<td style="text-align:right;font-family:var(--font-mono);font-size:12px">'+d.views.toLocaleString()+'</td>'
+      + '<td><div style="display:flex;align-items:center;gap:7px">'
+        + '<div style="flex:1;height:5px;background:var(--border);border-radius:3px;min-width:40px;overflow:hidden"><div style="height:5px;border-radius:3px;background:var(--green);width:'+pct+'%"></div></div>'
+        + '<span style="font-family:var(--font-mono);font-size:12px;min-width:32px;text-align:right">'+Math.round(d.dav)+'</span>'
+      + '</div></td>'
+      + '<td style="text-align:center">'+ctrBadge+'</td>'
+      + '</tr>';
+  }).join('');
+
+  document.getElementById('bPgInfo').textContent = (bPage+1) + ' / ' + total;
+  document.getElementById('bPrev').disabled = bPage === 0;
+  document.getElementById('bNext').disabled = bPage >= total - 1;
+}
+
+function bSort(key) {
+  if(bSortKey === key) bSortDir *= -1;
+  else { bSortKey = key; bSortDir = -1; }
+  bPage = 0; renderBanner();
+}
+function bPrevPage() { if(bPage > 0){ bPage--; renderBanner(); } }
+function bNextPage() { const r = bFiltered(); if((bPage+1)*B_PAGE < r.length){ bPage++; renderBanner(); } }
+
+// 배너 패널 활성화 시 초기 렌더
+document.addEventListener('DOMContentLoaded', () => {
+  const orig = window.showPanel;
+  window.showPanel = function(n) {
+    orig && orig.call(this, n);
+    if(n === 'banner-perf') renderBanner();
+  };
+});
+
 </script>
 </body>
 </html>
