@@ -545,7 +545,6 @@ body {
         </div>
       </div>
     </div>
-    </div>
 
     <div class="sidebar-section">
       <div class="sidebar-section-title">도구</div>
@@ -556,7 +555,7 @@ body {
           <span class="grp-arrow">›</span>
         </div>
         <div class="sidebar-items">
-          <div class="sidebar-item" id="nav-banner" onclick="navigateTo('banner-tool')">
+          <div class="sidebar-item" id="nav-banner" onclick="window.open('banner-analyzer.html', '_blank')">
             <span class="item-dot"></span>
             배너 효율 분석기
           </div>
@@ -865,174 +864,6 @@ body {
   </div>
 </div>
 
-
-  <div class="kpi-grid kpi-grid-4">
-    <div class="kpi n"><div class="lbl">총 배너 수</div><div class="val">131</div><div class="sub">분석 기간 전체</div></div>
-    <div class="kpi n"><div class="lbl">총 배너 조회</div><div class="val">92,022</div><div class="sub">view_count 합계</div></div>
-    <div class="kpi n"><div class="lbl">일평균 세션</div><div class="val">1,672</div><div class="sub">4/13~5/10 기준</div></div>
-    <div class="kpi n">
-      <div class="lbl">CTR 분포</div>
-      <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
-        <span style="background:var(--green-light);color:var(--green);padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600">20%+ · 8개</span>
-        <span style="background:var(--amber-light);color:var(--amber);padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600">5~20% · 43개</span>
-        <span style="background:var(--red-light);color:var(--red);padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600">&lt;5% · 80개</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="card full">
-    <div class="card-title">배너별 효율 상세</div>
-    <div class="card-sub">CTR = 배너 조회수 ÷ 노출 기간 세션수 / 세션 기준: 일평균 1,672명</div>
-
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
-      <div style="position:relative;flex:1;min-width:160px;max-width:260px">
-        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-tertiary);font-size:13px;pointer-events:none">🔍</span>
-        <input type="text" id="bSearch" placeholder="배너명 검색..." oninput="bPage=0;renderBanner()"
-          style="width:100%;padding:7px 12px 7px 32px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:13px;outline:none">
-      </div>
-      <select id="bCtrFilter" onchange="bPage=0;renderBanner()"
-        style="padding:7px 28px 7px 12px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:13px;outline:none;cursor:pointer;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239c9a93' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center">
-        <option value="">CTR 전체</option>
-        <option value="high">높음 (≥20%)</option>
-        <option value="mid">보통 (5~20%)</option>
-        <option value="low">낮음 (&lt;5%)</option>
-      </select>
-      <span id="bCountLabel" style="margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)"></span>
-    </div>
-
-    <div style="overflow-x:auto">
-      <table class="tbl" id="bTbl">
-        <thead>
-          <tr>
-            <th style="min-width:200px" onclick="bSort('subject')">배너명 <span id="bArr-subject"></span></th>
-            <th style="width:100px;text-align:right" onclick="bSort('started')">노출기간 <span id="bArr-started"></span></th>
-            <th style="width:50px;text-align:right" onclick="bSort('exp')">노출일 <span id="bArr-exp"></span></th>
-            <th style="width:70px;text-align:right" onclick="bSort('views')">조회수 <span id="bArr-views"></span></th>
-            <th style="width:130px" onclick="bSort('dav')">일평균조회 <span id="bArr-dav">↓</span></th>
-            <th style="width:90px;text-align:center" onclick="bSort('ctr')">CTR <span id="bArr-ctr"></span></th>
-          </tr>
-        </thead>
-        <tbody id="bTbody"></tbody>
-      </table>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:0.5px solid var(--border);background:var(--surface-2);border-radius:0 0 var(--radius-lg) var(--radius-lg)">
-      <button id="bPrev" onclick="bPrevPage()" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer">← 이전</button>
-      <span id="bPgInfo" style="flex:1;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)"></span>
-      <button id="bNext" onclick="bNextPage()" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer">다음 →</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ===== 배너 효율 분석기 ===== -->
-<div id="panel-banner-tool" class="panel">
-  <!-- 업로드 화면 -->
-  <div id="bt-upload">
-    <div style="max-width:600px;margin:0 auto;padding:2rem 0">
-      <div class="section-label">배너 효율 분석기</div>
-      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:1.5rem">CSV 두 개를 올리면 세션 대비 배너 효율을 자동 계산해요</p>
-
-      <!-- 배너 효율 단일 -->
-      <div id="bt-card-banner" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;cursor:pointer;margin-bottom:10px;position:relative;transition:.15s" onmouseenter="this.style.background='var(--surface-2)'" onmouseleave="this.style.background='var(--surface)'">
-        <input type="file" accept=".csv" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%" onchange="btHandleBanner(this)">
-        <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text-tertiary);margin-bottom:5px">필수 · 1개</div>
-        <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:3px">배너 효율 CSV</div>
-        <div style="font-size:12px;color:var(--text-secondary)">id, subject, view_count, started_at, ended_at, exposure_days, daily_avg_views 컬럼</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono)">
-          <span id="bt-dot-banner" style="width:6px;height:6px;border-radius:50%;background:var(--border);display:inline-block;flex-shrink:0"></span>
-          <span id="bt-lbl-banner">파일을 선택하거나 드래그하세요</span>
-        </div>
-      </div>
-
-      <!-- 세션 다중 업로드 -->
-      <div id="bt-session-box" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.25rem">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surface-2);border-bottom:0.5px solid var(--border)">
-          <div>
-            <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text-tertiary);margin-bottom:3px">선택 · 여러 개 가능</div>
-            <div style="font-size:14px;font-weight:600;color:var(--text-primary)">GA4 세션수 CSV</div>
-          </div>
-          <button onclick="document.getElementById('bt-file-hidden').click()" style="display:flex;align-items:center;gap:5px;background:var(--text-primary);color:#fff;border:none;border-radius:20px;padding:7px 14px;font-size:12px;font-weight:500;cursor:pointer;transition:.15s" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">
-            <span style="font-size:15px;line-height:1">+</span> 파일 추가
-          </button>
-          <input type="file" id="bt-file-hidden" accept=".csv" multiple style="display:none" onchange="btHandleSessions(this)">
-        </div>
-        <div id="bt-session-list" style="padding:8px 12px;min-height:48px">
-          <div id="bt-session-empty" style="padding:12px 4px;font-size:12px;color:var(--text-tertiary);font-family:var(--font-mono);text-align:center">세션 CSV를 추가하면 CTR을 계산해요</div>
-        </div>
-        <div style="padding:7px 12px;border-top:0.5px dashed var(--border);font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);text-align:center">여기로 파일을 드래그 앤 드롭해도 돼요</div>
-      </div>
-
-      <div style="text-align:center">
-        <button id="bt-analyze-btn" disabled onclick="btAnalyze()" style="background:var(--text-primary);color:#fff;border:none;padding:13px 36px;border-radius:40px;font-size:14px;font-weight:500;cursor:pointer;transition:.15s;opacity:.35" onmouseenter="if(!this.disabled)this.style.opacity='.85'" onmouseleave="if(!this.disabled)this.style.opacity='1'">분석 시작</button>
-        <p style="margin-top:12px;font-size:12px;color:var(--text-tertiary)">세션 없이도 배너 조회수 기준으로 분석 가능</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 분석 결과 화면 -->
-  <div id="bt-result" style="display:none">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap">
-      <div class="section-label" style="margin-bottom:0;flex:1">배너 효율 분석 결과</div>
-      <div id="bt-chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-      <button onclick="btReset()" style="background:none;border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer">↩ 다시 업로드</button>
-    </div>
-
-    <div class="kpi-grid kpi-grid-4" id="bt-summary"></div>
-
-    <div class="card full">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:8px">
-        <div>
-          <div class="card-title">배너별 효율 상세</div>
-          <div class="card-sub" style="margin-bottom:0">CTR = 배너 조회수 ÷ 노출 기간 세션수</div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <div style="position:relative">
-            <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text-tertiary);font-size:12px;pointer-events:none">🔍</span>
-            <input type="text" id="bt-search" placeholder="배너명 검색..." oninput="btRPage=0;btRender()" style="padding:7px 12px 7px 28px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:12px;outline:none;width:180px">
-          </div>
-          <select id="bt-ctr-filter" onchange="btRPage=0;btRender()" style="padding:7px 24px 7px 10px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-size:12px;outline:none;cursor:pointer;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239c9a93' fill='none' stroke-width='1.5'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 8px center">
-            <option value="">CTR 전체</option>
-            <option value="high">높음 (≥20%)</option>
-            <option value="mid">보통 (5~20%)</option>
-            <option value="low">낮음 (&lt;5%)</option>
-          </select>
-          <span id="bt-count" style="font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)"></span>
-        </div>
-      </div>
-
-      <!-- legend -->
-      <div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap">
-        <span style="font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.06em;align-self:center">CTR 기준</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary)"><span style="background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600">20%+</span> 높음</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary)"><span style="background:var(--amber-light);color:var(--amber);padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600">5~20%</span> 보통</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary)"><span style="background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600">&lt;5%</span> 낮음</span>
-        <span style="margin-left:auto;font-size:11px;color:var(--text-tertiary)">CTR = 배너 조회수 ÷ 기간 세션수</span>
-      </div>
-
-      <div style="overflow-x:auto">
-        <table class="tbl" id="bt-table">
-          <thead><tr>
-            <th style="min-width:190px" onclick="btSortBy('subject')">배너명 <span id="btArr-subject"></span></th>
-            <th style="width:105px;text-align:right" onclick="btSortBy('started_at')">노출기간 <span id="btArr-started_at"></span></th>
-            <th style="width:52px;text-align:right" onclick="btSortBy('exposure_days')">노출일 <span id="btArr-exposure_days"></span></th>
-            <th style="width:72px;text-align:right" onclick="btSortBy('view_count')">배너조회 <span id="btArr-view_count"></span></th>
-            <th style="width:130px" onclick="btSortBy('daily_avg_views')">일평균조회 <span id="btArr-daily_avg_views">↓</span></th>
-            <th style="width:78px;text-align:right" onclick="btSortBy('total_sessions')">기간세션 <span id="btArr-total_sessions"></span></th>
-            <th style="width:80px;text-align:right" onclick="btSortBy('daily_sessions')">일평균세션 <span id="btArr-daily_sessions"></span></th>
-            <th style="width:88px;text-align:center" onclick="btSortBy('ctr')">CTR <span id="btArr-ctr"></span></th>
-          </tr></thead>
-          <tbody id="bt-tbody"></tbody>
-        </table>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:0.5px solid var(--border);background:var(--surface-2)">
-        <button id="bt-prev" onclick="btPrev()" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer">← 이전</button>
-        <span id="bt-pginfo" style="flex:1;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)"></span>
-        <button id="bt-next" onclick="btNext()" style="background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:5px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer">다음 →</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 </div><!-- /main -->
 
 <footer class="footer">
@@ -1054,19 +885,15 @@ function toggleGroup(id) {
   document.getElementById(id).classList.toggle('expanded');
 }
 function navigateTo(page) {
+  // 현재는 어버이날 기획전만 존재 — 추후 페이지 추가 시 분기 처리
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  const navEl = document.getElementById('nav-' + page);
-  if(navEl) navEl.classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
   closeSidebar();
+  // 첫 탭(퍼널 개요)으로 리셋
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  if(page === 'banner-tool' || page === 'banner-perf'){
-    document.getElementById('panel-banner-tool').classList.add('active');
-    document.querySelector('.nav-tab[onclick*="banner-tool"]').classList.add('active');
-  } else {
-    document.getElementById('panel-funnel-overview').classList.add('active');
-    document.querySelector('.nav-tab').classList.add('active');
-  }
+  document.getElementById('panel-funnel-overview').classList.add('active');
+  document.querySelector('.nav-tab').classList.add('active');
 }
 
 // NAV TABS
@@ -1075,7 +902,6 @@ function showPanel(n) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('panel-' + n).classList.add('active');
   event.target.classList.add('active');
-  if(n === 'banner-tool') initBannerTool();
 }
 
 // ESC 닫기
@@ -1357,264 +1183,6 @@ allDates.forEach(date=>{
   tbody.appendChild(tr);
 });
 tbl.appendChild(tbody);
-
-}
-
-function renderBanner() {
-  const rows = bFiltered();
-  const maxDav = Math.max(...rows.map(r => r.dav), 1);
-  document.getElementById('bCountLabel').textContent = rows.length + '개';
-
-  ['subject','started','exp','views','dav','ctr'].forEach(k => {
-    const el = document.getElementById('bArr-' + k);
-    if(el) el.textContent = bSortKey === k ? (bSortDir === -1 ? '↓' : '↑') : '';
-  });
-
-  const total = Math.max(1, Math.ceil(rows.length / B_PAGE));
-  if(bPage >= total) bPage = total - 1;
-  const paged = rows.slice(bPage * B_PAGE, (bPage+1) * B_PAGE);
-
-  const tbody = document.getElementById('bTbody');
-  if(!tbody) return;
-
-  tbody.innerHTML = paged.map(d => {
-    const pct = Math.round(d.dav / maxDav * 100);
-    const dateStr = d.started && d.ended ? d.started.slice(5) + '~' + d.ended.slice(5) : '—';
-    const ctrBadge = d.ctr === null ? '<span style="color:var(--text-tertiary);font-size:11px">—</span>'
-      : d.ctr >= 20 ? '<span style="background:var(--green-light);color:var(--green);padding:2px 8px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">' + d.ctr.toFixed(1) + '%</span>'
-      : d.ctr >= 5  ? '<span style="background:var(--amber-light);color:var(--amber);padding:2px 8px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">' + d.ctr.toFixed(1) + '%</span>'
-      : '<span style="background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">' + d.ctr.toFixed(1) + '%</span>';
-    return '<tr>'
-      + '<td><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px;font-weight:500" title="'+d.subject+'">'+d.subject+'</div></td>'
-      + '<td style="text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)">'+dateStr+'</td>'
-      + '<td style="text-align:right;font-family:var(--font-mono);font-size:12px">'+d.exp+'일</td>'
-      + '<td style="text-align:right;font-family:var(--font-mono);font-size:12px">'+d.views.toLocaleString()+'</td>'
-      + '<td><div style="display:flex;align-items:center;gap:7px">'
-        + '<div style="flex:1;height:5px;background:var(--border);border-radius:3px;min-width:40px;overflow:hidden"><div style="height:5px;border-radius:3px;background:var(--green);width:'+pct+'%"></div></div>'
-        + '<span style="font-family:var(--font-mono);font-size:12px;min-width:32px;text-align:right">'+Math.round(d.dav)+'</span>'
-      + '</div></td>'
-      + '<td style="text-align:center">'+ctrBadge+'</td>'
-      + '</tr>';
-  }).join('');
-
-  document.getElementById('bPgInfo').textContent = (bPage+1) + ' / ' + total;
-  document.getElementById('bPrev').disabled = bPage === 0;
-  document.getElementById('bNext').disabled = bPage >= total - 1;
-}
-
-function bSort(key) {
-  if(bSortKey === key) bSortDir *= -1;
-  else { bSortKey = key; bSortDir = -1; }
-  bPage = 0; renderBanner();
-}
-function bPrevPage() { if(bPage > 0){ bPage--; renderBanner(); } }
-function bNextPage() { const r = bFiltered(); if((bPage+1)*B_PAGE < r.length){ bPage++; renderBanner(); } }
-
-// 배너 패널 활성화 시 초기 렌더
-document.addEventListener('DOMContentLoaded', () => {
-  const orig = window.showPanel;
-  window.showPanel = function(n) {
-    orig && orig.call(this, n);
-    if(n === 'banner-perf') renderBanner();
-  };
-});
-
-// ── BANNER TOOL (embedded analyzer) ──
-const btState = { banner: null, sessionFiles: [], sessions: {} };
-let btAllData = [], btSortKey = 'daily_avg_views', btSortDir = -1, btRPage = 0;
-const BT_PAGE = 25;
-
-function initBannerTool() {
-  // 아무것도 안 해도 됨 — 패널이 열릴 때 상태 유지
-}
-
-// CSV 파서
-function btParseCSV(text) {
-  const lines = text.split('\n'); let headers = null; const rows = [];
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (!line || line.startsWith('#')) continue;
-    const cols = btParseLine(line);
-    if (!headers) { headers = cols.map(c => c.trim()); continue; }
-    if (cols.length < headers.length) continue;
-    const obj = {}; headers.forEach((h,i) => obj[h]=(cols[i]||'').trim()); rows.push(obj);
-  }
-  return rows;
-}
-function btParseLine(line) {
-  const r=[]; let cur='', inQ=false;
-  for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){inQ=!inQ;continue;}if(c===','&&!inQ){r.push(cur);cur='';continue;}cur+=c;}r.push(cur);return r;
-}
-function btParseSession(text) {
-  const lines=text.split('\n'); const map={}; let started=false; const dates=[];
-  for(const raw of lines){const line=raw.trim();if(!line||line.startsWith('#'))continue;if(line.startsWith('날짜,')){started=true;continue;}if(!started)continue;const p=line.split(',');const ds=(p[0]||'').trim();if(!/^\d{8}$/.test(ds))continue;const sess=parseInt(p[1])||0;const key=`${ds.slice(0,4)}-${ds.slice(4,6)}-${ds.slice(6,8)}`;map[key]=sess;dates.push(key);}
-  dates.sort();
-  return {map, dateRange: dates.length ? dates[0].slice(5)+' ~ '+dates[dates.length-1].slice(5) : '날짜없음', count: dates.length};
-}
-
-// 파일 핸들러
-function btHandleBanner(input) {
-  const file = input.files[0]; if(!file) return;
-  const r = new FileReader();
-  r.onload = e => {
-    btState.banner = btParseCSV(e.target.result);
-    document.getElementById('bt-dot-banner').style.background = 'var(--green)';
-    document.getElementById('bt-lbl-banner').textContent = file.name;
-    document.getElementById('bt-card-banner').style.border = '0.5px solid #b8dfc9';
-    document.getElementById('bt-card-banner').style.background = '#f6fdf9';
-    const btn = document.getElementById('bt-analyze-btn');
-    btn.disabled = false; btn.style.opacity = '1';
-  };
-  r.readAsText(file, 'utf-8');
-}
-function btHandleSessions(input) {
-  Array.from(input.files).forEach(f => btLoadSession(f));
-  input.value = '';
-}
-function btLoadSession(file) {
-  const r = new FileReader();
-  r.onload = e => {
-    const {map, dateRange, count} = btParseSession(e.target.result);
-    const id = Date.now() + Math.random();
-    btState.sessionFiles.push({id, name: file.name, dateRange, count, map});
-    btState.sessions = {};
-    btState.sessionFiles.forEach(f => Object.assign(btState.sessions, f.map));
-    btRenderSessions();
-  };
-  r.readAsText(file, 'utf-8');
-}
-function btRemoveSession(id) {
-  btState.sessionFiles = btState.sessionFiles.filter(f => f.id !== id);
-  btState.sessions = {};
-  btState.sessionFiles.forEach(f => Object.assign(btState.sessions, f.map));
-  btRenderSessions();
-}
-function btRenderSessions() {
-  const list = document.getElementById('bt-session-list');
-  const empty = document.getElementById('bt-session-empty');
-  list.querySelectorAll('.bt-sess-row').forEach(r => r.remove());
-  if(!btState.sessionFiles.length){ empty.style.display='block'; return; }
-  empty.style.display = 'none';
-  btState.sessionFiles.forEach(f => {
-    const row = document.createElement('div');
-    row.className = 'bt-sess-row';
-    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 6px;border-radius:6px';
-    row.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;display:inline-block"></span>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</div>
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-tertiary)">${f.dateRange} · ${f.count.toLocaleString()}일</div>
-      </div>
-      <button onclick="btRemoveSession(${f.id})" style="background:none;border:none;color:var(--text-tertiary);font-size:16px;cursor:pointer;padding:2px 5px;border-radius:4px;line-height:1" onmouseenter="this.style.color=\'var(--red)\'" onmouseleave="this.style.color=\'var(--text-tertiary)\'">✕</button>`;
-    list.appendChild(row);
-  });
-}
-
-// 드래그앤드롭
-document.getElementById('bt-session-box')?.addEventListener('dragover', e=>{e.preventDefault();e.currentTarget.style.borderColor='var(--green)';});
-document.getElementById('bt-session-box')?.addEventListener('dragleave', e=>{e.currentTarget.style.borderColor='var(--border)';});
-document.getElementById('bt-session-box')?.addEventListener('drop', e=>{e.preventDefault();e.currentTarget.style.borderColor='var(--border)';Array.from(e.dataTransfer.files).filter(f=>f.name.endsWith('.csv')).forEach(f=>btLoadSession(f));});
-document.getElementById('bt-card-banner')?.addEventListener('drop', e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f&&f.name.endsWith('.csv')){const inp=document.createElement('input');inp.type='file';const dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;btHandleBanner(inp);}});
-
-// 분석
-function btAnalyze() {
-  const rows = btState.banner; if(!rows||!rows.length) return;
-  const hasSess = Object.keys(btState.sessions).length > 0;
-  btAllData = rows.map(r => {
-    const subj = (r.subject||'').replace(/\r\n|\r|\n/g,' ').trim();
-    const started = r.started_at ? r.started_at.slice(0,10) : '';
-    const ended   = r.ended_at   ? r.ended_at.slice(0,10)   : '';
-    const expDays = parseFloat(r.exposure_days)||0;
-    const views   = parseInt(r.view_count)||0;
-    const dav     = parseFloat(r.daily_avg_views)||0;
-    let totalSess=null, dailySess=null, ctr=null;
-    if(hasSess && started && ended) {
-      totalSess=0; let d=new Date(started); const end=new Date(ended);
-      while(d<=end){const k=d.toISOString().slice(0,10);totalSess+=btState.sessions[k]||0;d.setDate(d.getDate()+1);}
-      dailySess = expDays>0 ? Math.round(totalSess/expDays) : 0;
-      ctr = totalSess>0 ? parseFloat((views/totalSess*100).toFixed(2)) : null;
-    }
-    return {subject:subj||'(제목없음)', started_at:started, ended_at:ended, exposure_days:expDays, view_count:views, daily_avg_views:dav, total_sessions:totalSess, daily_sessions:dailySess, ctr};
-  });
-  // chips
-  const chips = document.getElementById('bt-chips'); chips.innerHTML='';
-  const addChip = t=>{const s=document.createElement('span');s.style.cssText='background:var(--green-light);color:var(--green);border-radius:20px;padding:2px 9px;font-family:var(--font-mono);font-size:10px;font-weight:500';s.textContent=t;chips.appendChild(s);};
-  addChip('배너 효율');
-  btState.sessionFiles.forEach(f=>addChip(f.dateRange));
-  // month filter
-  document.getElementById('bt-upload').style.display='none';
-  document.getElementById('bt-result').style.display='block';
-  btSortKey='daily_avg_views'; btSortDir=-1; btRPage=0;
-  btRender();
-}
-
-function btFiltered() {
-  const q=(document.getElementById('bt-search')?.value||'').toLowerCase();
-  const c=document.getElementById('bt-ctr-filter')?.value||'';
-  return btAllData.filter(d=>{
-    if(q&&!d.subject.toLowerCase().includes(q))return false;
-    if(c==='high'&&(d.ctr===null||d.ctr<20))return false;
-    if(c==='mid'&&(d.ctr===null||d.ctr<5||d.ctr>=20))return false;
-    if(c==='low'&&(d.ctr===null||d.ctr>=5))return false;
-    return true;
-  }).sort((a,b)=>{let av=a[btSortKey],bv=b[btSortKey];if(av===null)av=btSortDir===-1?-Infinity:Infinity;if(bv===null)bv=btSortDir===-1?-Infinity:Infinity;if(typeof av==='string')return btSortDir*av.localeCompare(bv);return btSortDir*(av-bv);});
-}
-
-function btRender() {
-  const rows=btFiltered();
-  const totV=rows.reduce((s,d)=>s+d.view_count,0);
-  const totS=rows.filter(d=>d.total_sessions!==null).reduce((s,d)=>s+d.total_sessions,0);
-  const avgCtr=totS>0?(totV/totS*100):null;
-  const hasSess=btAllData.some(d=>d.total_sessions!==null);
-  const maxDav=Math.max(...rows.map(d=>d.daily_avg_views),1);
-  const high=rows.filter(d=>d.ctr!==null&&d.ctr>=20).length;
-  const mid=rows.filter(d=>d.ctr!==null&&d.ctr>=5&&d.ctr<20).length;
-  const low=rows.filter(d=>d.ctr!==null&&d.ctr<5).length;
-
-  document.getElementById('bt-summary').innerHTML=`
-    <div class="kpi n"><div class="lbl">배너 수</div><div class="val">${rows.length}</div><div class="sub">개 배너</div></div>
-    <div class="kpi n"><div class="lbl">총 배너 조회</div><div class="val">${totV.toLocaleString()}</div><div class="sub">view_count 합계</div></div>
-    <div class="kpi n"><div class="lbl">기간 총 세션</div><div class="val">${hasSess?totS.toLocaleString():'—'}</div><div class="sub">${hasSess?btState.sessionFiles.length+'개 파일 합산':'세션 CSV 없음'}</div></div>
-    <div class="kpi n"><div class="lbl">CTR 분포</div><div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap">
-      <span style="background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600">20%+ ${high}</span>
-      <span style="background:var(--amber-light);color:var(--amber);padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600">5~20% ${mid}</span>
-      <span style="background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600">&lt;5% ${low}</span>
-    </div></div>`;
-
-  ['subject','started_at','exposure_days','view_count','daily_avg_views','total_sessions','daily_sessions','ctr'].forEach(k=>{const el=document.getElementById('btArr-'+k);if(el)el.textContent=btSortKey===k?(btSortDir===-1?'↓':'↑'):'';});
-  document.getElementById('bt-count').textContent=rows.length+'개';
-
-  const total=Math.max(1,Math.ceil(rows.length/BT_PAGE));
-  if(btRPage>=total)btRPage=total-1;
-  const paged=rows.slice(btRPage*BT_PAGE,(btRPage+1)*BT_PAGE);
-
-  document.getElementById('bt-tbody').innerHTML=paged.length?paged.map(d=>{
-    const pct=Math.round(d.daily_avg_views/maxDav*100);
-    const dateStr=d.started_at&&d.ended_at?d.started_at.slice(5)+'~'+d.ended_at.slice(5):'—';
-    const ctrBadge=d.ctr===null?'<span style="color:var(--text-tertiary);font-family:var(--font-mono);font-size:11px">—</span>':d.ctr>=20?`<span style="background:var(--green-light);color:var(--green);padding:2px 7px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">${d.ctr.toFixed(1)}%</span>`:d.ctr>=5?`<span style="background:var(--amber-light);color:var(--amber);padding:2px 7px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">${d.ctr.toFixed(1)}%</span>`:`<span style="background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:20px;font-family:var(--font-mono);font-size:11px;font-weight:600">${d.ctr.toFixed(1)}%</span>`;
-    return `<tr><td><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500" title="${d.subject}">${d.subject}</div></td><td style="text-align:right;font-family:var(--font-mono);font-size:11px;color:var(--text-tertiary)">${dateStr}</td><td style="text-align:right;font-family:var(--font-mono);font-size:12px">${d.exposure_days}일</td><td style="text-align:right;font-family:var(--font-mono);font-size:12px">${d.view_count.toLocaleString()}</td><td><div style="display:flex;align-items:center;gap:7px"><div style="flex:1;height:5px;background:var(--border);border-radius:3px;min-width:40px;overflow:hidden"><div style="height:5px;border-radius:3px;background:var(--green);width:${pct}%"></div></div><span style="font-family:var(--font-mono);font-size:12px;min-width:32px;text-align:right">${Math.round(d.daily_avg_views)}</span></div></td><td style="text-align:right;font-family:var(--font-mono);font-size:12px">${d.total_sessions!==null?d.total_sessions.toLocaleString():'—'}</td><td style="text-align:right;font-family:var(--font-mono);font-size:12px">${d.daily_sessions!==null?d.daily_sessions.toLocaleString():'—'}</td><td style="text-align:center">${ctrBadge}</td></tr>`;
-  }).join(''):'<tr><td colspan="8" style="padding:40px;text-align:center;color:var(--text-tertiary);font-size:13px">검색 결과가 없어요</td></tr>';
-
-  document.getElementById('bt-pginfo').textContent=`${btRPage+1} / ${total}`;
-  document.getElementById('bt-prev').disabled=btRPage===0;
-  document.getElementById('bt-next').disabled=btRPage>=total-1;
-}
-
-function btSortBy(k){if(btSortKey===k)btSortDir*=-1;else{btSortKey=k;btSortDir=-1;}btRPage=0;btRender();}
-function btPrev(){if(btRPage>0){btRPage--;btRender();}}
-function btNext(){const r=btFiltered();if((btRPage+1)*BT_PAGE<r.length){btRPage++;btRender();}}
-function btReset(){
-  btState.banner=null;btState.sessionFiles=[];btState.sessions={};btAllData=[];btRPage=0;
-  document.getElementById('bt-upload').style.display='block';
-  document.getElementById('bt-result').style.display='none';
-  document.getElementById('bt-dot-banner').style.background='var(--border)';
-  document.getElementById('bt-lbl-banner').textContent='파일을 선택하거나 드래그하세요';
-  document.getElementById('bt-card-banner').style.border='0.5px solid var(--border)';
-  document.getElementById('bt-card-banner').style.background='var(--surface)';
-  document.getElementById('bt-analyze-btn').disabled=true;
-  document.getElementById('bt-analyze-btn').style.opacity='.35';
-  btState.sessionFiles=[];btRenderSessions();
-}
-
 </script>
 </body>
 </html>
