@@ -7,59 +7,61 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-    background: #F7F6F3;
-    color: #1a1a1a;
-    min-height: 100vh;
-  }
-  .page { max-width: 900px; margin: 0 auto; padding: 2.5rem 2rem; }
-
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: #F7F6F3; color: #1a1a1a; min-height: 100vh; }
+  .page { max-width: 920px; margin: 0 auto; padding: 2.5rem 2rem; }
   .header { margin-bottom: 2.5rem; }
   .header .label { font-size: 12px; color: #888; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
   .header h1 { font-size: 26px; font-weight: 600; margin-bottom: 4px; }
   .header .sub { font-size: 13px; color: #888; }
-
-  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 2rem; }
-  .kpi { background: #fff; border-radius: 10px; padding: 1.1rem 1.2rem; border: 1px solid #ebebeb; }
-  .kpi .kpi-label { font-size: 12px; color: #888; margin-bottom: 6px; }
-  .kpi .kpi-value { font-size: 28px; font-weight: 600; }
-  .kpi .kpi-sub { font-size: 11px; color: #aaa; margin-top: 2px; }
-
+  .overview { background: #fff; border-radius: 14px; border: 1px solid #ebebeb; padding: 1.5rem; margin-bottom: 2rem; }
+  .overview-title { font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 1.2rem; }
+  .funnel { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+  .funnel-step { flex: 1; min-width: 100px; text-align: center; padding: 0.8rem 0.4rem; }
+  .funnel-step .f-label { font-size: 11px; color: #aaa; margin-bottom: 6px; }
+  .funnel-step .f-value { font-size: 22px; font-weight: 600; margin-bottom: 2px; }
+  .funnel-step .f-sub { font-size: 10px; color: #bbb; }
+  .funnel-arrow { font-size: 18px; color: #ddd; flex-shrink: 0; }
+  .rate-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 2rem; }
+  .rate-card { background: #fff; border-radius: 10px; border: 1px solid #ebebeb; padding: 1.1rem; text-align: center; }
+  .rate-card .rc-label { font-size: 11px; color: #aaa; margin-bottom: 8px; }
+  .rate-card .rc-value { font-size: 32px; font-weight: 600; margin-bottom: 4px; }
+  .rate-card .rc-desc { font-size: 11px; color: #aaa; line-height: 1.5; }
+  .rate-bar { width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; margin: 8px 0; overflow: hidden; }
+  .rate-fill { height: 100%; border-radius: 3px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 2rem; }
+  .kpi { background: #fff; border-radius: 10px; padding: 1rem 0.8rem; border: 1px solid #ebebeb; }
+  .kpi .kpi-label { font-size: 11px; color: #888; margin-bottom: 6px; line-height: 1.4; }
+  .kpi .kpi-value { font-size: 20px; font-weight: 600; }
+  .kpi .kpi-sub { font-size: 10px; color: #bbb; margin-top: 2px; }
   .section { margin-bottom: 2.5rem; }
   .section-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
   .section-sub { font-size: 12px; color: #888; margin-bottom: 14px; }
-
   .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
   .chart-box { background: #fff; border-radius: 12px; border: 1px solid #ebebeb; padding: 1.25rem; }
   .chart-box .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
-
   .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
   .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #666; }
   .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-
   .canvas-wrap { position: relative; width: 100%; }
-
   .etc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 2rem; }
   .etc-card { background: #fff; border-radius: 10px; border: 1px solid #ebebeb; padding: 1rem; }
   .etc-card .etc-icon { font-size: 20px; margin-bottom: 6px; }
   .etc-card .etc-label { font-size: 11px; color: #888; margin-bottom: 6px; }
   .etc-card .etc-count { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
-  .etc-card .etc-example { font-size: 10px; color: #aaa; line-height: 1.5; }
-
+  .etc-card .etc-example { font-size: 10px; color: #aaa; line-height: 1.6; }
   .insight-list { display: flex; flex-direction: column; gap: 10px; }
   .insight { background: #fff; border-radius: 10px; border: 1px solid #ebebeb; border-left: 3px solid #ccc; padding: 0.9rem 1.1rem; }
   .insight-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
   .insight-tag { font-size: 12px; font-weight: 600; }
   .insight-arrow { font-size: 11px; color: #aaa; }
-  .insight-desc { font-size: 12px; color: #555; line-height: 1.6; }
-
-  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #ebebeb; font-size: 12px; color: #aaa; text-align: right; }
-
-  @media (max-width: 600px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .insight-desc { font-size: 12px; color: #555; line-height: 1.65; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #ebebeb; font-size: 11px; color: #bbb; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 640px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
     .chart-row { grid-template-columns: 1fr; }
     .etc-grid { grid-template-columns: repeat(2, 1fr); }
+    .rate-cards { grid-template-columns: 1fr; }
+    .funnel-arrow { display: none; }
   }
 </style>
 </head>
@@ -69,43 +71,85 @@
   <div class="header">
     <p class="label">정기구독 이탈 분석 리포트</p>
     <h1>정지·해지 현황 분석</h1>
-    <p class="sub">2025년 9월 23일 (구독 정책 변경) 이후 ~ 2026년 5월 13일</p>
+    <p class="sub">2025년 9월 23일 (구독 정책 변경) 이후 ~ 2026년 5월 13일 &nbsp;·&nbsp; 약 8개월</p>
+  </div>
+
+  <div class="overview">
+    <p class="overview-title">구독 풀 전체 흐름</p>
+    <div class="funnel">
+      <div class="funnel-step">
+        <p class="f-label">기간 시작 구독</p>
+        <p class="f-value">5,300</p>
+        <p class="f-sub">활성 구독</p>
+      </div>
+      <div class="funnel-arrow">+</div>
+      <div class="funnel-step">
+        <p class="f-label">기간 내 신규</p>
+        <p class="f-value" style="color:#1D9E75;">+944</p>
+        <p class="f-sub">신규 가입</p>
+      </div>
+      <div class="funnel-arrow">=</div>
+      <div class="funnel-step">
+        <p class="f-label">이탈 가능 모수</p>
+        <p class="f-value">6,244</p>
+        <p class="f-sub">전체 기간 구독</p>
+      </div>
+      <div class="funnel-arrow">−</div>
+      <div class="funnel-step">
+        <p class="f-label">총 이탈</p>
+        <p class="f-value" style="color:#E24B4A;">−652</p>
+        <p class="f-sub">이탈률 10.4%</p>
+      </div>
+      <div class="funnel-arrow">=</div>
+      <div class="funnel-step">
+        <p class="f-label">기간 종료 구독</p>
+        <p class="f-value" style="color:#185FA5;">6,102</p>
+        <p class="f-sub">순증 <strong>+802</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rate-cards">
+    <div class="rate-card">
+      <p class="rc-label">전체 이탈률</p>
+      <p class="rc-value" style="color:#E24B4A;">10.4%</p>
+      <div class="rate-bar"><div class="rate-fill" style="width:10.4%; background:#E24B4A;"></div></div>
+      <p class="rc-desc">6,244명 중 652명 이탈<br>정지+해지+자동정지 합산</p>
+    </div>
+    <div class="rate-card">
+      <p class="rc-label">의도적 이탈률</p>
+      <p class="rc-value" style="color:#BA7517;">9.9%</p>
+      <div class="rate-bar"><div class="rate-fill" style="width:9.9%; background:#BA7517;"></div></div>
+      <p class="rc-desc">618명이 직접 정지·해지<br>자동정지 제외 순수 이탈</p>
+    </div>
+    <div class="rate-card">
+      <p class="rc-label">자동정지율</p>
+      <p class="rc-value" style="color:#533AB7;">0.5%</p>
+      <div class="rate-bar"><div class="rate-fill" style="width:5%; background:#533AB7;"></div></div>
+      <p class="rc-desc">34명 결제 실패 자동정지<br>결제 수단 업데이트 유도 필요</p>
+    </div>
   </div>
 
   <div class="kpi-grid">
-    <div class="kpi">
-      <p class="kpi-label">총 이탈 건수</p>
-      <p class="kpi-value">652</p>
-      <p class="kpi-sub">정지+해지+자동정지</p>
-    </div>
-    <div class="kpi">
-      <p class="kpi-label">정지</p>
-      <p class="kpi-value" style="color:#185FA5;">476</p>
-      <p class="kpi-sub">전체의 73.0%</p>
-    </div>
-    <div class="kpi">
-      <p class="kpi-label">해지</p>
-      <p class="kpi-value" style="color:#A32D2D;">142</p>
-      <p class="kpi-sub">전체의 21.8%</p>
-    </div>
-    <div class="kpi">
-      <p class="kpi-label">자동정지</p>
-      <p class="kpi-value" style="color:#854F0B;">34</p>
-      <p class="kpi-sub">전체의 5.2%</p>
-    </div>
+    <div class="kpi"><p class="kpi-label">시작 구독</p><p class="kpi-value">5,300</p><p class="kpi-sub">활성 구독수</p></div>
+    <div class="kpi"><p class="kpi-label">신규 가입</p><p class="kpi-value" style="color:#1D9E75;">944</p><p class="kpi-sub">기간 내 신규</p></div>
+    <div class="kpi"><p class="kpi-label">정지</p><p class="kpi-value" style="color:#185FA5;">476</p><p class="kpi-sub">이탈의 73%</p></div>
+    <div class="kpi"><p class="kpi-label">해지</p><p class="kpi-value" style="color:#A32D2D;">142</p><p class="kpi-sub">이탈의 21.8%</p></div>
+    <div class="kpi"><p class="kpi-label">자동정지</p><p class="kpi-value" style="color:#854F0B;">34</p><p class="kpi-sub">이탈의 5.2%</p></div>
+    <div class="kpi"><p class="kpi-label">순증감</p><p class="kpi-value" style="color:#1D9E75;">+802</p><p class="kpi-sub">6,102명 종료</p></div>
   </div>
 
   <div class="chart-row">
     <div class="chart-box">
-      <p class="chart-title">정지 사유별 분포</p>
+      <p class="chart-title">정지 사유별 분포 (476건)</p>
       <div class="legend">
-        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>상품 품질 불만</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>품질 불만</span>
         <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>직접 선택 선호</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#BA7517;"></span>변심/부재</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#BA7517;"></span>변심·부재</span>
         <span class="legend-item"><span class="legend-dot" style="background:#888;"></span>기타</span>
       </div>
       <div class="canvas-wrap" style="height:260px;">
-        <canvas id="reasonChart" role="img" aria-label="정지 사유별 건수 가로 바 차트">상품품질불만 137, 직접선택선호 133, 기타 83, 단순변심 66, 부재 61, 사유없음 48, 수량불만 23, 수령인거절 13, 타사이동 7, 서비스 7</canvas>
+        <canvas id="reasonChart" role="img" aria-label="정지 사유별 건수">상품품질불만137, 직접선택선호133, 기타83, 단순변심66, 부재61, 사유없음48, 수량23, 수령인거절13, 타사7, 서비스7</canvas>
       </div>
     </div>
     <div class="chart-box">
@@ -116,14 +160,14 @@
         <span class="legend-item"><span class="legend-dot" style="background:#1D9E75;"></span>단순 변심</span>
       </div>
       <div class="canvas-wrap" style="height:260px;">
-        <canvas id="monthlyChart" role="img" aria-label="월별 정지 사유 추이 라인 차트">2025년9월부터2026년5월까지 품질불만, 직접선택선호, 단순변심 추이</canvas>
+        <canvas id="monthlyChart" role="img" aria-label="월별 정지 사유 추이">2025년9월~2026년5월</canvas>
       </div>
     </div>
   </div>
 
   <div class="section">
     <p class="section-title">구독 회차별 정지 사유 분포</p>
-    <p class="section-sub">몇 회차에 어떤 이유로 정지하는가 — 1~3회 이탈이 전체의 32%</p>
+    <p class="section-sub">1~3회차 이탈 208건(32%) — 초기 온보딩이 가장 중요한 구간</p>
     <div class="chart-box">
       <div class="legend">
         <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>상품 품질 불만</span>
@@ -133,14 +177,57 @@
         <span class="legend-item"><span class="legend-dot" style="background:#C4C2BB;"></span>사유없음+기타</span>
       </div>
       <div class="canvas-wrap" style="height:200px;">
-        <canvas id="cohortChart" role="img" aria-label="회차별 정지 사유 누적 바 차트">결제없음 91건, 1-3회 208건, 4-6회 78건, 7회이상 201건</canvas>
+        <canvas id="cohortChart" role="img" aria-label="회차별 정지 사유">결제없음91, 1-3회208, 4-6회78, 7회이상201</canvas>
       </div>
     </div>
   </div>
 
   <div class="section">
-    <p class="section-title">기타사유 분류 <span style="font-size:12px;font-weight:400;color:#aaa;">(자유 텍스트 83건 분석)</span></p>
-    <p class="section-sub">선택 사유 '기타'를 선택한 고객의 실제 텍스트 내용</p>
+    <p class="section-title">이탈 유형 구성 및 월별 추이</p>
+    <p class="section-sub">정지(복귀 가능) vs 해지(완전 이탈) — 3~4월 급증 구간 주목</p>
+    <div class="chart-row">
+      <div class="chart-box" style="display:flex; align-items:center; gap:1.5rem;">
+        <div class="canvas-wrap" style="height:180px; width:180px; flex-shrink:0;">
+          <canvas id="donutChart" role="img" aria-label="이탈 유형 도넛 차트">정지476, 해지142, 자동정지34</canvas>
+        </div>
+        <div style="flex:1;">
+          <div style="margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+              <span style="font-size:12px; color:#555;">정지 (복귀 가능)</span>
+              <span style="font-size:13px; font-weight:600; color:#185FA5;">476건 · 73%</span>
+            </div>
+            <div style="background:#f0f0f0; height:6px; border-radius:3px; overflow:hidden;"><div style="width:73%; height:100%; background:#185FA5; border-radius:3px;"></div></div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+              <span style="font-size:12px; color:#555;">해지 (완전 이탈)</span>
+              <span style="font-size:13px; font-weight:600; color:#A32D2D;">142건 · 21.8%</span>
+            </div>
+            <div style="background:#f0f0f0; height:6px; border-radius:3px; overflow:hidden;"><div style="width:21.8%; height:100%; background:#A32D2D; border-radius:3px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+              <span style="font-size:12px; color:#555;">자동정지 (결제 실패)</span>
+              <span style="font-size:13px; font-weight:600; color:#854F0B;">34건 · 5.2%</span>
+            </div>
+            <div style="background:#f0f0f0; height:6px; border-radius:3px; overflow:hidden;"><div style="width:5.2%; height:100%; background:#854F0B; border-radius:3px;"></div></div>
+          </div>
+          <p style="font-size:10px; color:#bbb; margin-top:12px; line-height:1.6;">정지 구독자 복귀율 추적 시<br>실질 이탈률은 더 낮을 수 있음</p>
+        </div>
+      </div>
+      <div class="chart-box">
+        <p class="chart-title">월별 총 이탈 건수</p>
+        <p style="font-size:11px; color:#aaa; margin-bottom:10px;">빨간색: 100건 이상 / 주황: 60건 이상 (*5월 부분 집계)</p>
+        <div class="canvas-wrap" style="height:190px;">
+          <canvas id="totalMonthlyChart" role="img" aria-label="월별 총 이탈 건수 바 차트">9월37, 10월65, 11월45, 12월51, 1월55, 2월61, 3월108, 4월102, 5월54</canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="section-title">기타사유 분류 <span style="font-size:12px;font-weight:400;color:#aaa;">(자유 텍스트 83건)</span></p>
+    <p class="section-sub">선택 사유 '기타'를 선택한 고객의 실제 텍스트 패턴</p>
     <div class="etc-grid">
       <div class="etc-card">
         <div class="etc-icon">⚠️</div>
@@ -171,124 +258,124 @@
 
   <div class="section">
     <p class="section-title">핵심 인사이트 &amp; 액션 포인트</p>
-    <p class="section-sub">우선순위 순으로 정렬</p>
+    <p class="section-sub">이탈률 10.4% / 모수 6,244건 맥락에서 본 우선순위</p>
     <div class="insight-list">
+      <div class="insight" style="border-left-color:#1D9E75;">
+        <div class="insight-top">
+          <span class="insight-tag" style="color:#1D9E75;">✅ 순증 +802건 — 비즈니스는 성장 중</span>
+          <span class="insight-arrow">→ 이탈 절감이 곧 가속도</span>
+        </div>
+        <p class="insight-desc">신규 944명 유입으로 순증 +802건 달성. 이탈률 10.4%를 5%대로 줄이면 순증은 ~1,100건 수준. 지금은 획득보다 유지에 집중할 타이밍.</p>
+      </div>
       <div class="insight" style="border-left-color:#E24B4A;">
         <div class="insight-top">
           <span class="insight-tag" style="color:#E24B4A;">🔴 중복 구독 UX 버그 (~25건)</span>
-          <span class="insight-arrow">→ 즉시 수정 가능</span>
+          <span class="insight-arrow">→ 즉시 수정 가능한 이탈</span>
         </div>
-        <p class="insight-desc">기타사유의 30%가 중복 결제·구독 실수. 구독 신청 완료 시 "이미 활성 구독이 있습니다" 확인 팝업 또는 배너가 없는 것이 원인. 코드 수정으로 즉시 방지 가능한 이탈.</p>
+        <p class="insight-desc">기타사유 83건 중 약 30%가 중복 결제·구독 실수. 구독 신청 완료 시 "이미 활성 구독이 있습니다" 확인 팝업 하나로 방지 가능. 코드 수정으로 ROI 최고.</p>
       </div>
       <div class="insight" style="border-left-color:#E24B4A;">
         <div class="insight-top">
-          <span class="insight-tag" style="color:#E24B4A;">🔴 품질 불만 1위 (23.7%)</span>
-          <span class="insight-arrow">→ 상품 기획 & 배송 품질</span>
+          <span class="insight-tag" style="color:#E24B4A;">🔴 품질 불만 1위 (23.7% · 137건)</span>
+          <span class="insight-arrow">→ 상품·배송 품질 개선</span>
         </div>
-        <p class="insight-desc">"꽃이 빨리 시들어요", "구성이 약해요" — 여름 시즌(6~8월) 집중 발생. 계절별 품종 전략과 포장 개선 필요. 3~4월 급증 구간과도 연관.</p>
+        <p class="insight-desc">"꽃이 빨리 시들어요", "구성이 약해요" — 여름 및 3~4월 집중. 계절별 품종 전략과 포장 개선 필요. 전체 모수 6,244 대비 2.2% 이탈 원인.</p>
       </div>
       <div class="insight" style="border-left-color:#378ADD;">
         <div class="insight-top">
-          <span class="insight-tag" style="color:#378ADD;">🟡 직접 선택 선호 2위 (23.0%)</span>
+          <span class="insight-tag" style="color:#378ADD;">🟡 직접 선택 선호 2위 (23.0% · 133건)</span>
           <span class="insight-arrow">→ 큐레이션 UX 개선</span>
         </div>
-        <p class="insight-desc">구독 모델의 '랜덤 배송'에 대한 저항감. 정기구독 내 취향 설문 + '원하는 꽃 1가지 픽' 옵션 도입 검토. 품질 불만과 합치면 사실상 46.7%가 같은 맥락.</p>
+        <p class="insight-desc">품질 불만 + 직접 선택 선호 = 46.7%가 같은 맥락. 초기 취향 설문 + '원하는 꽃 1가지 픽' 옵션 도입. 초기 3회 내 취향 확인 플로우가 핵심 레버.</p>
       </div>
       <div class="insight" style="border-left-color:#BA7517;">
         <div class="insight-top">
-          <span class="insight-tag" style="color:#BA7517;">🟡 1~3회 구독 후 정지 최다 (208건, 32%)</span>
+          <span class="insight-tag" style="color:#BA7517;">🟡 1~3회 이탈 최다 (208건 · 전체 32%)</span>
           <span class="insight-arrow">→ 온보딩 Critical Zone</span>
         </div>
-        <p class="insight-desc">초기 3회 이내 이탈이 전체의 1/3. 첫 배송 피드백 수집 & 2회차 전 취향 확인 플로우가 핵심 리텐션 레버. 품질불만+직접선택선호 집중 구간.</p>
+        <p class="insight-desc">첫 배송 피드백 수집 & 2회차 전 취향 확인 플로우 필수. 모수 6,244 기준 3.3%가 초기 3회 내 이탈. 이 구간 10% 개선 시 ~20건 추가 유지.</p>
       </div>
       <div class="insight" style="border-left-color:#533AB7;">
         <div class="insight-top">
-          <span class="insight-tag" style="color:#533AB7;">🔵 3~4월 이탈 급증 (월평균 대비 +75%)</span>
-          <span class="insight-arrow">→ 봄 시즌 특이점 분석 필요</span>
+          <span class="insight-tag" style="color:#533AB7;">🔵 3~4월 이탈 급증 (평균 대비 +75%)</span>
+          <span class="insight-arrow">→ 봄 시즌 원인 분석 필요</span>
         </div>
-        <p class="insight-desc">3월 108건, 4월 102건 (평균 ~58건). 봄 꽃 수요 대응 실패 또는 봄 상품 가격 인상 체감 가능성. 해당 시기 CS 로그 & 배송 품질 데이터 크로스 분석 권장.</p>
+        <p class="insight-desc">3월 108건·4월 102건 (월평균 ~58건). 봄 꽃 품질 저하 또는 가격 인상 체감 가능성. CS 로그 & 배송 품질 데이터 크로스 분석 권장.</p>
       </div>
       <div class="insight" style="border-left-color:#888;">
         <div class="insight-top">
-          <span class="insight-tag" style="color:#666;">⚪ 7회차+ 장기구독자 이탈 (201건)</span>
-          <span class="insight-arrow">→ Loyalty 프로그램</span>
+          <span class="insight-tag" style="color:#666;">⚪ 7회차+ 장기 구독자 이탈 201건</span>
+          <span class="insight-arrow">→ Loyalty + 자동정지 복구</span>
         </div>
-        <p class="insight-desc">장기구독자도 201건 이탈. 이 그룹에서 '사유없음'이 24건으로 높음 — 조용히 떠나는 패턴. 6개월+ 구독자 대상 loyalty 혜택 또는 정기 만족도 체크 도입 필요.</p>
+        <p class="insight-desc">장기 구독자 '사유없음' 24건 — 조용히 떠나는 패턴. 자동정지 34건은 결제 수단 업데이트 유도로 회수 가능. 6개월+ 구독자 감사 혜택 도입 필요.</p>
       </div>
     </div>
   </div>
 
   <div class="footer">
-    분석 기간: 2025.09.23 ~ 2026.05.13 &nbsp;|&nbsp; 데이터: 정기구독 정지·해지 로그 &nbsp;|&nbsp; 총 652건
+    <span>분석 기간: 2025.09.23 ~ 2026.05.13 &nbsp;·&nbsp; 데이터: Script-18 (사유 분석) + Script-19 (전체 구독 지표)</span>
+    <span>총 이탈 652건 / 모수 6,244건 / 이탈률 10.4%</span>
   </div>
 
 </div>
 
 <script>
-const labels_reason = ['상품 품질 불만','직접 선택 선호','기타','단순 변심','부재/수령','사유 없음','수량 불만','수령인 거절','타사 이동','서비스'];
-const data_reason = [137, 133, 83, 66, 61, 48, 23, 13, 7, 7];
-const colors_reason = ['#E24B4A','#378ADD','#888780','#BA7517','#BA7517','#888780','#BA7517','#888780','#888780','#888780'];
+const textColor = '#aaa';
+const gridColor = 'rgba(0,0,0,0.05)';
+const baseOpts = { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{mode:'index',intersect:false}}, scales:{x:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}} };
 
 new Chart(document.getElementById('reasonChart'), {
-  type: 'bar',
-  data: {
-    labels: labels_reason,
-    datasets: [{ data: data_reason, backgroundColor: colors_reason, borderRadius: 4, borderSkipped: false }]
+  type:'bar',
+  data:{
+    labels:['상품 품질 불만','직접 선택 선호','기타','단순 변심','부재/수령','사유 없음','수량 불만','수령인 거절','타사 이동','서비스'],
+    datasets:[{data:[137,133,83,66,61,48,23,13,7,7], backgroundColor:['#E24B4A','#378ADD','#888780','#BA7517','#BA7517','#888780','#BA7517','#888780','#888780','#888780'], borderRadius:4, borderSkipped:false}]
   },
-  options: {
-    indexAxis: 'y',
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { ticks: { color: '#aaa', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
-      y: { ticks: { color: '#555', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
-    }
-  }
+  options:{...baseOpts, indexAxis:'y', scales:{x:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}, y:{ticks:{color:'#555',font:{size:10},autoSkip:false},grid:{color:gridColor}}}}
 });
 
 new Chart(document.getElementById('monthlyChart'), {
-  type: 'line',
-  data: {
-    labels: ["'25.9","'25.10","'25.11","'25.12","'26.1","'26.2","'26.3","'26.4","'26.5*"],
-    datasets: [
-      { label: '상품 품질 불만', data: [9,18,7,14,16,12,22,28,11], borderColor: '#E24B4A', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderDash: [] },
-      { label: '직접 선택 선호', data: [3,14,11,10,17,16,21,30,11], borderColor: '#378ADD', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderDash: [5,3] },
-      { label: '단순 변심', data: [4,9,3,4,3,6,16,13,8], borderColor: '#1D9E75', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, borderDash: [2,2] }
+  type:'line',
+  data:{
+    labels:["'25.9","'25.10","'25.11","'25.12","'26.1","'26.2","'26.3","'26.4","'26.5*"],
+    datasets:[
+      {label:'품질 불만', data:[9,18,7,14,16,12,22,28,11], borderColor:'#E24B4A', backgroundColor:'transparent', tension:0.3, pointRadius:3},
+      {label:'직접 선택 선호', data:[3,14,11,10,17,16,21,30,11], borderColor:'#378ADD', backgroundColor:'transparent', tension:0.3, pointRadius:3, borderDash:[5,3]},
+      {label:'단순 변심', data:[4,9,3,4,3,6,16,13,8], borderColor:'#1D9E75', backgroundColor:'transparent', tension:0.3, pointRadius:3, borderDash:[2,2]}
     ]
   },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-    scales: {
-      x: { ticks: { color: '#aaa', font: { size: 11 }, autoSkip: false, maxRotation: 0 }, grid: { color: 'rgba(0,0,0,0.05)' } },
-      y: { ticks: { color: '#aaa', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
-    }
-  }
+  options:{...baseOpts, scales:{x:{ticks:{color:textColor,font:{size:11},autoSkip:false,maxRotation:0},grid:{color:gridColor}}, y:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}}}
 });
 
 new Chart(document.getElementById('cohortChart'), {
-  type: 'bar',
-  data: {
-    labels: ['결제 없음 (91건)','1~3회차 (208건)','4~6회차 (78건)','7회차~ (201건)'],
-    datasets: [
-      { label: '상품 품질 불만', data: [11,62,21,43], backgroundColor: '#E24B4A', borderRadius: 0 },
-      { label: '직접 선택 선호', data: [19,56,17,41], backgroundColor: '#378ADD', borderRadius: 0 },
-      { label: '단순 변심', data: [25,16,6,19], backgroundColor: '#BA7517', borderRadius: 0 },
-      { label: '부재/수령', data: [4,19,11,27], backgroundColor: '#1D9E75', borderRadius: 0 },
-      { label: '사유없음+기타', data: [32,55,23,71], backgroundColor: '#C4C2BB', borderRadius: 0 }
+  type:'bar',
+  data:{
+    labels:['결제 없음 (91건)','1~3회차 (208건)','4~6회차 (78건)','7회차~ (201건)'],
+    datasets:[
+      {label:'상품 품질 불만', data:[11,62,21,43], backgroundColor:'#E24B4A'},
+      {label:'직접 선택 선호', data:[19,56,17,41], backgroundColor:'#378ADD'},
+      {label:'단순 변심', data:[25,16,6,19], backgroundColor:'#BA7517'},
+      {label:'부재/수령', data:[4,19,11,27], backgroundColor:'#1D9E75'},
+      {label:'사유없음+기타', data:[32,55,23,71], backgroundColor:'#C4C2BB'}
     ]
   },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-    scales: {
-      x: { stacked: true, ticks: { color: '#555', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
-      y: { stacked: true, ticks: { color: '#aaa', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } }
-    }
-  }
+  options:{...baseOpts, plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}}, scales:{x:{stacked:true,ticks:{color:'#555',font:{size:11}},grid:{color:gridColor}}, y:{stacked:true,ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}}}
+});
+
+new Chart(document.getElementById('donutChart'), {
+  type:'doughnut',
+  data:{labels:['정지','해지','자동정지'], datasets:[{data:[476,142,34], backgroundColor:['#185FA5','#A32D2D','#854F0B'], borderWidth:0, hoverOffset:6}]},
+  options:{responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed}건`}}}}
+});
+
+new Chart(document.getElementById('totalMonthlyChart'), {
+  type:'bar',
+  data:{
+    labels:["'25.9","'25.10","'25.11","'25.12","'26.1","'26.2","'26.3","'26.4","'26.5*"],
+    datasets:[{label:'총 이탈', data:[37,65,45,51,55,61,108,102,54],
+      backgroundColor:(ctx)=>{ const v=ctx.parsed.y; return v>=100?'#E24B4A':v>=60?'#BA7517':'#B5D4F4'; },
+      borderRadius:4}]
+  },
+  options:{...baseOpts, scales:{x:{ticks:{color:textColor,font:{size:11},autoSkip:false,maxRotation:0},grid:{color:gridColor}}, y:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}}}
 });
 </script>
 </body>
