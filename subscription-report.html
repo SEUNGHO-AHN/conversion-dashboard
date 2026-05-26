@@ -521,11 +521,114 @@
           </tbody>
         </table>
       </div>
+
+      <!-- 3M LTV 심화 분석 -->
+      <div style="padding-top:2rem;border-top:1.5px dashed #e0e0e0;margin-top:2rem;">
+        <p style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">관측 기간 통제</p>
+        <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;">구독 후 3M / 6M / 8M LTV 성장 궤적</h3>
+        <p style="font-size:13px;color:#888;margin-bottom:1.5rem;">동일 시점 기준 비교 — 관측 기간 차이가 아닌 진짜 품질 차이 확인</p>
+
+        <!-- 경고 배너 -->
+        <div style="background:#FEF2F2;border:1px solid #FECACA;border-left:4px solid #E24B4A;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
+          <p style="font-size:13px;font-weight:600;color:#A32D2D;margin-bottom:4px;">⚠️ 3M 기준에서도 전년동기 유료가 당기보다 27% 높음 — 진짜 품질 차이</p>
+          <p style="font-size:12px;color:#7B2323;line-height:1.7;margin:0;">관측 기간 차이를 제거해도 격차 유지. 당기 유료 구독자 6M→8M 중앙값이 동일(₩87,013) — 6개월 이후 추가 결제 거의 없음. 전년 유료는 3M→8M +70% 성장.</p>
+        </div>
+
+        <!-- 3M KPI -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;">
+          <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
+            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">전년동기 유료 3M 중앙값</p>
+            <p style="font-size:22px;font-weight:600;color:#185FA5;">₩108,402</p>
+            <p style="font-size:11px;color:#aaa;margin-top:2px;">228명 기준</p>
+          </div>
+          <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
+            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">당기 유료 3M 중앙값</p>
+            <p style="font-size:22px;font-weight:600;color:#E24B4A;">₩79,400</p>
+            <p style="font-size:11px;color:#E24B4A;margin-top:2px;">-27% vs 전년동기 유료</p>
+          </div>
+          <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
+            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">전년동기 유료 성장율</p>
+            <p style="font-size:22px;font-weight:600;color:#185FA5;">+70%</p>
+            <p style="font-size:11px;color:#aaa;margin-top:2px;">3M → 8M LTV 성장</p>
+          </div>
+          <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
+            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">당기 유료 성장율</p>
+            <p style="font-size:22px;font-weight:600;color:#E24B4A;">+40.7%</p>
+            <p style="font-size:11px;color:#E24B4A;margin-top:2px;">6M 이후 성장 정체</p>
+          </div>
+        </div>
+
+        <!-- LTV 성장 궤적 차트 + 구간별 바 차트 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+          <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
+            <p style="font-size:13px;font-weight:600;margin-bottom:4px;">LTV 성장 궤적 (유료 구독자, 중앙값)</p>
+            <p style="font-size:11px;color:#aaa;margin-bottom:12px;">전년동기 유료가 전 구간에서 앞서며 격차 유지</p>
+            <div style="position:relative;height:220px;">
+              <canvas id="ltvGrowthChart"></canvas>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
+            <p style="font-size:13px;font-weight:600;margin-bottom:4px;">3M → 8M 성장율 비교</p>
+            <p style="font-size:11px;color:#aaa;margin-bottom:12px;">전년 프로모 72.9%는 소수 장기 구독자 효과, 중앙값은 8,800원 그대로</p>
+            <div style="position:relative;height:220px;">
+              <canvas id="growthRateChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 전체 LTV 구간 비교 테이블 -->
+        <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
+          <p style="font-size:13px;font-weight:600;margin-bottom:14px;">전체 LTV 구간 비교 <span style="font-size:11px;font-weight:400;color:#aaa;">(중앙값 기준)</span></p>
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="border-bottom:1.5px solid #ebebeb;">
+                <th style="text-align:left;padding:8px 10px;color:#aaa;font-weight:500;">구분</th>
+                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">구독수</th>
+                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">3M 중앙값</th>
+                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">6M 중앙값</th>
+                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">8M 중앙값</th>
+                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">3M→8M 성장</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #f5f5f5;background:#EEF5FC;">
+                <td style="padding:9px 10px;color:#185FA5;font-weight:600;">전년동기 유료 (228명)</td>
+                <td style="padding:9px 10px;text-align:right;">228</td>
+                <td style="padding:9px 10px;text-align:right;font-weight:600;">₩108,402</td>
+                <td style="padding:9px 10px;text-align:right;font-weight:600;">₩135,595</td>
+                <td style="padding:9px 10px;text-align:right;font-weight:600;">₩136,915</td>
+                <td style="padding:9px 10px;text-align:right;color:#1D9E75;font-weight:600;">+70%</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f5f5f5;">
+                <td style="padding:9px 10px;color:#E24B4A;font-weight:600;">당기 유료 (737명)</td>
+                <td style="padding:9px 10px;text-align:right;">737</td>
+                <td style="padding:9px 10px;text-align:right;">₩79,400</td>
+                <td style="padding:9px 10px;text-align:right;">₩87,013</td>
+                <td style="padding:9px 10px;text-align:right;">₩87,013</td>
+                <td style="padding:9px 10px;text-align:right;color:#BA7517;font-weight:600;">+40.7%</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f5f5f5;background:#fafafa;">
+                <td style="padding:9px 10px;color:#888;">전년동기 프로모 (943명)</td>
+                <td style="padding:9px 10px;text-align:right;">943</td>
+                <td style="padding:9px 10px;text-align:right;color:#888;">₩8,800</td>
+                <td style="padding:9px 10px;text-align:right;color:#888;">₩8,800</td>
+                <td style="padding:9px 10px;text-align:right;color:#888;">₩8,800</td>
+                <td style="padding:9px 10px;text-align:right;color:#888;">-</td>
+              </tr>
+              <tr>
+                <td style="padding:9px 10px;color:#888;">당기 프로모 (4명)</td>
+                <td style="padding:9px 10px;text-align:right;color:#bbb;">4</td>
+                <td colspan="4" style="padding:9px 10px;text-align:center;color:#bbb;font-size:11px;">표본 수 부족 (통계적 의미 없음)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="footer">
-    <span>분석 기간: 2025.09.23 ~ 2026.05.13 &nbsp;·&nbsp; 데이터: Script-18 + Script-19 + Script-20</span>
+    <span>분석 기간: 2025.09.23 ~ 2026.05.13 &nbsp;·&nbsp; 데이터: Script-18 + Script-19 + Script-20 + Script-21</span>
     <span>총 이탈 652건 / 모수 6,244건 / 이탈률 10.4%</span>
   </div>
 
@@ -640,7 +743,76 @@ new Chart(document.getElementById('ltv3wayChart'), {
   }
 });
 
-/* ── 건전성 차트들 ── */
+/* ── 3M LTV 성장 궤적 ── */
+new Chart(document.getElementById('ltvGrowthChart'), {
+  type: 'line',
+  data: {
+    labels: ['3개월', '6개월', '8개월'],
+    datasets: [
+      {
+        label: '전년동기 유료',
+        data: [108402, 135595, 136915],
+        borderColor: '#185FA5',
+        backgroundColor: 'rgba(24,95,165,0.08)',
+        tension: 0.3, pointRadius: 6, pointBackgroundColor: '#185FA5',
+        fill: true, borderWidth: 2
+      },
+      {
+        label: '당기 유료',
+        data: [79400, 87013, 87013],
+        borderColor: '#E24B4A',
+        backgroundColor: 'rgba(226,75,74,0.06)',
+        tension: 0.3, pointRadius: 6, pointBackgroundColor: '#E24B4A',
+        fill: true, borderWidth: 2, borderDash: [5,3]
+      },
+      {
+        label: '전년동기 프로모',
+        data: [8800, 8800, 8800],
+        borderColor: '#F5C97A',
+        backgroundColor: 'transparent',
+        tension: 0, pointRadius: 4, pointBackgroundColor: '#F5C97A',
+        fill: false, borderWidth: 1.5, borderDash: [3,3]
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: true, position: 'top', labels: { font: { size: 11 }, color: '#555', boxWidth: 10, boxHeight: 10 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₩${ctx.parsed.y.toLocaleString()}` } }
+    },
+    scales: {
+      x: { ticks: { color: '#555', font: { size: 11 } }, grid: { color: gridColor } },
+      y: { ticks: { color: textColor, font: { size: 11 }, callback: v => '₩' + v.toLocaleString() }, grid: { color: gridColor } }
+    }
+  }
+});
+
+new Chart(document.getElementById('growthRateChart'), {
+  type: 'bar',
+  data: {
+    labels: ['전년동기\n유료', '당기\n유료', '전년동기\n프로모*'],
+    datasets: [{
+      label: '3M→8M 성장율 (%)',
+      data: [70.0, 40.7, 72.9],
+      backgroundColor: ['#185FA5', '#E24B4A', '#F5C97A'],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` +${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { ticks: { color: '#555', font: { size: 11 } }, grid: { color: gridColor } },
+      y: { ticks: { color: textColor, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gridColor }, max: 90 }
+    }
+  }
+});
+
+
 
 /* LTV 비교 바 */
 new Chart(document.getElementById('ltvCompareChart'), {
