@@ -3,948 +3,659 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>정기구독 정지·해지 분석 리포트</title>
+<title>정기구독 분석 리포트</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: #F7F6F3; color: #1a1a1a; min-height: 100vh; }
-  .page { max-width: 920px; margin: 0 auto; padding: 2.5rem 2rem; }
-  .header { margin-bottom: 2.5rem; }
-  .header .label { font-size: 12px; color: #888; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
-  .header h1 { font-size: 26px; font-weight: 600; margin-bottom: 4px; }
-  .header .sub { font-size: 13px; color: #888; }
-  .overview { background: #fff; border-radius: 14px; border: 1px solid #ebebeb; padding: 1.5rem; margin-bottom: 2rem; }
-  .overview-title { font-size: 12px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 1.2rem; }
-  .funnel { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-  .funnel-step { flex: 1; min-width: 100px; text-align: center; padding: 0.8rem 0.4rem; }
-  .funnel-step .f-label { font-size: 11px; color: #aaa; margin-bottom: 6px; }
-  .funnel-step .f-value { font-size: 22px; font-weight: 600; margin-bottom: 2px; }
-  .funnel-step .f-sub { font-size: 10px; color: #bbb; }
-  .funnel-arrow { font-size: 18px; color: #ddd; flex-shrink: 0; }
-  .rate-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 2rem; }
-  .rate-card { background: #fff; border-radius: 10px; border: 1px solid #ebebeb; padding: 1.1rem; text-align: center; }
-  .rate-card .rc-label { font-size: 11px; color: #aaa; margin-bottom: 8px; }
-  .rate-card .rc-value { font-size: 32px; font-weight: 600; margin-bottom: 4px; }
-  .rate-card .rc-desc { font-size: 11px; color: #aaa; line-height: 1.5; }
-  .rate-bar { width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; margin: 8px 0; overflow: hidden; }
-  .rate-fill { height: 100%; border-radius: 3px; }
-  .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 2rem; }
-  .kpi { background: #fff; border-radius: 10px; padding: 1rem 0.8rem; border: 1px solid #ebebeb; }
-  .kpi .kpi-label { font-size: 11px; color: #888; margin-bottom: 6px; line-height: 1.4; }
-  .kpi .kpi-value { font-size: 20px; font-weight: 600; }
-  .kpi .kpi-sub { font-size: 10px; color: #bbb; margin-top: 2px; }
-  .section { margin-bottom: 2.5rem; }
-  .section-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
-  .section-sub { font-size: 12px; color: #888; margin-bottom: 14px; }
-  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-  .chart-box { background: #fff; border-radius: 12px; border: 1px solid #ebebeb; padding: 1.25rem; }
-  .chart-box .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
-  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #666; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-  .canvas-wrap { position: relative; width: 100%; }
-  .etc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 2rem; }
-  .etc-card { background: #fff; border-radius: 10px; border: 1px solid #ebebeb; padding: 1rem; }
-  .etc-card .etc-icon { font-size: 20px; margin-bottom: 6px; }
-  .etc-card .etc-label { font-size: 11px; color: #888; margin-bottom: 6px; }
-  .etc-card .etc-count { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
-  .etc-card .etc-example { font-size: 10px; color: #aaa; line-height: 1.6; }
-  .insight-list { display: flex; flex-direction: column; gap: 10px; }
-  .insight { background: #fff; border-radius: 10px; border: 1px solid #ebebeb; border-left: 3px solid #ccc; padding: 0.9rem 1.1rem; }
-  .insight-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 5px; }
-  .insight-tag { font-size: 12px; font-weight: 600; }
-  .insight-arrow { font-size: 11px; color: #aaa; }
-  .insight-desc { font-size: 12px; color: #555; line-height: 1.65; }
-  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #ebebeb; font-size: 11px; color: #bbb; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-  @media (max-width: 640px) {
-    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-    .chart-row { grid-template-columns: 1fr; }
-    .etc-grid { grid-template-columns: repeat(2, 1fr); }
-    .rate-cards { grid-template-columns: 1fr; }
-    .funnel-arrow { display: none; }
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Pretendard', sans-serif; background: #F7F6F3; color: #1a1a1a; }
+.page { max-width: 960px; margin: 0 auto; padding: 2.5rem 2rem 4rem; }
+
+/* ── 헤더 ── */
+.report-header { margin-bottom: 2.5rem; }
+.report-header .tag { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.report-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+.report-header .meta { font-size: 13px; color: #888; }
+
+/* ── 섹션 구분 ── */
+.section { margin-bottom: 3rem; }
+.section-header { margin-bottom: 1.5rem; }
+.section-header .section-num { display: inline-block; font-size: 11px; font-weight: 600; color: #fff; background: #1a1a1a; border-radius: 4px; padding: 2px 8px; margin-bottom: 8px; }
+.section-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.section-header .section-desc { font-size: 13px; color: #666; line-height: 1.6; }
+
+/* ── 핵심 발견 카드 ── */
+.findings { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; }
+.finding-card { background: #fff; border-radius: 12px; border: 1px solid #e8e8e8; border-left: 4px solid; padding: 1rem 1.25rem; }
+.finding-card .f-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.finding-card .f-body { font-size: 12px; color: #555; line-height: 1.7; }
+.finding-card .f-action { margin-top: 8px; font-size: 11px; font-weight: 600; color: #888; }
+
+/* ── KPI ── */
+.kpi-row { display: grid; gap: 10px; margin-bottom: 1.5rem; }
+.kpi-row.col-4 { grid-template-columns: repeat(4,1fr); }
+.kpi-row.col-3 { grid-template-columns: repeat(3,1fr); }
+.kpi-row.col-6 { grid-template-columns: repeat(6,1fr); }
+.kpi { background: #fff; border-radius: 10px; border: 1px solid #e8e8e8; padding: 1rem 1.1rem; }
+.kpi .k-label { font-size: 11px; color: #aaa; margin-bottom: 6px; line-height: 1.4; }
+.kpi .k-value { font-size: 24px; font-weight: 700; }
+.kpi .k-sub { font-size: 11px; color: #bbb; margin-top: 3px; }
+
+/* ── 차트 박스 ── */
+.chart-grid { display: grid; gap: 1.5rem; margin-bottom: 1.5rem; }
+.chart-grid.col-2 { grid-template-columns: 1fr 1fr; }
+.chart-grid.col-3-2 { grid-template-columns: 1.4fr 1fr; }
+.chart-grid.col-2-3 { grid-template-columns: 1fr 1.4fr; }
+.chart-box { background: #fff; border-radius: 12px; border: 1px solid #e8e8e8; padding: 1.25rem; }
+.chart-box .cb-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.chart-box .cb-what { font-size: 12px; color: #888; margin-bottom: 4px; }
+.chart-box .cb-finding { font-size: 12px; color: #333; font-weight: 500; background: #F7F6F3; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; }
+.chart-canvas { position: relative; width: 100%; }
+
+/* ── 범례 ── */
+.legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #666; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── 인사이트 리스트 ── */
+.insight-list { display: flex; flex-direction: column; gap: 10px; }
+.insight { background: #fff; border-radius: 10px; border: 1px solid #e8e8e8; border-left: 3px solid; padding: .9rem 1.1rem; }
+.insight .i-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.insight .i-body { font-size: 12px; color: #555; line-height: 1.65; }
+
+/* ── 테이블 ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { text-align: left; padding: 8px 12px; color: #aaa; font-weight: 500; border-bottom: 1.5px solid #ebebeb; }
+.data-table th.right { text-align: right; }
+.data-table td { padding: 9px 12px; border-bottom: 1px solid #f5f5f5; }
+.data-table td.right { text-align: right; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr.alt { background: #fafafa; }
+.data-table tr.highlight { background: #EEF5FC; }
+
+/* ── 배너 ── */
+.banner { border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; border: 1px solid; border-left: 4px solid; }
+.banner.warn { background: #FFF8F0; border-color: #F5D9B0; border-left-color: #BA7517; }
+.banner.danger { background: #FEF2F2; border-color: #FECACA; border-left-color: #E24B4A; }
+.banner.info { background: #EEF5FC; border-color: #B5D4F4; border-left-color: #185FA5; }
+.banner-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.banner-body { font-size: 12px; line-height: 1.7; }
+
+/* ── 구분선 ── */
+.divider { border: none; border-top: 1.5px dashed #e0e0e0; margin: 2rem 0; }
+
+/* ── 퍼널 ── */
+.funnel { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; background:#fff; border:1px solid #e8e8e8; border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; }
+.funnel-step { flex:1; min-width:90px; text-align:center; padding:.8rem .4rem; }
+.funnel-step .fs-label { font-size:11px; color:#aaa; margin-bottom:6px; }
+.funnel-step .fs-value { font-size:22px; font-weight:700; margin-bottom:2px; }
+.funnel-step .fs-sub { font-size:10px; color:#bbb; }
+.funnel-arrow { font-size:18px; color:#ddd; flex-shrink:0; }
+
+/* ── 도넛 래퍼 ── */
+.donut-wrap { position:relative; }
+.donut-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+
+/* ── 프로그레스 바 ── */
+.prog-bar { width:100%; height:6px; background:#f0f0f0; border-radius:3px; overflow:hidden; margin:6px 0; }
+.prog-fill { height:100%; border-radius:3px; }
+
+/* ── 푸터 ── */
+.footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid #ebebeb; font-size:11px; color:#bbb; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+
+@media(max-width:640px){
+  .kpi-row.col-4,.kpi-row.col-6{grid-template-columns:repeat(2,1fr);}
+  .kpi-row.col-3{grid-template-columns:1fr;}
+  .chart-grid.col-2,.chart-grid.col-3-2,.chart-grid.col-2-3{grid-template-columns:1fr;}
+  .funnel-arrow{display:none;}
+}
 </style>
 </head>
 <body>
 <div class="page">
 
-  <div class="header">
-    <p class="label">정기구독 이탈 분석 리포트</p>
-    <h1>정지·해지 현황 분석</h1>
-    <p class="sub">2025년 9월 23일 (구독 정책 변경) 이후 ~ 2026년 5월 13일 &nbsp;·&nbsp; 약 8개월</p>
+<!-- ═══════════════════════════════════════
+     헤더
+═══════════════════════════════════════ -->
+<div class="report-header">
+  <p class="tag">정기구독 분석 리포트</p>
+  <h1>구독 이탈·건전성 종합 분석</h1>
+  <p class="meta">분석 기준일: 2025년 9월 23일(구독 정책 변경) 이후 ~ 2026년 5월 13일 &nbsp;·&nbsp; 약 8개월</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     오늘의 핵심 발견 4가지
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">핵심 발견</span>
+    <h2>분석 전 꼭 알아야 할 4가지</h2>
+    <p class="section-desc">아래 내용을 이해하고 차트를 보면 훨씬 빠르게 파악됩니다.</p>
+  </div>
+  <div class="findings">
+    <div class="finding-card" style="border-left-color:#E24B4A;">
+      <p class="f-title" style="color:#E24B4A;">① 2024년 1월~2025년 7월, 신규 구독자의 80%가 "배송비만 낸" 프로모 고객이었습니다</p>
+      <p class="f-body">이 기간 신규 구독자(1,171명) 중 943명이 첫 달에 배송비 4,400원만 냈습니다. 즉 사실상 무료 체험에 가까운 구조였고, 이 중 52.5%가 단 1회만 받고 이탈했습니다. 이 때문에 전년도 이탈률, 신규 유입 수, LTV 숫자가 모두 왜곡되어 있습니다.</p>
+      <p class="f-action">→ 전년과 올해를 직접 비교할 때는 반드시 이 프로모 효과를 제거하고 봐야 합니다.</p>
+    </div>
+    <div class="finding-card" style="border-left-color:#BA7517;">
+      <p class="f-title" style="color:#BA7517;">② 정책 변경 후 구독자 수는 줄었지만, 진짜 유료 고객은 3배로 늘었습니다</p>
+      <p class="f-body">전년 정상 결제 구독자(프로모 제외)는 228명이었는데, 정책 변경 후 당기에는 737명으로 늘었습니다. 외형상 신규가 줄어 보이는 건 프로모가 없어졌기 때문이지, 실제 유료 구독 수요는 증가했습니다.</p>
+      <p class="f-action">→ 숫자가 줄어 보여도 패닉할 필요 없음. 단, 1인당 LTV는 별개 문제입니다.</p>
+    </div>
+    <div class="finding-card" style="border-left-color:#533AB7;">
+      <p class="f-title" style="color:#533AB7;">③ 같은 기간(3개월) 기준으로 봐도, 당기 구독자 LTV가 전년 유료 구독자보다 27% 낮습니다</p>
+      <p class="f-body">관측 기간 차이를 없애기 위해 구독 후 3개월만 잘라서 비교했습니다. 전년 정상결제 구독자는 3개월에 중앙값 108,402원을 결제했고, 당기는 79,400원입니다. 볼륨(수)은 늘었지만 1인당 가치는 낮아졌습니다.</p>
+      <p class="f-action">→ 당기 신규 구독자가 덜 결제하고 덜 오래 쓰고 있습니다. 온보딩 품질 개선이 필요합니다.</p>
+    </div>
+    <div class="finding-card" style="border-left-color:#1D9E75;">
+      <p class="f-title" style="color:#1D9E75;">④ 이탈 사유 1위는 "상품 품질 불만"(23.7%), 2위는 "직접 선택 선호"(23%)로 둘 다 같은 맥락입니다</p>
+      <p class="f-body">두 사유를 합치면 46.7%가 "내가 원하는 꽃을 못 받았다"는 뜻입니다. 또한 기타 사유의 30%는 중복 구독 실수로, 이건 UI 하나로 즉시 막을 수 있는 이탈입니다. 3~4월에 이탈이 급증(월평균 대비 +75%)한 이유도 파악이 필요합니다.</p>
+      <p class="f-action">→ 취향 수집 온보딩 + 중복 구독 방지 팝업이 가장 빠른 이탈 감소 방법입니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 1. 전체 구독 현황
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">Section 1</span>
+    <h2>전체 구독 모수 현황</h2>
+    <p class="section-desc">2025년 9월 23일 기준 전후 8개월간 구독자 풀이 어떻게 바뀌었는지 보여줍니다.</p>
   </div>
 
-  <div class="overview">
-    <p class="overview-title">구독 풀 전체 흐름</p>
-    <div class="funnel">
-      <div class="funnel-step">
-        <p class="f-label">기간 시작 구독</p>
-        <p class="f-value">5,300</p>
-        <p class="f-sub">활성 구독</p>
-      </div>
-      <div class="funnel-arrow">+</div>
-      <div class="funnel-step">
-        <p class="f-label">기간 내 신규</p>
-        <p class="f-value" style="color:#1D9E75;">+944</p>
-        <p class="f-sub">신규 가입</p>
-      </div>
-      <div class="funnel-arrow">=</div>
-      <div class="funnel-step">
-        <p class="f-label">이탈 가능 모수</p>
-        <p class="f-value">6,244</p>
-        <p class="f-sub">전체 기간 구독</p>
-      </div>
-      <div class="funnel-arrow">−</div>
-      <div class="funnel-step">
-        <p class="f-label">총 이탈</p>
-        <p class="f-value" style="color:#E24B4A;">−652</p>
-        <p class="f-sub">이탈률 10.4%</p>
-      </div>
-      <div class="funnel-arrow">=</div>
-      <div class="funnel-step">
-        <p class="f-label">기간 종료 구독</p>
-        <p class="f-value" style="color:#185FA5;">6,102</p>
-        <p class="f-sub">순증 <strong>+802</strong></p>
-      </div>
+  <!-- 퍼널 -->
+  <div class="funnel">
+    <div class="funnel-step">
+      <p class="fs-label">분석 시작 시점 구독자</p>
+      <p class="fs-value">5,300명</p>
+      <p class="fs-sub">기존 활성 구독</p>
+    </div>
+    <div class="funnel-arrow">+</div>
+    <div class="funnel-step">
+      <p class="fs-label">기간 내 신규 유입</p>
+      <p class="fs-value" style="color:#1D9E75;">+944명</p>
+      <p class="fs-sub">새로 구독 시작</p>
+    </div>
+    <div class="funnel-arrow">=</div>
+    <div class="funnel-step">
+      <p class="fs-label">전체 이탈 가능 모수</p>
+      <p class="fs-value">6,244명</p>
+      <p class="fs-sub">이 중 누가 떠났나</p>
+    </div>
+    <div class="funnel-arrow">−</div>
+    <div class="funnel-step">
+      <p class="fs-label">실제 이탈</p>
+      <p class="fs-value" style="color:#E24B4A;">−652명</p>
+      <p class="fs-sub">이탈률 10.4%</p>
+    </div>
+    <div class="funnel-arrow">=</div>
+    <div class="funnel-step">
+      <p class="fs-label">현재 구독자</p>
+      <p class="fs-value" style="color:#185FA5;">6,102명</p>
+      <p class="fs-sub">순증 <strong>+802명</strong></p>
     </div>
   </div>
 
-  <div class="rate-cards">
-    <div class="rate-card">
-      <p class="rc-label">전체 이탈률</p>
-      <p class="rc-value" style="color:#E24B4A;">10.4%</p>
-      <div class="rate-bar"><div class="rate-fill" style="width:10.4%; background:#E24B4A;"></div></div>
-      <p class="rc-desc">6,244명 중 652명 이탈<br>정지+해지+자동정지 합산</p>
+  <!-- KPI -->
+  <div class="kpi-row col-3">
+    <div class="kpi">
+      <p class="k-label">전체 이탈률<br><span style="font-size:10px;color:#bbb;">6,244명 중 652명</span></p>
+      <p class="k-value" style="color:#E24B4A;">10.4%</p>
+      <div class="prog-bar"><div class="prog-fill" style="width:10.4%;background:#E24B4A;"></div></div>
     </div>
-    <div class="rate-card">
-      <p class="rc-label">의도적 이탈률</p>
-      <p class="rc-value" style="color:#BA7517;">9.9%</p>
-      <div class="rate-bar"><div class="rate-fill" style="width:9.9%; background:#BA7517;"></div></div>
-      <p class="rc-desc">618명이 직접 정지·해지<br>자동정지 제외 순수 이탈</p>
+    <div class="kpi">
+      <p class="k-label">의도적 이탈률<br><span style="font-size:10px;color:#bbb;">스스로 정지·해지한 비율</span></p>
+      <p class="k-value" style="color:#BA7517;">9.9%</p>
+      <div class="prog-bar"><div class="prog-fill" style="width:9.9%;background:#BA7517;"></div></div>
     </div>
-    <div class="rate-card">
-      <p class="rc-label">자동정지율</p>
-      <p class="rc-value" style="color:#533AB7;">0.5%</p>
-      <div class="rate-bar"><div class="rate-fill" style="width:5%; background:#533AB7;"></div></div>
-      <p class="rc-desc">34명 결제 실패 자동정지<br>결제 수단 업데이트 유도 필요</p>
+    <div class="kpi">
+      <p class="k-label">자동정지율<br><span style="font-size:10px;color:#bbb;">결제 실패로 자동 정지</span></p>
+      <p class="k-value" style="color:#533AB7;">0.5%</p>
+      <div class="prog-bar"><div class="prog-fill" style="width:5%;background:#533AB7;"></div></div>
     </div>
   </div>
 
-  <div class="kpi-grid">
-    <div class="kpi"><p class="kpi-label">시작 구독</p><p class="kpi-value">5,300</p><p class="kpi-sub">활성 구독수</p></div>
-    <div class="kpi"><p class="kpi-label">신규 가입</p><p class="kpi-value" style="color:#1D9E75;">944</p><p class="kpi-sub">기간 내 신규</p></div>
-    <div class="kpi"><p class="kpi-label">정지</p><p class="kpi-value" style="color:#185FA5;">476</p><p class="kpi-sub">이탈의 73%</p></div>
-    <div class="kpi"><p class="kpi-label">해지</p><p class="kpi-value" style="color:#A32D2D;">142</p><p class="kpi-sub">이탈의 21.8%</p></div>
-    <div class="kpi"><p class="kpi-label">자동정지</p><p class="kpi-value" style="color:#854F0B;">34</p><p class="kpi-sub">이탈의 5.2%</p></div>
-    <div class="kpi"><p class="kpi-label">순증감</p><p class="kpi-value" style="color:#1D9E75;">+802</p><p class="kpi-sub">6,102명 종료</p></div>
-  </div>
-
-  <div class="chart-row">
+  <!-- 이탈 유형 + 월별 총 이탈 -->
+  <div class="chart-grid col-2">
     <div class="chart-box">
-      <p class="chart-title">정지 사유별 분포 (476건)</p>
+      <p class="cb-title">이탈 유형 구성</p>
+      <p class="cb-what">652건의 이탈이 어떤 종류인지 보여줍니다</p>
+      <p class="cb-finding">정지(73%)는 재활성화 가능, 해지(21.8%)는 완전 이탈 — 정지 구독자 복귀 유도가 빠른 방법</p>
+      <div style="display:flex;align-items:center;gap:1.5rem;">
+        <div class="chart-canvas donut-wrap" style="height:160px;width:160px;flex-shrink:0;">
+          <canvas id="donutChart"></canvas>
+          <div class="donut-label">
+            <span style="font-size:18px;font-weight:700;">652</span>
+            <span style="font-size:11px;color:#aaa;">총 이탈</span>
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;color:#555;">정지 (재활성화 가능)</span><span style="font-size:12px;font-weight:700;color:#185FA5;">476건 73%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:73%;background:#185FA5;"></div></div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;color:#555;">해지 (완전 이탈)</span><span style="font-size:12px;font-weight:700;color:#A32D2D;">142건 21.8%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:21.8%;background:#A32D2D;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:12px;color:#555;">자동정지 (결제 실패)</span><span style="font-size:12px;font-weight:700;color:#854F0B;">34건 5.2%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:5.2%;background:#854F0B;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-box">
+      <p class="cb-title">월별 총 이탈 건수</p>
+      <p class="cb-what">이탈이 어느 달에 집중됐는지 보여줍니다</p>
+      <p class="cb-finding">3월(108건)·4월(102건)이 월평균(58건)의 2배 — 봄 시즌 이탈 급증 원인 파악 필요</p>
+      <div class="chart-canvas" style="height:180px;"><canvas id="totalMonthlyChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 2. 이탈 사유 상세
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">Section 2</span>
+    <h2>왜 떠났는가 — 이탈 사유 분석</h2>
+    <p class="section-desc">정지·해지한 고객이 직접 선택하거나 입력한 사유를 분석합니다. 어디를 먼저 고쳐야 하는지 우선순위를 잡을 수 있습니다.</p>
+  </div>
+
+  <div class="chart-grid col-2">
+    <div class="chart-box">
+      <p class="cb-title">사유별 정지 건수 (476건 전체)</p>
+      <p class="cb-what">정지한 고객이 선택한 이유 중 무엇이 가장 많은지 보여줍니다</p>
+      <p class="cb-finding">품질 불만 + 직접 선택 선호 = 46.7% — 결국 "원하는 꽃을 못 받았다"는 같은 맥락</p>
       <div class="legend">
         <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>품질 불만</span>
         <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>직접 선택 선호</span>
         <span class="legend-item"><span class="legend-dot" style="background:#BA7517;"></span>변심·부재</span>
         <span class="legend-item"><span class="legend-dot" style="background:#888;"></span>기타</span>
       </div>
-      <div class="canvas-wrap" style="height:260px;">
-        <canvas id="reasonChart" role="img" aria-label="정지 사유별 건수">상품품질불만137, 직접선택선호133, 기타83, 단순변심66, 부재61, 사유없음48, 수량23, 수령인거절13, 타사7, 서비스7</canvas>
-      </div>
+      <div class="chart-canvas" style="height:240px;"><canvas id="reasonChart"></canvas></div>
     </div>
     <div class="chart-box">
-      <p class="chart-title">월별 주요 사유 추이</p>
+      <p class="cb-title">월별 주요 이탈 사유 추이</p>
+      <p class="cb-what">이탈 사유가 시간에 따라 어떻게 변했는지 보여줍니다</p>
+      <p class="cb-finding">3~4월에 "직접 선택 선호" 급등 — 봄 시즌 큐레이션 만족도 하락 가능성</p>
       <div class="legend">
         <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>품질 불만</span>
         <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>직접 선택 선호</span>
         <span class="legend-item"><span class="legend-dot" style="background:#1D9E75;"></span>단순 변심</span>
       </div>
-      <div class="canvas-wrap" style="height:260px;">
-        <canvas id="monthlyChart" role="img" aria-label="월별 정지 사유 추이">2025년9월~2026년5월</canvas>
-      </div>
+      <div class="chart-canvas" style="height:240px;"><canvas id="monthlyChart"></canvas></div>
     </div>
   </div>
 
-  <div class="section">
-    <p class="section-title">구독 회차별 정지 사유 분포</p>
-    <p class="section-sub">1~3회차 이탈 208건(32%) — 초기 온보딩이 가장 중요한 구간</p>
+  <div class="chart-grid col-2">
     <div class="chart-box">
+      <p class="cb-title">몇 회차에 가장 많이 정지하는가</p>
+      <p class="cb-what">구독을 몇 번 받은 뒤 정지하는지 보여줍니다. 언제 집중 관리해야 하는지 알 수 있습니다</p>
+      <p class="cb-finding">1~3회차에 208건(32%) 이탈 — 처음 3번이 구독 유지의 결정적 구간</p>
       <div class="legend">
-        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>상품 품질 불만</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>품질 불만</span>
         <span class="legend-item"><span class="legend-dot" style="background:#378ADD;"></span>직접 선택 선호</span>
         <span class="legend-item"><span class="legend-dot" style="background:#BA7517;"></span>단순 변심</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#1D9E75;"></span>부재/수령</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#C4C2BB;"></span>사유없음+기타</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#1D9E75;"></span>부재·수령</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#C4C2BB;"></span>기타</span>
       </div>
-      <div class="canvas-wrap" style="height:200px;">
-        <canvas id="cohortChart" role="img" aria-label="회차별 정지 사유">결제없음91, 1-3회208, 4-6회78, 7회이상201</canvas>
-      </div>
+      <div class="chart-canvas" style="height:200px;"><canvas id="cohortChart"></canvas></div>
     </div>
-  </div>
-
-  <div class="section">
-    <p class="section-title">이탈 유형 구성 및 월별 추이</p>
-    <p class="section-sub">정지(복귀 가능) vs 해지(완전 이탈) — 3~4월 급증 구간 주목</p>
-    <div class="chart-row">
-      <div class="chart-box" style="display:flex; align-items:center; gap:1.5rem;">
-        <div class="canvas-wrap" style="height:180px; width:180px; flex-shrink:0;">
-          <canvas id="donutChart" role="img" aria-label="이탈 유형 도넛 차트">정지476, 해지142, 자동정지34</canvas>
+    <div class="chart-box">
+      <p class="cb-title">"기타" 사유 안에 뭐가 있는가 (83건)</p>
+      <p class="cb-what">고객이 직접 입력한 기타 사유를 읽고 패턴별로 분류했습니다</p>
+      <p class="cb-finding">기타의 30%가 "중복 구독 실수" — UI 하나로 즉시 막을 수 있는 이탈</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <div style="background:#fafafa;border-radius:8px;padding:.75rem 1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;"><span style="font-size:12px;font-weight:600;color:#E24B4A;">⚠️ 중복 결제·구독 실수</span><span style="font-size:14px;font-weight:700;color:#E24B4A;">~25건</span></div>
+          <p style="font-size:11px;color:#888;">"두번 신청됐어요" "이중구독이 됐습니다" — 구독 완료 시 중복 확인 팝업으로 즉시 해결 가능</p>
         </div>
-        <div style="flex:1;">
-          <div style="margin-bottom:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
-              <span style="font-size:12px; color:#555;">정지 (복귀 가능)</span>
-              <span style="font-size:13px; font-weight:600; color:#185FA5;">476건 · 73%</span>
-            </div>
-            <div style="background:#f0f0f0; height:6px; border-radius:3px; overflow:hidden;"><div style="width:73%; height:100%; background:#185FA5; border-radius:3px;"></div></div>
-          </div>
-          <div style="margin-bottom:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
-              <span style="font-size:12px; color:#555;">해지 (완전 이탈)</span>
-              <span style="font-size:13px; font-weight:600; color:#A32D2D;">142건 · 21.8%</span>
-            </div>
-            <div style="background:#f0f0f0; height:6px; border-radius:3px; overflow:hidden;"><div style="width:21.8%; height:100%; background:#A32D2D; border-radius:3px;"></div></div>
-          </div>
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
-              <span style="font-size:12px; color:#555;">자동정지 (결제 실패)</span>
-              <span style="font-size:13px; font-weight:600; color:#854F0B;">34건 · 5.2%</span>
-            </div>
-            <div style="background:#f0f0f0; height:6px; border-radius:3px; overflow:hidden;"><div style="width:5.2%; height:100%; background:#854F0B; border-radius:3px;"></div></div>
-          </div>
-          <p style="font-size:10px; color:#bbb; margin-top:12px; line-height:1.6;">정지 구독자 복귀율 추적 시<br>실질 이탈률은 더 낮을 수 있음</p>
+        <div style="background:#fafafa;border-radius:8px;padding:.75rem 1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;"><span style="font-size:12px;font-weight:600;color:#BA7517;">🌸 계절·날씨</span><span style="font-size:14px;font-weight:700;color:#BA7517;">~12건</span></div>
+          <p style="font-size:11px;color:#888;">"여름엔 빨리 시들어서" "봄에 다시 할게요" — 계절 일시정지 기능 니즈</p>
         </div>
-      </div>
-      <div class="chart-box">
-        <p class="chart-title">월별 총 이탈 건수</p>
-        <p style="font-size:11px; color:#aaa; margin-bottom:10px;">빨간색: 100건 이상 / 주황: 60건 이상 (*5월 부분 집계)</p>
-        <div class="canvas-wrap" style="height:190px;">
-          <canvas id="totalMonthlyChart" role="img" aria-label="월별 총 이탈 건수 바 차트">9월37, 10월65, 11월45, 12월51, 1월55, 2월61, 3월108, 4월102, 5월54</canvas>
+        <div style="background:#fafafa;border-radius:8px;padding:.75rem 1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;"><span style="font-size:12px;font-weight:600;color:#533AB7;">💸 가격 부담</span><span style="font-size:14px;font-weight:700;color:#533AB7;">~10건</span></div>
+          <p style="font-size:11px;color:#888;">"매달 금액이 부담돼요" "비싸졌어요" — 가격 민감층 이탈</p>
+        </div>
+        <div style="background:#fafafa;border-radius:8px;padding:.75rem 1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;"><span style="font-size:12px;font-weight:600;color:#1D9E75;">🐾 반려동물·알러지</span><span style="font-size:14px;font-weight:700;color:#1D9E75;">~8건</span></div>
+          <p style="font-size:11px;color:#888;">"고양이가 건드려서" "아이 꽃가루 알러지" — 가입 시 사전 안내 필요</p>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <p class="section-title">기타사유 분류 <span style="font-size:12px;font-weight:400;color:#aaa;">(자유 텍스트 83건)</span></p>
-    <p class="section-sub">선택 사유 '기타'를 선택한 고객의 실제 텍스트 패턴</p>
-    <div class="etc-grid">
-      <div class="etc-card">
-        <div class="etc-icon">⚠️</div>
-        <p class="etc-label">중복 결제·구독</p>
-        <p class="etc-count" style="color:#E24B4A;">~25건</p>
-        <p class="etc-example">"두번 신청됐어요"<br>"이중구독이 됐습니다"<br>"착오로 두 건 신청함"</p>
-      </div>
-      <div class="etc-card">
-        <div class="etc-icon">🌸</div>
-        <p class="etc-label">계절·날씨</p>
-        <p class="etc-count" style="color:#BA7517;">~12건</p>
-        <p class="etc-example">"여름엔 꽃이 빨리 시들어서"<br>"봄에 다시 할게요"<br>"날씨 변화"</p>
-      </div>
-      <div class="etc-card">
-        <div class="etc-icon">💸</div>
-        <p class="etc-label">가격 부담</p>
-        <p class="etc-count" style="color:#533AB7;">~10건</p>
-        <p class="etc-example">"매달 금액이 올라가요"<br>"가격인상으로 부담"<br>"비싸졌어요"</p>
-      </div>
-      <div class="etc-card">
-        <div class="etc-icon">🐾</div>
-        <p class="etc-label">반려동물·알러지</p>
-        <p class="etc-count" style="color:#1D9E75;">~8건</p>
-        <p class="etc-example">"고양이가 건드려서"<br>"강아지가 먹으려 해서"<br>"아이 꽃가루 알러지"</p>
-      </div>
+  <!-- 이탈 대응 액션 -->
+  <div class="insight-list">
+    <div class="insight" style="border-left-color:#E24B4A;">
+      <p class="i-title" style="color:#E24B4A;">🔴 즉시 수정 — 중복 구독 방지 팝업 (예상 감소: ~25건)</p>
+      <p class="i-body">구독 신청 완료 화면에 "이미 활성 구독이 있습니다" 확인 팝업 하나면 됩니다. 개발 1일 이내로 막을 수 있는 이탈입니다.</p>
+    </div>
+    <div class="insight" style="border-left-color:#378ADD;">
+      <p class="i-title" style="color:#378ADD;">🟡 온보딩 개선 — 취향 수집 + 첫 3회 집중 관리</p>
+      <p class="i-body">품질 불만(23.7%) + 직접 선택 선호(23%)를 동시에 해결하는 방법은 "처음부터 취향을 물어보는 것"입니다. 가입 시 색상·꽃 종류·알러지 여부를 수집하고 1~3회 배송에 반영하면, 이 구간 이탈을 줄일 수 있습니다.</p>
+    </div>
+    <div class="insight" style="border-left-color:#BA7517;">
+      <p class="i-title" style="color:#BA7517;">🟡 봄 시즌 대응 — 3~4월 이탈 급증 원인 파악</p>
+      <p class="i-body">3월 108건·4월 102건으로 월평균(58건)의 2배. 봄 수요 급증 시 품질 유지 실패 가능성이 높습니다. 해당 기간 CS 문의·배송 품질 데이터 크로스 분석 권장.</p>
     </div>
   </div>
-
-  <div class="section">
-    <p class="section-title">핵심 인사이트 &amp; 액션 포인트</p>
-    <p class="section-sub">이탈률 10.4% / 모수 6,244건 맥락에서 본 우선순위</p>
-    <div class="insight-list">
-      <div class="insight" style="border-left-color:#1D9E75;">
-        <div class="insight-top">
-          <span class="insight-tag" style="color:#1D9E75;">✅ 순증 +802건 — 비즈니스는 성장 중</span>
-          <span class="insight-arrow">→ 이탈 절감이 곧 가속도</span>
-        </div>
-        <p class="insight-desc">신규 944명 유입으로 순증 +802건 달성. 이탈률 10.4%를 5%대로 줄이면 순증은 ~1,100건 수준. 지금은 획득보다 유지에 집중할 타이밍.</p>
-      </div>
-      <div class="insight" style="border-left-color:#E24B4A;">
-        <div class="insight-top">
-          <span class="insight-tag" style="color:#E24B4A;">🔴 중복 구독 UX 버그 (~25건)</span>
-          <span class="insight-arrow">→ 즉시 수정 가능한 이탈</span>
-        </div>
-        <p class="insight-desc">기타사유 83건 중 약 30%가 중복 결제·구독 실수. 구독 신청 완료 시 "이미 활성 구독이 있습니다" 확인 팝업 하나로 방지 가능. 코드 수정으로 ROI 최고.</p>
-      </div>
-      <div class="insight" style="border-left-color:#E24B4A;">
-        <div class="insight-top">
-          <span class="insight-tag" style="color:#E24B4A;">🔴 품질 불만 1위 (23.7% · 137건)</span>
-          <span class="insight-arrow">→ 상품·배송 품질 개선</span>
-        </div>
-        <p class="insight-desc">"꽃이 빨리 시들어요", "구성이 약해요" — 여름 및 3~4월 집중. 계절별 품종 전략과 포장 개선 필요. 전체 모수 6,244 대비 2.2% 이탈 원인.</p>
-      </div>
-      <div class="insight" style="border-left-color:#378ADD;">
-        <div class="insight-top">
-          <span class="insight-tag" style="color:#378ADD;">🟡 직접 선택 선호 2위 (23.0% · 133건)</span>
-          <span class="insight-arrow">→ 큐레이션 UX 개선</span>
-        </div>
-        <p class="insight-desc">품질 불만 + 직접 선택 선호 = 46.7%가 같은 맥락. 초기 취향 설문 + '원하는 꽃 1가지 픽' 옵션 도입. 초기 3회 내 취향 확인 플로우가 핵심 레버.</p>
-      </div>
-      <div class="insight" style="border-left-color:#BA7517;">
-        <div class="insight-top">
-          <span class="insight-tag" style="color:#BA7517;">🟡 1~3회 이탈 최다 (208건 · 전체 32%)</span>
-          <span class="insight-arrow">→ 온보딩 Critical Zone</span>
-        </div>
-        <p class="insight-desc">첫 배송 피드백 수집 & 2회차 전 취향 확인 플로우 필수. 모수 6,244 기준 3.3%가 초기 3회 내 이탈. 이 구간 10% 개선 시 ~20건 추가 유지.</p>
-      </div>
-      <div class="insight" style="border-left-color:#533AB7;">
-        <div class="insight-top">
-          <span class="insight-tag" style="color:#533AB7;">🔵 3~4월 이탈 급증 (평균 대비 +75%)</span>
-          <span class="insight-arrow">→ 봄 시즌 원인 분석 필요</span>
-        </div>
-        <p class="insight-desc">3월 108건·4월 102건 (월평균 ~58건). 봄 꽃 품질 저하 또는 가격 인상 체감 가능성. CS 로그 & 배송 품질 데이터 크로스 분석 권장.</p>
-      </div>
-      <div class="insight" style="border-left-color:#888;">
-        <div class="insight-top">
-          <span class="insight-tag" style="color:#666;">⚪ 7회차+ 장기 구독자 이탈 201건</span>
-          <span class="insight-arrow">→ Loyalty + 자동정지 복구</span>
-        </div>
-        <p class="insight-desc">장기 구독자 '사유없음' 24건 — 조용히 떠나는 패턴. 자동정지 34건은 결제 수단 업데이트 유도로 회수 가능. 6개월+ 구독자 감사 혜택 도입 필요.</p>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ══════════════════════════════════════════
-       건전성 분석 섹션 (Script-20 결과)
-       ══════════════════════════════════════════ -->
-  <div style="margin-top:3rem; padding-top:2rem; border-top:2px solid #ebebeb;">
-    <p style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">정기구독 건전성 분석</p>
-    <h2 style="font-size:20px;font-weight:600;margin-bottom:4px;">LTV · 유지회차 · 모수 증감 (전년동기 비교)</h2>
-    <p style="font-size:13px;color:#888;margin-bottom:2rem;">당기 2025.09.23~2026.05.13 vs 전년동기 2024.09.23~2025.05.13 · 동일 8개월 윈도우</p>
-
-    <!-- 건전성 판단 배너 -->
-    <div style="background:#FFF8F0;border:1px solid #F5D9B0;border-left:4px solid #BA7517;border-radius:10px;padding:1rem 1.25rem;margin-bottom:2rem;">
-      <p style="font-size:13px;font-weight:600;color:#854F0B;margin-bottom:4px;">⚠️ 구독 풀 크기는 줄었고, 남은 구독자 질은 올랐습니다</p>
-      <p style="font-size:12px;color:#6B4A1A;line-height:1.7;margin:0;">신규 유입 1,054→682명(-35%), 당기 누적 순증 <strong>-37</strong>로 실질 마이너스. 단, 중앙값 LTV 4배 상승·1회 이탈율 절반으로 감소 — 진성 구독자 비중은 대폭 개선됨.</p>
-    </div>
-
-    <!-- KPI 비교 4개 -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:2rem;">
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
-        <p style="font-size:11px;color:#aaa;margin-bottom:6px;">중앙값 LTV</p>
-        <p style="font-size:22px;font-weight:600;color:#185FA5;">₩95,600</p>
-        <p style="font-size:11px;color:#1D9E75;margin-top:2px;">↑ +300% vs 전년 ₩23,900</p>
-      </div>
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
-        <p style="font-size:11px;color:#aaa;margin-bottom:6px;">1회 이탈율</p>
-        <p style="font-size:22px;font-weight:600;color:#1D9E75;">21.1%</p>
-        <p style="font-size:11px;color:#1D9E75;margin-top:2px;">↓ -25.9%p vs 전년 47.0%</p>
-      </div>
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
-        <p style="font-size:11px;color:#aaa;margin-bottom:6px;">평균 유지회차</p>
-        <p style="font-size:22px;font-weight:600;color:#185FA5;">4.48회</p>
-        <p style="font-size:11px;color:#1D9E75;margin-top:2px;">↑ +0.34회 vs 전년 4.14회</p>
-      </div>
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
-        <p style="font-size:11px;color:#aaa;margin-bottom:6px;">신규 유입 (8개월)</p>
-        <p style="font-size:22px;font-weight:600;color:#E24B4A;">682명</p>
-        <p style="font-size:11px;color:#E24B4A;margin-top:2px;">↓ -35% vs 전년 1,054명</p>
-      </div>
-    </div>
-
-    <!-- 차트 2열: LTV + 1회 이탈율 -->
-    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-        <p style="font-size:13px;font-weight:600;margin-bottom:4px;">LTV 비교 (원)</p>
-        <p style="font-size:11px;color:#aaa;margin-bottom:12px;">평균값보다 중앙값 격차가 더 의미있음 — 4배 상승</p>
-        <div style="position:relative;height:200px;">
-          <canvas id="ltvCompareChart" role="img" aria-label="LTV 전년동기 비교">전년86514/23900, 당기151323/95600</canvas>
-        </div>
-      </div>
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-        <p style="font-size:13px;font-weight:600;margin-bottom:4px;">1회 이탈율</p>
-        <p style="font-size:11px;color:#aaa;margin-bottom:12px;">정책 변경 후 절반 이하로 감소</p>
-        <div style="display:flex;align-items:center;gap:1.5rem;height:200px;">
-          <div style="text-align:center;flex:1;">
-            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">전년동기</p>
-            <div style="position:relative;width:90px;height:90px;margin:0 auto;">
-              <canvas id="churn1PrevChart" role="img" aria-label="전년동기 1회 이탈율 47%">47%</canvas>
-              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:18px;font-weight:600;color:#E24B4A;">47%</span>
-              </div>
-            </div>
-          </div>
-          <div style="font-size:20px;color:#ddd;flex-shrink:0;">→</div>
-          <div style="text-align:center;flex:1;">
-            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">당기</p>
-            <div style="position:relative;width:90px;height:90px;margin:0 auto;">
-              <canvas id="churn1CurrentChart" role="img" aria-label="당기 1회 이탈율 21.1%">21.1%</canvas>
-              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:18px;font-weight:600;color:#1D9E75;">21.1%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 차트 2열: 회차 분포 + 월별 순증감 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-        <p style="font-size:13px;font-weight:600;margin-bottom:4px;">회차 구간 분포 (%)</p>
-        <p style="font-size:11px;color:#aaa;margin-bottom:12px;">1회 이탈 절반·2~6회 허리 구간 두터워짐</p>
-        <div style="position:relative;height:200px;">
-          <canvas id="roundDistChart" role="img" aria-label="회차 분포 비교">전년동기vs당기 회차 분포</canvas>
-        </div>
-      </div>
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-        <p style="font-size:13px;font-weight:600;margin-bottom:4px;">월별 순증감 (M1=첫 달)</p>
-        <p style="font-size:11px;color:#aaa;margin-bottom:12px;">당기 M1(-94): 정책 변경 충격 / 전년 M5~M6: 여름 이탈</p>
-        <div style="position:relative;height:200px;">
-          <canvas id="netChangeChart" role="img" aria-label="월별 순증감 전년동기 비교">전년동기vs당기 순증감</canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- 누적 순증감 전체 -->
-    <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;margin-bottom:2rem;">
-      <p style="font-size:13px;font-weight:600;margin-bottom:4px;">누적 순증감 추이</p>
-      <p style="font-size:11px;color:#aaa;margin-bottom:12px;">전년동기 최고 +604(M9) 후 여름 감소 · 당기는 M1 충격 후 완만한 회복세 (-37로 마감 중)</p>
-      <div style="position:relative;height:200px;">
-        <canvas id="cumNetChart" role="img" aria-label="누적 순증감 전년동기 비교">전년동기vs당기 누적 순증감</canvas>
-      </div>
-    </div>
-
-    <!-- 건전성 인사이트 (업데이트) -->
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:2.5rem;">
-      <div style="background:#fff;border:1px solid #ebebeb;border-left:3px solid #E24B4A;border-radius:0 10px 10px 0;padding:.9rem 1.1rem;">
-        <p style="font-size:12px;font-weight:600;color:#E24B4A;margin-bottom:4px;">🔴 전년 LTV 상승은 착시 — 프로모 종료 효과였음</p>
-        <p style="font-size:12px;color:#555;line-height:1.65;margin:0;">전년동기 구독자의 80.5%가 4,400원 배송비 프로모 유저. 프로모 제외 기준 전년 LTV(223,210원)가 당기(146,614원)보다 오히려 52% 높음. "LTV 상승"은 프로모 희석 제거 착시.</p>
-      </div>
-      <div style="background:#fff;border:1px solid #ebebeb;border-left:3px solid #1D9E75;border-radius:0 10px 10px 0;padding:.9rem 1.1rem;">
-        <p style="font-size:12px;font-weight:600;color:#1D9E75;margin-bottom:4px;">✅ 유료 구독자 볼륨 3.2배 증가</p>
-        <p style="font-size:12px;color:#555;line-height:1.65;margin:0;">프로모 제외 기준 유료 구독자: 228명 → 737명(+223%). 프로모 없이도 진성 유입이 크게 늘었음. 1회 이탈율도 20.6% → 26.1%로 소폭 악화에 그침.</p>
-      </div>
-      <div style="background:#fff;border:1px solid #ebebeb;border-left:3px solid #BA7517;border-radius:0 10px 10px 0;padding:.9rem 1.1rem;">
-        <p style="font-size:12px;font-weight:600;color:#BA7517;margin-bottom:4px;">🟡 유료 구독자 1인당 LTV는 하락 중</p>
-        <p style="font-size:12px;color:#555;line-height:1.65;margin:0;">유료 기준 평균 LTV 223,210 → 146,614원(-34%), 유지회차 5.90 → 4.32회(-27%). 볼륨은 늘었지만 개인 충성도 지표 악화. 당기 유입 구독자의 품질 개선이 다음 과제.</p>
-      </div>
-      <div style="background:#fff;border:1px solid #ebebeb;border-left:3px solid #533AB7;border-radius:0 10px 10px 0;padding:.9rem 1.1rem;">
-        <p style="font-size:12px;font-weight:600;color:#533AB7;margin-bottom:4px;">🔵 프로모 유저 LTV: 중앙값 8,800원 · 1회 이탈 52.5%</p>
-        <p style="font-size:12px;color:#555;line-height:1.65;margin:0;">4,400원 프로모 유저는 사실상 무료 체험 후 절반 이상 1회 이탈. 24.01~25.07 동안 전체 신규의 70~90%가 이 구조. 과거 이탈 지표 전반 재해석 필요.</p>
-      </div>
-    </div>
-
-    <!-- 프로모션 상세 분석 -->
-    <div style="padding-top:2rem;border-top:1.5px dashed #e0e0e0;margin-bottom:2rem;">
-      <p style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">라이트 구독 (첫결제 0원 + 배송비 4,400원)</p>
-      <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;">프로모션 기간 분석</h3>
-      <p style="font-size:13px;color:#888;margin-bottom:1.5rem;">운영 기간: 2024년 1월 ~ 2025년 7월 (19개월) · 2025년 8월 완전 종료</p>
-
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;">
-        <div style="background:#FFF8F0;border:1px solid #F5D9B0;border-radius:10px;padding:1rem;">
-          <p style="font-size:11px;color:#854F0B;margin-bottom:6px;">전년동기 프로모 비중</p>
-          <p style="font-size:26px;font-weight:600;color:#BA7517;">80.5%</p>
-          <p style="font-size:11px;color:#aaa;margin-top:2px;">943명 / 1,171명</p>
-        </div>
-        <div style="background:#FFF8F0;border:1px solid #F5D9B0;border-radius:10px;padding:1rem;">
-          <p style="font-size:11px;color:#854F0B;margin-bottom:6px;">프로모 중앙값 LTV</p>
-          <p style="font-size:26px;font-weight:600;color:#BA7517;">₩8,800</p>
-          <p style="font-size:11px;color:#aaa;margin-top:2px;">배송비 2회치 수준</p>
-        </div>
-        <div style="background:#FFF8F0;border:1px solid #F5D9B0;border-radius:10px;padding:1rem;">
-          <p style="font-size:11px;color:#854F0B;margin-bottom:6px;">프로모 1회 이탈율</p>
-          <p style="font-size:26px;font-weight:600;color:#E24B4A;">52.5%</p>
-          <p style="font-size:11px;color:#aaa;margin-top:2px;">절반 이상 1회 후 이탈</p>
-        </div>
-        <div style="background:#EDF7F2;border:1px solid #B0DEC8;border-radius:10px;padding:1rem;">
-          <p style="font-size:11px;color:#1D6A4A;margin-bottom:6px;">유료 구독자 증가</p>
-          <p style="font-size:26px;font-weight:600;color:#1D9E75;">+223%</p>
-          <p style="font-size:11px;color:#aaa;margin-top:2px;">228명 → 737명</p>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
-        <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-          <p style="font-size:13px;font-weight:600;margin-bottom:4px;">월별 신규 — 프로모 vs 유료</p>
-          <p style="font-size:11px;color:#aaa;margin-bottom:12px;">주황: 4,400원 프로모 / 파란: 유료 구독 (2024.01~2025.09)</p>
-          <div style="position:relative;height:220px;"><canvas id="promoBarChart"></canvas></div>
-        </div>
-        <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-          <p style="font-size:13px;font-weight:600;margin-bottom:4px;">LTV 3-way 비교 (중앙값)</p>
-          <p style="font-size:11px;color:#aaa;margin-bottom:12px;">프로모 제외 시 전년동기 유료가 당기보다 57% 높음</p>
-          <div style="position:relative;height:220px;"><canvas id="ltv3wayChart"></canvas></div>
-        </div>
-      </div>
-
-      <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-        <p style="font-size:13px;font-weight:600;margin-bottom:14px;">유료 구독자 기준 비교 <span style="font-size:11px;font-weight:400;color:#aaa;">(프로모 제외 apples-to-apples)</span></p>
-        <table style="width:100%;border-collapse:collapse;font-size:12px;">
-          <thead>
-            <tr style="border-bottom:1.5px solid #ebebeb;">
-              <th style="text-align:left;padding:8px 10px;color:#aaa;font-weight:500;">지표</th>
-              <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">전년동기 유료 (228명)</th>
-              <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">당기 유료 (737명)</th>
-              <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">변화</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom:1px solid #f5f5f5;">
-              <td style="padding:9px 10px;color:#555;">구독자 수</td>
-              <td style="padding:9px 10px;text-align:right;">228명</td>
-              <td style="padding:9px 10px;text-align:right;font-weight:600;">737명</td>
-              <td style="padding:9px 10px;text-align:right;color:#1D9E75;font-weight:600;">+223%</td>
-            </tr>
-            <tr style="border-bottom:1px solid #f5f5f5;background:#fafafa;">
-              <td style="padding:9px 10px;color:#555;">평균 LTV</td>
-              <td style="padding:9px 10px;text-align:right;font-weight:600;">₩223,210</td>
-              <td style="padding:9px 10px;text-align:right;">₩146,614</td>
-              <td style="padding:9px 10px;text-align:right;color:#E24B4A;font-weight:600;">-34%</td>
-            </tr>
-            <tr style="border-bottom:1px solid #f5f5f5;">
-              <td style="padding:9px 10px;color:#555;">중앙값 LTV</td>
-              <td style="padding:9px 10px;text-align:right;font-weight:600;">₩136,915</td>
-              <td style="padding:9px 10px;text-align:right;">₩87,013</td>
-              <td style="padding:9px 10px;text-align:right;color:#E24B4A;font-weight:600;">-36%</td>
-            </tr>
-            <tr style="border-bottom:1px solid #f5f5f5;background:#fafafa;">
-              <td style="padding:9px 10px;color:#555;">평균 유지회차</td>
-              <td style="padding:9px 10px;text-align:right;font-weight:600;">5.90회</td>
-              <td style="padding:9px 10px;text-align:right;">4.32회</td>
-              <td style="padding:9px 10px;text-align:right;color:#E24B4A;font-weight:600;">-27%</td>
-            </tr>
-            <tr>
-              <td style="padding:9px 10px;color:#555;">1회 이탈율</td>
-              <td style="padding:9px 10px;text-align:right;font-weight:600;">20.6%</td>
-              <td style="padding:9px 10px;text-align:right;">26.1%</td>
-              <td style="padding:9px 10px;text-align:right;color:#E24B4A;font-weight:600;">+5.5%p</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- 3M LTV 심화 분석 -->
-      <div style="padding-top:2rem;border-top:1.5px dashed #e0e0e0;margin-top:2rem;">
-        <p style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">관측 기간 통제</p>
-        <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;">구독 후 3M / 6M / 8M LTV 성장 궤적</h3>
-        <p style="font-size:13px;color:#888;margin-bottom:1.5rem;">동일 시점 기준 비교 — 관측 기간 차이가 아닌 진짜 품질 차이 확인</p>
-
-        <!-- 경고 배너 -->
-        <div style="background:#FEF2F2;border:1px solid #FECACA;border-left:4px solid #E24B4A;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
-          <p style="font-size:13px;font-weight:600;color:#A32D2D;margin-bottom:4px;">⚠️ 3M 기준에서도 전년동기 유료가 당기보다 27% 높음 — 진짜 품질 차이</p>
-          <p style="font-size:12px;color:#7B2323;line-height:1.7;margin:0;">관측 기간 차이를 제거해도 격차 유지. 당기 유료 구독자 6M→8M 중앙값이 동일(₩87,013) — 6개월 이후 추가 결제 거의 없음. 전년 유료는 3M→8M +70% 성장.</p>
-        </div>
-
-        <!-- 3M KPI -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;">
-          <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
-            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">전년동기 유료 3M 중앙값</p>
-            <p style="font-size:22px;font-weight:600;color:#185FA5;">₩108,402</p>
-            <p style="font-size:11px;color:#aaa;margin-top:2px;">228명 기준</p>
-          </div>
-          <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
-            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">당기 유료 3M 중앙값</p>
-            <p style="font-size:22px;font-weight:600;color:#E24B4A;">₩79,400</p>
-            <p style="font-size:11px;color:#E24B4A;margin-top:2px;">-27% vs 전년동기 유료</p>
-          </div>
-          <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
-            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">전년동기 유료 성장율</p>
-            <p style="font-size:22px;font-weight:600;color:#185FA5;">+70%</p>
-            <p style="font-size:11px;color:#aaa;margin-top:2px;">3M → 8M LTV 성장</p>
-          </div>
-          <div style="background:#fff;border:1px solid #ebebeb;border-radius:10px;padding:1rem;">
-            <p style="font-size:11px;color:#aaa;margin-bottom:6px;">당기 유료 성장율</p>
-            <p style="font-size:22px;font-weight:600;color:#E24B4A;">+40.7%</p>
-            <p style="font-size:11px;color:#E24B4A;margin-top:2px;">6M 이후 성장 정체</p>
-          </div>
-        </div>
-
-        <!-- LTV 성장 궤적 차트 + 구간별 바 차트 -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
-          <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-            <p style="font-size:13px;font-weight:600;margin-bottom:4px;">LTV 성장 궤적 (유료 구독자, 중앙값)</p>
-            <p style="font-size:11px;color:#aaa;margin-bottom:12px;">전년동기 유료가 전 구간에서 앞서며 격차 유지</p>
-            <div style="position:relative;height:220px;">
-              <canvas id="ltvGrowthChart"></canvas>
-            </div>
-          </div>
-          <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-            <p style="font-size:13px;font-weight:600;margin-bottom:4px;">3M → 8M 성장율 비교</p>
-            <p style="font-size:11px;color:#aaa;margin-bottom:12px;">전년 프로모 72.9%는 소수 장기 구독자 효과, 중앙값은 8,800원 그대로</p>
-            <div style="position:relative;height:220px;">
-              <canvas id="growthRateChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- 전체 LTV 구간 비교 테이블 -->
-        <div style="background:#fff;border:1px solid #ebebeb;border-radius:12px;padding:1.25rem;">
-          <p style="font-size:13px;font-weight:600;margin-bottom:14px;">전체 LTV 구간 비교 <span style="font-size:11px;font-weight:400;color:#aaa;">(중앙값 기준)</span></p>
-          <table style="width:100%;border-collapse:collapse;font-size:12px;">
-            <thead>
-              <tr style="border-bottom:1.5px solid #ebebeb;">
-                <th style="text-align:left;padding:8px 10px;color:#aaa;font-weight:500;">구분</th>
-                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">구독수</th>
-                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">3M 중앙값</th>
-                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">6M 중앙값</th>
-                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">8M 중앙값</th>
-                <th style="text-align:right;padding:8px 10px;color:#aaa;font-weight:500;">3M→8M 성장</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="border-bottom:1px solid #f5f5f5;background:#EEF5FC;">
-                <td style="padding:9px 10px;color:#185FA5;font-weight:600;">전년동기 유료 (228명)</td>
-                <td style="padding:9px 10px;text-align:right;">228</td>
-                <td style="padding:9px 10px;text-align:right;font-weight:600;">₩108,402</td>
-                <td style="padding:9px 10px;text-align:right;font-weight:600;">₩135,595</td>
-                <td style="padding:9px 10px;text-align:right;font-weight:600;">₩136,915</td>
-                <td style="padding:9px 10px;text-align:right;color:#1D9E75;font-weight:600;">+70%</td>
-              </tr>
-              <tr style="border-bottom:1px solid #f5f5f5;">
-                <td style="padding:9px 10px;color:#E24B4A;font-weight:600;">당기 유료 (737명)</td>
-                <td style="padding:9px 10px;text-align:right;">737</td>
-                <td style="padding:9px 10px;text-align:right;">₩79,400</td>
-                <td style="padding:9px 10px;text-align:right;">₩87,013</td>
-                <td style="padding:9px 10px;text-align:right;">₩87,013</td>
-                <td style="padding:9px 10px;text-align:right;color:#BA7517;font-weight:600;">+40.7%</td>
-              </tr>
-              <tr style="border-bottom:1px solid #f5f5f5;background:#fafafa;">
-                <td style="padding:9px 10px;color:#888;">전년동기 프로모 (943명)</td>
-                <td style="padding:9px 10px;text-align:right;">943</td>
-                <td style="padding:9px 10px;text-align:right;color:#888;">₩8,800</td>
-                <td style="padding:9px 10px;text-align:right;color:#888;">₩8,800</td>
-                <td style="padding:9px 10px;text-align:right;color:#888;">₩8,800</td>
-                <td style="padding:9px 10px;text-align:right;color:#888;">-</td>
-              </tr>
-              <tr>
-                <td style="padding:9px 10px;color:#888;">당기 프로모 (4명)</td>
-                <td style="padding:9px 10px;text-align:right;color:#bbb;">4</td>
-                <td colspan="4" style="padding:9px 10px;text-align:center;color:#bbb;font-size:11px;">표본 수 부족 (통계적 의미 없음)</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer">
-    <span>분석 기간: 2025.09.23 ~ 2026.05.13 &nbsp;·&nbsp; 데이터: Script-18 + Script-19 + Script-20 + Script-21</span>
-    <span>총 이탈 652건 / 모수 6,244건 / 이탈률 10.4%</span>
-  </div>
-
 </div>
 
+<!-- ═══════════════════════════════════════
+     SECTION 3. 구독 건전성
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">Section 3</span>
+    <h2>구독이 건전하게 유지되고 있는가</h2>
+    <p class="section-desc">LTV(구독자 1인당 실제 결제 금액)와 유지 회차를 분석합니다. 단, 전년도 수치는 "배송비 프로모 고객 80.5%"가 섞여 있어 그냥 비교하면 왜곡됩니다. 반드시 프로모를 빼고 봐야 합니다.</p>
+  </div>
+
+  <!-- 비교 기준 설명 박스 -->
+  <div class="banner warn" style="margin-bottom:1.5rem;">
+    <p class="banner-title" style="color:#854F0B;">📌 비교 기준 안내 — 이걸 모르면 숫자가 거꾸로 보입니다</p>
+    <p class="banner-body" style="color:#6B4A1A;">
+      <strong>전년 정상결제 구독자</strong>: 2024.09~2025.05에 첫 결제가 5,000원 초과인 228명 (전체의 19.5%)<br>
+      <strong>당기 구독자</strong>: 2025.09~2026.05에 시작한 741명 — 이 중 99.5%가 정상 결제<br>
+      프로모 고객을 제거하고 "진짜 유료 고객끼리" 비교해야 올바른 판단이 가능합니다.
+    </p>
+  </div>
+
+  <!-- KPI 비교 -->
+  <div class="kpi-row col-4">
+    <div class="kpi">
+      <p class="k-label">전년 정상결제 구독자 수</p>
+      <p class="k-value" style="color:#185FA5;">228명</p>
+      <p class="k-sub">전년 전체 1,171명 중 19.5%</p>
+    </div>
+    <div class="kpi">
+      <p class="k-label">당기 구독자 수</p>
+      <p class="k-value" style="color:#1D9E75;">737명</p>
+      <p class="k-sub">↑ 전년 대비 +223% 증가</p>
+    </div>
+    <div class="kpi">
+      <p class="k-label">전년 정상결제 1회 이탈율</p>
+      <p class="k-value" style="color:#185FA5;">20.6%</p>
+      <p class="k-sub">1회 받고 그만둔 비율</p>
+    </div>
+    <div class="kpi">
+      <p class="k-label">당기 1회 이탈율</p>
+      <p class="k-value" style="color:#E24B4A;">26.1%</p>
+      <p class="k-sub">↑ +5.5%p 악화</p>
+    </div>
+  </div>
+
+  <div class="chart-grid col-2">
+    <div class="chart-box">
+      <p class="cb-title">월별 구독 순증감 (당기 vs 전년)</p>
+      <p class="cb-what">매달 신규가 얼마나 들어오고, 정지·해지가 얼마나 나갔는지 보여줍니다. M1=구독 정책 기준 첫 달</p>
+      <p class="cb-finding">당기 M1(-94): 정책 변경 충격 / 전년은 M5(봄)에 폭발적 신규 유입</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#B5D4F4;"></span>전년동기</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>당기</span>
+      </div>
+      <div class="chart-canvas" style="height:200px;"><canvas id="netChangeChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <p class="cb-title">누적 순증감 (당기 vs 전년)</p>
+      <p class="cb-what">순증감을 매달 쌓아가면서 전체 추세가 어떻게 다른지 비교합니다</p>
+      <p class="cb-finding">전년 최고 +604(봄 피크) 후 감소 vs 당기는 출발이 -94로 시작해 완만한 회복 중</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#B5D4F4;"></span>전년동기</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>당기</span>
+      </div>
+      <div class="chart-canvas" style="height:200px;"><canvas id="cumNetChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid col-2">
+    <div class="chart-box">
+      <p class="cb-title">회차 구간 분포 비교</p>
+      <p class="cb-what">구독자들이 몇 회차까지 유지됐는지 비율을 보여줍니다</p>
+      <p class="cb-finding">당기는 1회 이탈 21.1%로 절반 수준 — 2~6회 허리 구간이 훨씬 두터워짐</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#B5D4F4;"></span>전년 전체</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>당기</span>
+      </div>
+      <div class="chart-canvas" style="height:200px;"><canvas id="roundDistChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <p class="cb-title">1회 이탈율 비교</p>
+      <p class="cb-what">첫 배송 받고 바로 그만두는 비율이 얼마나 달라졌는지 비교합니다</p>
+      <p class="cb-finding">전년 전체 47% → 당기 21.1% 개선 (단, 전년은 프로모 고객 52.5% 이탈 포함된 수치)</p>
+      <div style="display:flex;align-items:center;justify-content:space-around;height:180px;">
+        <div style="text-align:center;">
+          <p style="font-size:11px;color:#aaa;margin-bottom:8px;">전년 전체 (프로모 포함)</p>
+          <div class="donut-wrap" style="width:100px;height:100px;margin:0 auto;">
+            <canvas id="churn1PrevChart"></canvas>
+            <div class="donut-label"><span style="font-size:20px;font-weight:700;color:#E24B4A;">47%</span></div>
+          </div>
+        </div>
+        <div style="font-size:24px;color:#ddd;">→</div>
+        <div style="text-align:center;">
+          <p style="font-size:11px;color:#aaa;margin-bottom:8px;">당기</p>
+          <div class="donut-wrap" style="width:100px;height:100px;margin:0 auto;">
+            <canvas id="churn1CurrentChart"></canvas>
+            <div class="donut-label"><span style="font-size:20px;font-weight:700;color:#1D9E75;">21%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 4. 프로모션 영향
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">Section 4</span>
+    <h2>배송비 프로모션(4,400원)이 미친 영향</h2>
+    <p class="section-desc">2024년 1월~2025년 7월 운영된 "첫 달 배송비만 내는" 프로모션의 실제 효과를 분석합니다. 이 기간 신규 수치는 프로모 고객이 70~90%를 차지해 실제 성과와 크게 다릅니다.</p>
+  </div>
+
+  <div class="kpi-row col-4">
+    <div class="kpi" style="background:#FFF8F0;border-color:#F5D9B0;">
+      <p class="k-label" style="color:#854F0B;">전년 신규 중 프로모 비중</p>
+      <p class="k-value" style="color:#BA7517;">80.5%</p>
+      <p class="k-sub">943명 / 1,171명</p>
+    </div>
+    <div class="kpi" style="background:#FFF8F0;border-color:#F5D9B0;">
+      <p class="k-label" style="color:#854F0B;">프로모 고객 LTV 중앙값</p>
+      <p class="k-value" style="color:#BA7517;">₩8,800</p>
+      <p class="k-sub">배송비 2회치 — 3M·6M·8M 동일</p>
+    </div>
+    <div class="kpi" style="background:#FFF8F0;border-color:#F5D9B0;">
+      <p class="k-label" style="color:#854F0B;">프로모 고객 1회 이탈율</p>
+      <p class="k-value" style="color:#E24B4A;">52.5%</p>
+      <p class="k-sub">절반 이상이 1회 후 이탈</p>
+    </div>
+    <div class="kpi" style="background:#EDF7F2;border-color:#B0DEC8;">
+      <p class="k-label" style="color:#1D6A4A;">프로모 종료 후 유료 구독자 증가</p>
+      <p class="k-value" style="color:#1D9E75;">+223%</p>
+      <p class="k-sub">228명 → 737명</p>
+    </div>
+  </div>
+
+  <div class="chart-grid col-3-2">
+    <div class="chart-box">
+      <p class="cb-title">월별 신규 구독 — 프로모 vs 정상결제</p>
+      <p class="cb-what">매달 신규 구독자가 얼마나 들어왔고, 그 중 프로모 고객이 몇 명인지 보여줍니다</p>
+      <p class="cb-finding">2025년 3월 신규 254명 중 208명(81.9%)이 프로모 — 전년 신규 폭증의 실체</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>정상결제 구독자</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#F5C97A;"></span>배송비 프로모(4,400원)</span>
+      </div>
+      <div class="chart-canvas" style="height:220px;"><canvas id="promoBarChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <p class="cb-title">LTV 비교 — 전년 정상결제 vs 당기 vs 전년 프로모</p>
+      <p class="cb-what">세 그룹의 실제 결제 금액(중앙값)을 나란히 비교합니다</p>
+      <p class="cb-finding">프로모 고객은 ₩8,800으로 사실상 무료 체험에 가까움</p>
+      <div class="chart-canvas" style="height:220px;"><canvas id="ltv3wayChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 비교 테이블 -->
+  <div class="chart-box">
+    <p class="cb-title" style="margin-bottom:4px;">정상결제 구독자끼리만 비교한 결과</p>
+    <p class="cb-what" style="margin-bottom:12px;">프로모를 빼고, 진짜 돈 낸 고객만 보면 어떤가 — 볼륨은 늘었지만 1인당 가치는 낮아졌습니다</p>
+    <table class="data-table">
+      <thead><tr>
+        <th>지표</th>
+        <th class="right">전년 정상결제 구독자 (228명)</th>
+        <th class="right">당기 구독자 (737명)</th>
+        <th class="right">변화</th>
+      </tr></thead>
+      <tbody>
+        <tr class="highlight"><td>구독자 수</td><td class="right">228명</td><td class="right" style="font-weight:700;">737명</td><td class="right" style="color:#1D9E75;font-weight:700;">+223% ✅</td></tr>
+        <tr class="alt"><td>평균 LTV</td><td class="right" style="font-weight:700;">₩223,210</td><td class="right">₩146,614</td><td class="right" style="color:#E24B4A;font-weight:700;">-34% ⚠️</td></tr>
+        <tr><td>중앙값 LTV</td><td class="right" style="font-weight:700;">₩136,915</td><td class="right">₩87,013</td><td class="right" style="color:#E24B4A;font-weight:700;">-36% ⚠️</td></tr>
+        <tr class="alt"><td>평균 유지회차</td><td class="right" style="font-weight:700;">5.90회</td><td class="right">4.32회</td><td class="right" style="color:#E24B4A;font-weight:700;">-27% ⚠️</td></tr>
+        <tr><td>1회 이탈율</td><td class="right" style="font-weight:700;">20.6%</td><td class="right">26.1%</td><td class="right" style="color:#E24B4A;font-weight:700;">+5.5%p ⚠️</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 5. 3M LTV — 관측 기간 통제
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">Section 5</span>
+    <h2>"전년이 더 오래 됐으니 당연히 LTV가 높은 것 아닌가?" — 확인해봤습니다</h2>
+    <p class="section-desc">전년 정상결제 구독자는 이미 1년이 지났으니 LTV가 더 쌓였을 수 있습니다. 공정한 비교를 위해 <strong>구독 후 3개월만 잘라서</strong> 동일 시점으로 비교했습니다.</p>
+  </div>
+
+  <div class="banner danger">
+    <p class="banner-title" style="color:#A32D2D;">결론: 3개월 기준으로 봐도 당기 구독자 LTV가 27% 낮습니다. 관측 기간 차이가 아닌 진짜 품질 차이입니다.</p>
+    <p class="banner-body" style="color:#7B2323;">전년 정상결제 3M 중앙값 ₩108,402 vs 당기 3M 중앙값 ₩79,400. 또한 당기 구독자는 6개월과 8개월 LTV가 ₩87,013으로 동일 — 6개월 이후 추가 결제가 거의 없습니다.</p>
+  </div>
+
+  <div class="kpi-row col-4">
+    <div class="kpi">
+      <p class="k-label">전년 정상결제 3M 중앙값</p>
+      <p class="k-value" style="color:#185FA5;">₩108,402</p>
+      <p class="k-sub">228명, 구독 후 3개월</p>
+    </div>
+    <div class="kpi">
+      <p class="k-label">당기 3M 중앙값</p>
+      <p class="k-value" style="color:#E24B4A;">₩79,400</p>
+      <p class="k-sub">-27% vs 전년 정상결제</p>
+    </div>
+    <div class="kpi">
+      <p class="k-label">전년 정상결제 3M→8M 성장</p>
+      <p class="k-value" style="color:#185FA5;">+70%</p>
+      <p class="k-sub">계속 결제하며 LTV 성장</p>
+    </div>
+    <div class="kpi">
+      <p class="k-label">당기 3M→8M 성장</p>
+      <p class="k-value" style="color:#E24B4A;">+40.7%</p>
+      <p class="k-sub">6M 이후 추가 결제 거의 없음</p>
+    </div>
+  </div>
+
+  <div class="chart-grid col-2">
+    <div class="chart-box">
+      <p class="cb-title">LTV 성장 궤적 — 3M / 6M / 8M (중앙값)</p>
+      <p class="cb-what">시간이 지남에 따라 각 그룹의 누적 결제금액이 어떻게 달라지는지 보여줍니다</p>
+      <p class="cb-finding">전년 정상결제는 꾸준히 오르는 반면, 당기는 6개월 이후 성장이 멈춤</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>전년 정상결제 구독자</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>당기 구독자</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#F5C97A;"></span>전년 프로모 구독자</span>
+      </div>
+      <div class="chart-canvas" style="height:220px;"><canvas id="ltvGrowthChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <p class="cb-title">전체 LTV 구간 비교표</p>
+      <p class="cb-what">4개 그룹의 3M·6M·8M LTV를 한눈에 비교합니다</p>
+      <p class="cb-finding">전년 프로모 고객은 3·6·8개월 내내 ₩8,800 — 처음부터 끝까지 배송비 2회치만 내고 떠남</p>
+      <table class="data-table" style="margin-top:8px;">
+        <thead><tr>
+          <th>구분</th><th class="right">3M</th><th class="right">6M</th><th class="right">8M</th><th class="right">성장</th>
+        </tr></thead>
+        <tbody>
+          <tr class="highlight"><td style="color:#185FA5;font-weight:700;">전년 정상결제 (228명)</td><td class="right">₩108,402</td><td class="right">₩135,595</td><td class="right">₩136,915</td><td class="right" style="color:#1D9E75;font-weight:700;">+70%</td></tr>
+          <tr><td style="color:#E24B4A;font-weight:700;">당기 구독자 (737명)</td><td class="right">₩79,400</td><td class="right">₩87,013</td><td class="right">₩87,013</td><td class="right" style="color:#BA7517;font-weight:700;">+40.7%</td></tr>
+          <tr class="alt"><td style="color:#888;">전년 프로모 (943명)</td><td class="right" style="color:#888;">₩8,800</td><td class="right" style="color:#888;">₩8,800</td><td class="right" style="color:#888;">₩8,800</td><td class="right" style="color:#888;">변화없음</td></tr>
+          <tr><td style="color:#bbb;">당기 프로모 (4명)</td><td class="right" colspan="4" style="color:#bbb;text-align:center;">표본 부족 — 프로모 사실상 종료</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="insight-list">
+    <div class="insight" style="border-left-color:#E24B4A;">
+      <p class="i-title" style="color:#E24B4A;">🔴 당기 구독자의 6개월 이후 이탈 원인 파악이 시급합니다</p>
+      <p class="i-body">당기 LTV가 6개월(₩87,013)과 8개월(₩87,013)에서 동일하다는 건, 6개월 이후에는 추가 결제가 거의 없다는 의미입니다. 6개월 시점에 CS 문의·배송 만족도·이탈 패턴을 집중 분석하면 LTV 개선 레버를 찾을 수 있습니다.</p>
+    </div>
+    <div class="insight" style="border-left-color:#185FA5;">
+      <p class="i-title" style="color:#185FA5;">🔵 유료 구독자 볼륨 3.2배 성장은 진짜입니다</p>
+      <p class="i-body">프로모를 걷어내도 228명 → 737명으로 3.2배 증가. 프로모 없이도 유료 구독 수요가 늘었습니다. 지금은 이 사람들이 더 오래, 더 많이 결제하게 만드는 것이 과제입니다.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>데이터: Script-18 (이탈 사유) · Script-19 (모수 지표) · Script-20 (LTV·프로모 분석) · Script-21 (3M LTV)</span>
+  <span>분석 기간: 2025.09.23 ~ 2026.05.13</span>
+</div>
+
+</div><!-- .page -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-const textColor = '#aaa';
-const gridColor = 'rgba(0,0,0,0.05)';
-const baseOpts = { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{mode:'index',intersect:false}}, scales:{x:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}} };
+const tc = '#aaa', gc = 'rgba(0,0,0,0.05)';
+const base = { responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{display:false}, tooltip:{mode:'index',intersect:false} },
+  scales:{ x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}}, y:{ticks:{color:tc,font:{size:11}},grid:{color:gc}} }
+};
 
-new Chart(document.getElementById('reasonChart'), {
-  type:'bar',
-  data:{
-    labels:['상품 품질 불만','직접 선택 선호','기타','단순 변심','부재/수령','사유 없음','수량 불만','수령인 거절','타사 이동','서비스'],
-    datasets:[{data:[137,133,83,66,61,48,23,13,7,7], backgroundColor:['#E24B4A','#378ADD','#888780','#BA7517','#BA7517','#888780','#BA7517','#888780','#888780','#888780'], borderRadius:4, borderSkipped:false}]
-  },
-  options:{...baseOpts, indexAxis:'y', scales:{x:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}, y:{ticks:{color:'#555',font:{size:10},autoSkip:false},grid:{color:gridColor}}}}
-});
+/* 도넛 — 이탈 유형 */
+new Chart(document.getElementById('donutChart'),{type:'doughnut',data:{labels:['정지','해지','자동정지'],datasets:[{data:[476,142,34],backgroundColor:['#185FA5','#A32D2D','#854F0B'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed}건`}}}}});
 
-new Chart(document.getElementById('monthlyChart'), {
-  type:'line',
-  data:{
-    labels:["'25.9","'25.10","'25.11","'25.12","'26.1","'26.2","'26.3","'26.4","'26.5*"],
-    datasets:[
-      {label:'품질 불만', data:[9,18,7,14,16,12,22,28,11], borderColor:'#E24B4A', backgroundColor:'transparent', tension:0.3, pointRadius:3},
-      {label:'직접 선택 선호', data:[3,14,11,10,17,16,21,30,11], borderColor:'#378ADD', backgroundColor:'transparent', tension:0.3, pointRadius:3, borderDash:[5,3]},
-      {label:'단순 변심', data:[4,9,3,4,3,6,16,13,8], borderColor:'#1D9E75', backgroundColor:'transparent', tension:0.3, pointRadius:3, borderDash:[2,2]}
-    ]
-  },
-  options:{...baseOpts, scales:{x:{ticks:{color:textColor,font:{size:11},autoSkip:false,maxRotation:0},grid:{color:gridColor}}, y:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}}}
-});
+/* 월별 총 이탈 */
+new Chart(document.getElementById('totalMonthlyChart'),{type:'bar',data:{labels:["'25.9","'25.10","'25.11","'25.12","'26.1","'26.2","'26.3","'26.4","'26.5*"],datasets:[{label:'총 이탈',data:[37,65,45,51,55,61,108,102,54],backgroundColor:ctx=>{const v=ctx.parsed.y;return v>=100?'#E24B4A':v>=60?'#BA7517':'#B5D4F4';},borderRadius:4}]},options:{...base,plugins:{legend:{display:false},tooltip:{intersect:false}},scales:{x:{ticks:{color:'#555',font:{size:11},autoSkip:false,maxRotation:0},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc}}}}});
 
-new Chart(document.getElementById('cohortChart'), {
-  type:'bar',
-  data:{
-    labels:['결제 없음 (91건)','1~3회차 (208건)','4~6회차 (78건)','7회차~ (201건)'],
-    datasets:[
-      {label:'상품 품질 불만', data:[11,62,21,43], backgroundColor:'#E24B4A'},
-      {label:'직접 선택 선호', data:[19,56,17,41], backgroundColor:'#378ADD'},
-      {label:'단순 변심', data:[25,16,6,19], backgroundColor:'#BA7517'},
-      {label:'부재/수령', data:[4,19,11,27], backgroundColor:'#1D9E75'},
-      {label:'사유없음+기타', data:[32,55,23,71], backgroundColor:'#C4C2BB'}
-    ]
-  },
-  options:{...baseOpts, plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}}, scales:{x:{stacked:true,ticks:{color:'#555',font:{size:11}},grid:{color:gridColor}}, y:{stacked:true,ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}}}
-});
+/* 사유별 */
+new Chart(document.getElementById('reasonChart'),{type:'bar',data:{labels:['상품 품질 불만','직접 선택 선호','기타','단순 변심','부재/수령','사유 없음','수량 불만','수령인 거절','타사 이동','서비스'],datasets:[{data:[137,133,83,66,61,48,23,13,7,7],backgroundColor:['#E24B4A','#378ADD','#888780','#BA7517','#BA7517','#888780','#BA7517','#888780','#888780','#888780'],borderRadius:4,borderSkipped:false}]},options:{...base,indexAxis:'y',scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:'#555',font:{size:10},autoSkip:false},grid:{color:gc}}}}});
 
-new Chart(document.getElementById('donutChart'), {
-  type:'doughnut',
-  data:{labels:['정지','해지','자동정지'], datasets:[{data:[476,142,34], backgroundColor:['#185FA5','#A32D2D','#854F0B'], borderWidth:0, hoverOffset:6}]},
-  options:{responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed}건`}}}}
-});
+/* 월별 사유 추이 */
+new Chart(document.getElementById('monthlyChart'),{type:'line',data:{labels:["'25.9","'25.10","'25.11","'25.12","'26.1","'26.2","'26.3","'26.4","'26.5*"],datasets:[{label:'품질 불만',data:[9,18,7,14,16,12,22,28,11],borderColor:'#E24B4A',backgroundColor:'transparent',tension:0.3,pointRadius:3},{label:'직접 선택 선호',data:[3,14,11,10,17,16,21,30,11],borderColor:'#378ADD',backgroundColor:'transparent',tension:0.3,pointRadius:3,borderDash:[5,3]},{label:'단순 변심',data:[4,9,3,4,3,6,16,13,8],borderColor:'#1D9E75',backgroundColor:'transparent',tension:0.3,pointRadius:3,borderDash:[2,2]}]},options:{...base,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},scales:{x:{ticks:{color:tc,font:{size:11},autoSkip:false,maxRotation:0},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc}}}}});
 
-new Chart(document.getElementById('totalMonthlyChart'), {
-  type:'bar',
-  data:{
-    labels:["'25.9","'25.10","'25.11","'25.12","'26.1","'26.2","'26.3","'26.4","'26.5*"],
-    datasets:[{label:'총 이탈', data:[37,65,45,51,55,61,108,102,54],
-      backgroundColor:(ctx)=>{ const v=ctx.parsed.y; return v>=100?'#E24B4A':v>=60?'#BA7517':'#B5D4F4'; },
-      borderRadius:4}]
-  },
-  options:{...baseOpts, scales:{x:{ticks:{color:textColor,font:{size:11},autoSkip:false,maxRotation:0},grid:{color:gridColor}}, y:{ticks:{color:textColor,font:{size:11}},grid:{color:gridColor}}}}
-});
+/* 회차별 코호트 */
+new Chart(document.getElementById('cohortChart'),{type:'bar',data:{labels:['결제 없음 (91건)','1~3회차 (208건)','4~6회차 (78건)','7회차~ (201건)'],datasets:[{label:'품질 불만',data:[11,62,21,43],backgroundColor:'#E24B4A'},{label:'직접 선택 선호',data:[19,56,17,41],backgroundColor:'#378ADD'},{label:'단순 변심',data:[25,16,6,19],backgroundColor:'#BA7517'},{label:'부재/수령',data:[4,19,11,27],backgroundColor:'#1D9E75'},{label:'기타',data:[32,55,23,71],backgroundColor:'#C4C2BB'}]},options:{...base,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},scales:{x:{stacked:true,ticks:{color:'#555',font:{size:10}},grid:{color:gc}},y:{stacked:true,ticks:{color:tc,font:{size:11}},grid:{color:gc}}}}});
 
-/* ── 프로모션 분석 차트 ── */
+/* 순증감 */
+new Chart(document.getElementById('netChangeChart'),{type:'line',data:{labels:['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'],datasets:[{label:'전년동기',data:[20,31,21,7,96,146,188,84,11,-21,-80,-25],borderColor:'#B5D4F4',backgroundColor:'rgba(181,212,244,0.1)',tension:0.3,pointRadius:4,fill:true,borderDash:[5,3]},{label:'당기',data:[-94,-1,6,3,-9,24,26,18,-10,null,null,null],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.07)',tension:0.3,pointRadius:4,fill:true}]},options:{...base,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}}}});
 
-/* 월별 신규 프로모 vs 유료 스택 바 */
-new Chart(document.getElementById('promoBarChart'), {
-  type:'bar',
-  data:{
-    labels:["'24.1","'24.2","'24.3","'24.4","'24.5","'24.6","'24.7","'24.8","'24.9","'24.10","'24.11","'24.12","'25.1","'25.2","'25.3","'25.4","'25.5","'25.6","'25.7","'25.8","'25.9"],
-    datasets:[
-      {label:'유료 구독', data:[24,31,40,45,36,20,10,11,20,19,22,14,23,35,46,23,26,22,13,22,23], backgroundColor:'#185FA5', borderRadius:0},
-      {label:'프로모 (4,400원)', data:[76,289,220,157,81,76,46,44,55,72,40,46,123,158,208,129,112,37,16,0,0], backgroundColor:'#F5C97A', borderRadius:0}
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:true,position:'top',labels:{font:{size:10},color:'#555',boxWidth:10,boxHeight:10}},
-      tooltip:{mode:'index',intersect:false}
-    },
-    scales:{
-      x:{stacked:true, ticks:{color:textColor,font:{size:9},maxRotation:0,autoSkip:false}, grid:{color:gridColor}},
-      y:{stacked:true, ticks:{color:textColor,font:{size:11}}, grid:{color:gridColor}}
-    }
-  }
-});
+/* 누적 순증감 */
+new Chart(document.getElementById('cumNetChart'),{type:'line',data:{labels:['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'],datasets:[{label:'전년동기',data:[20,51,72,79,175,321,509,593,604,583,503,478],borderColor:'#B5D4F4',backgroundColor:'rgba(181,212,244,0.15)',tension:0.3,pointRadius:4,fill:true,borderDash:[5,3]},{label:'당기',data:[-94,-95,-89,-86,-95,-71,-45,-27,-37,null,null,null],borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.07)',tension:0.3,pointRadius:4,fill:true}]},options:{...base,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}}}});
 
-/* LTV 3way 비교 (중앙값 기준) */
-new Chart(document.getElementById('ltv3wayChart'), {
-  type:'bar',
-  data:{
-    labels:['전년동기\n전체','전년동기\n유료만','전년동기\n프로모만','당기\n전체'],
-    datasets:[{
-      label:'중앙값 LTV (원)',
-      data:[27301, 136915, 8800, 87013],
-      backgroundColor:['#B5D4F4','#185FA5','#F5C97A','#1D9E75'],
-      borderRadius:5
-    }]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{label:ctx=>' ₩'+ctx.parsed.y.toLocaleString()}}
-    },
-    scales:{
-      x:{ticks:{color:'#555',font:{size:10}}, grid:{color:gridColor}},
-      y:{ticks:{color:textColor,font:{size:11},callback:v=>'₩'+v.toLocaleString()}, grid:{color:gridColor}}
-    }
-  }
-});
+/* 회차 분포 */
+new Chart(document.getElementById('roundDistChart'),{type:'bar',data:{labels:['1회 이탈','2~3회','4~6회','7~12회','12회 초과'],datasets:[{label:'전년 전체',data:[47.0,16.9,14.7,13.5,8.0],backgroundColor:'#B5D4F4',borderRadius:3},{label:'당기',data:[21.1,34.2,23.5,15.4,5.9],backgroundColor:'#185FA5',borderRadius:3}]},options:{...base,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.x}%`}}},scales:{x:{ticks:{color:tc,font:{size:11},callback:v=>v+'%'},grid:{color:gc},max:55},y:{ticks:{color:'#555',font:{size:10}},grid:{color:gc}}}}});
 
-/* ── 3M LTV 성장 궤적 ── */
-new Chart(document.getElementById('ltvGrowthChart'), {
-  type: 'line',
-  data: {
-    labels: ['3개월', '6개월', '8개월'],
-    datasets: [
-      {
-        label: '전년동기 유료',
-        data: [108402, 135595, 136915],
-        borderColor: '#185FA5',
-        backgroundColor: 'rgba(24,95,165,0.08)',
-        tension: 0.3, pointRadius: 6, pointBackgroundColor: '#185FA5',
-        fill: true, borderWidth: 2
-      },
-      {
-        label: '당기 유료',
-        data: [79400, 87013, 87013],
-        borderColor: '#E24B4A',
-        backgroundColor: 'rgba(226,75,74,0.06)',
-        tension: 0.3, pointRadius: 6, pointBackgroundColor: '#E24B4A',
-        fill: true, borderWidth: 2, borderDash: [5,3]
-      },
-      {
-        label: '전년동기 프로모',
-        data: [8800, 8800, 8800],
-        borderColor: '#F5C97A',
-        backgroundColor: 'transparent',
-        tension: 0, pointRadius: 4, pointBackgroundColor: '#F5C97A',
-        fill: false, borderWidth: 1.5, borderDash: [3,3]
-      }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: true, position: 'top', labels: { font: { size: 11 }, color: '#555', boxWidth: 10, boxHeight: 10 } },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ₩${ctx.parsed.y.toLocaleString()}` } }
-    },
-    scales: {
-      x: { ticks: { color: '#555', font: { size: 11 } }, grid: { color: gridColor } },
-      y: { ticks: { color: textColor, font: { size: 11 }, callback: v => '₩' + v.toLocaleString() }, grid: { color: gridColor } }
-    }
-  }
-});
+/* 1회 이탈 도넛 */
+new Chart(document.getElementById('churn1PrevChart'),{type:'doughnut',data:{labels:['1회 이탈','유지'],datasets:[{data:[47,53],backgroundColor:['#E24B4A','#EBEBEB'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+new Chart(document.getElementById('churn1CurrentChart'),{type:'doughnut',data:{labels:['1회 이탈','유지'],datasets:[{data:[21.1,78.9],backgroundColor:['#E24B4A','#EBEBEB'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});
 
-new Chart(document.getElementById('growthRateChart'), {
-  type: 'bar',
-  data: {
-    labels: ['전년동기\n유료', '당기\n유료', '전년동기\n프로모*'],
-    datasets: [{
-      label: '3M→8M 성장율 (%)',
-      data: [70.0, 40.7, 72.9],
-      backgroundColor: ['#185FA5', '#E24B4A', '#F5C97A'],
-      borderRadius: 6
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: { label: ctx => ` +${ctx.parsed.y}%` } }
-    },
-    scales: {
-      x: { ticks: { color: '#555', font: { size: 11 } }, grid: { color: gridColor } },
-      y: { ticks: { color: textColor, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gridColor }, max: 90 }
-    }
-  }
-});
+/* 프로모 바 */
+new Chart(document.getElementById('promoBarChart'),{type:'bar',data:{labels:["'24.1","'24.2","'24.3","'24.4","'24.5","'24.6","'24.7","'24.8","'24.9","'24.10","'24.11","'24.12","'25.1","'25.2","'25.3","'25.4","'25.5","'25.6","'25.7","'25.8","'25.9"],datasets:[{label:'정상결제',data:[24,31,40,45,36,20,10,11,20,19,22,14,23,35,46,23,26,22,13,22,23],backgroundColor:'#185FA5',borderRadius:0},{label:'배송비 프로모',data:[76,289,220,157,81,76,46,44,55,72,40,46,123,158,208,129,112,37,16,0,0],backgroundColor:'#F5C97A',borderRadius:0}]},options:{...base,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},scales:{x:{stacked:true,ticks:{color:tc,font:{size:9},maxRotation:0,autoSkip:false},grid:{color:gc}},y:{stacked:true,ticks:{color:tc,font:{size:11}},grid:{color:gc}}}}});
 
+/* LTV 3way */
+new Chart(document.getElementById('ltv3wayChart'),{type:'bar',data:{labels:['전년\n정상결제','당기\n구독자','전년\n프로모'],datasets:[{label:'중앙값 LTV',data:[136915,87013,8800],backgroundColor:['#185FA5','#E24B4A','#F5C97A'],borderRadius:5}]},options:{...base,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' ₩'+ctx.parsed.y.toLocaleString()}}},scales:{x:{ticks:{color:'#555',font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11},callback:v=>'₩'+v.toLocaleString()},grid:{color:gc}}}}});
 
-
-/* LTV 비교 바 */
-new Chart(document.getElementById('ltvCompareChart'), {
-  type:'bar',
-  data:{
-    labels:['평균 LTV','중앙값 LTV','평균 LTV\n(프로모제외)'],
-    datasets:[
-      {label:'전년동기 (24.09~25.05)', data:[86514,23900,86514], backgroundColor:'#B5D4F4', borderRadius:4},
-      {label:'당기 (25.09~26.05)',     data:[151323,95600,151323], backgroundColor:'#185FA5', borderRadius:4}
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:true, position:'top', labels:{font:{size:11}, color:'#555', boxWidth:10, boxHeight:10}},
-      tooltip:{callbacks:{label:ctx=>' ₩'+ctx.parsed.y.toLocaleString()}}
-    },
-    scales:{
-      x:{ticks:{color:'#555',font:{size:11}}, grid:{color:gridColor}},
-      y:{ticks:{color:textColor,font:{size:11},callback:v=>'₩'+v.toLocaleString()}, grid:{color:gridColor}}
-    }
-  }
-});
-
-/* 1회 이탈율 게이지용 도넛 */
-new Chart(document.getElementById('churn1CurrentChart'), {
-  type:'doughnut',
-  data:{
-    labels:['1회 이탈','유지'],
-    datasets:[{data:[21.1,78.9], backgroundColor:['#E24B4A','#EBEBEB'], borderWidth:0}]
-  },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}}}
-});
-new Chart(document.getElementById('churn1PrevChart'), {
-  type:'doughnut',
-  data:{
-    labels:['1회 이탈','유지'],
-    datasets:[{data:[47.0,53.0], backgroundColor:['#E24B4A','#EBEBEB'], borderWidth:0}]
-  },
-  options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}}}
-});
-
-/* 회차 분포 비교 가로 바 */
-new Chart(document.getElementById('roundDistChart'), {
-  type:'bar',
-  data:{
-    labels:['1회 이탈','2~3회','4~6회','7~12회','12회 초과'],
-    datasets:[
-      {label:'전년동기', data:[47.0,16.9,14.7,13.5,8.0], backgroundColor:'#B5D4F4', borderRadius:3},
-      {label:'당기',     data:[21.1,34.2,23.5,15.4,5.9], backgroundColor:'#185FA5', borderRadius:3}
-    ]
-  },
-  options:{
-    indexAxis:'y', responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:true,position:'top',labels:{font:{size:11},color:'#555',boxWidth:10,boxHeight:10}},
-      tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.x}%`}}
-    },
-    scales:{
-      x:{ticks:{color:textColor,font:{size:11},callback:v=>v+'%'}, grid:{color:gridColor}, max:55},
-      y:{ticks:{color:'#555',font:{size:10}}, grid:{color:gridColor}}
-    }
-  }
-});
-
-/* 월별 순증감 라인 (전년동기 vs 당기) */
-new Chart(document.getElementById('netChangeChart'), {
-  type:'line',
-  data:{
-    labels:['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'],
-    datasets:[
-      {
-        label:'전년동기 (24.09~)',
-        data:[20,31,21,7,96,146,188,84,11,-21,-80,-25],
-        borderColor:'#B5D4F4', backgroundColor:'rgba(181,212,244,0.1)',
-        tension:0.3, pointRadius:4, fill:true, borderDash:[5,3]
-      },
-      {
-        label:'당기 (25.09~)',
-        data:[-94,-1,6,3,-9,24,26,18,-10,null,null,null],
-        borderColor:'#185FA5', backgroundColor:'rgba(24,95,165,0.07)',
-        tension:0.3, pointRadius:4, fill:true
-      }
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:true,position:'top',labels:{font:{size:11},color:'#555',boxWidth:10,boxHeight:10}},
-      tooltip:{mode:'index',intersect:false}
-    },
-    scales:{
-      x:{ticks:{color:textColor,font:{size:11}}, grid:{color:gridColor}},
-      y:{ticks:{color:textColor,font:{size:11}}, grid:{color:gridColor},
-         afterDataLimits:axis=>{axis.max=axis.max+20;}}
-    }
-  }
-});
-
-/* 누적 순증감 비교 */
-new Chart(document.getElementById('cumNetChart'), {
-  type:'line',
-  data:{
-    labels:['M1','M2','M3','M4','M5','M6','M7','M8','M9','M10','M11','M12'],
-    datasets:[
-      {
-        label:'전년동기 누적',
-        data:[20,51,72,79,175,321,509,593,604,583,503,478],
-        borderColor:'#B5D4F4', backgroundColor:'rgba(181,212,244,0.15)',
-        tension:0.3, pointRadius:4, fill:true, borderDash:[5,3]
-      },
-      {
-        label:'당기 누적',
-        data:[-94,-95,-89,-86,-95,-71,-45,-27,-37,null,null,null],
-        borderColor:'#E24B4A', backgroundColor:'rgba(226,75,74,0.07)',
-        tension:0.3, pointRadius:4, fill:true
-      }
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{
-      legend:{display:true,position:'top',labels:{font:{size:11},color:'#555',boxWidth:10,boxHeight:10}},
-      tooltip:{mode:'index',intersect:false}
-    },
-    scales:{
-      x:{ticks:{color:textColor,font:{size:11}}, grid:{color:gridColor}},
-      y:{ticks:{color:textColor,font:{size:11}}, grid:{color:gridColor}}
-    }
-  }
-});
-
+/* LTV 성장 궤적 */
+new Chart(document.getElementById('ltvGrowthChart'),{type:'line',data:{labels:['3개월','6개월','8개월'],datasets:[{label:'전년 정상결제 구독자',data:[108402,135595,136915],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.08)',tension:0.3,pointRadius:6,pointBackgroundColor:'#185FA5',fill:true,borderWidth:2},{label:'당기 구독자',data:[79400,87013,87013],borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.06)',tension:0.3,pointRadius:6,pointBackgroundColor:'#E24B4A',fill:true,borderWidth:2,borderDash:[5,3]},{label:'전년 프로모 구독자',data:[8800,8800,8800],borderColor:'#F5C97A',backgroundColor:'transparent',tension:0,pointRadius:4,pointBackgroundColor:'#F5C97A',fill:false,borderWidth:1.5,borderDash:[3,3]}]},options:{...base,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₩${ctx.parsed.y.toLocaleString()}`}}},scales:{x:{ticks:{color:'#555',font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11},callback:v=>'₩'+v.toLocaleString()},grid:{color:gc}}}}});
 </script>
 </body>
 </html>
