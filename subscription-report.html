@@ -743,8 +743,134 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════
+     SECTION 6. 코호트 리텐션 분석
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">Section 6</span>
+    <h2>왜 더 짧게 쓰는가 — 코호트 리텐션 분석</h2>
+    <p class="section-desc">
+      같은 시기에 구독을 시작한 사람들이 2회, 3회, 6회... 얼마나 남아있는지 비교합니다.<br>
+      정책변경 전후 구독자를 동일 조건(프로모 제외, 내부 계정 제외)으로 비교합니다.
+    </p>
+  </div>
+
+  <!-- 핵심 발견 배너 -->
+  <div class="banner danger" style="margin-bottom:1.5rem;">
+    <p class="banner-title" style="color:#A32D2D;">🎯 3→4회 구간에서 이탈이 2배로 뜁니다 — 이게 "더 짧게 쓰는" 이유입니다</p>
+    <p class="banner-body" style="color:#7B2323;">
+      2회 리텐션은 전년(80.7%)과 당기(79.9%)가 거의 동일합니다. 첫 경험 자체는 비슷하다는 뜻입니다.<br>
+      그런데 <strong>3번 받은 후 4번째를 결정하는 시점</strong>에서 이탈이 전년 6.6% → 당기 13.6%로 2배 뜁니다.<br>
+      이후 격차가 계속 벌어져 12회 리텐션은 전년 22.8% vs 당기 7.1%로 3배 차이가 납니다.
+    </p>
+  </div>
+
+  <!-- 리텐션 KPI -->
+  <div class="kpi-row col-4">
+    <div class="kpi">
+      <p class="k-label">2회 리텐션<br><span style="font-size:10px;color:#bbb;">첫 배송 후 재구매율</span></p>
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <p class="k-value" style="color:#185FA5;">79.9%</p>
+        <p style="font-size:12px;color:#888;">vs 80.7%</p>
+      </div>
+      <p class="k-sub" style="color:#1D9E75;">✓ 거의 동일 — 첫 경험은 비슷</p>
+    </div>
+    <div class="kpi" style="border-color:#E24B4A;border-width:1.5px;">
+      <p class="k-label">3→4회 이탈<br><span style="font-size:10px;color:#bbb;">가장 큰 차이 구간</span></p>
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <p class="k-value" style="color:#E24B4A;">13.6%</p>
+        <p style="font-size:12px;color:#888;">vs 6.6%</p>
+      </div>
+      <p class="k-sub" style="color:#E24B4A;">⚠️ 2배 차이 — 핵심 이탈 구간</p>
+    </div>
+    <div class="kpi">
+      <p class="k-label">6회 리텐션<br><span style="font-size:10px;color:#bbb;">6개월 생존율</span></p>
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <p class="k-value" style="color:#E24B4A;">28.9%</p>
+        <p style="font-size:12px;color:#888;">vs 42.1%</p>
+      </div>
+      <p class="k-sub" style="color:#E24B4A;">-13.2%p 차이</p>
+    </div>
+    <div class="kpi">
+      <p class="k-label">12회 리텐션<br><span style="font-size:10px;color:#bbb;">장기 구독 전환율</span></p>
+      <div style="display:flex;align-items:baseline;gap:8px;">
+        <p class="k-value" style="color:#E24B4A;">7.1%</p>
+        <p style="font-size:12px;color:#888;">vs 22.8%</p>
+      </div>
+      <p class="k-sub" style="color:#E24B4A;">3배 차이 — 장기 구독 전환 실패</p>
+    </div>
+  </div>
+
+  <!-- 리텐션 커브 + 이탈 구간 바 -->
+  <div class="chart-grid col-2">
+    <div class="chart-box">
+      <p class="cb-title">리텐션 커브 비교</p>
+      <p class="cb-what">회차별로 몇 %가 남아있는지 보여줍니다. 곡선이 가파를수록 이탈이 빠릅니다</p>
+      <p class="cb-finding">2회까지는 같이 가다가 3→4회 구간부터 벌어지고, 이후 격차가 계속 확대됨</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>전년동기 정상결제 (197명)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>정책변경 후 (678명)</span>
+      </div>
+      <div class="chart-canvas" style="height:240px;"><canvas id="retentionCurveChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <p class="cb-title">구간별 이탈률 비교</p>
+      <p class="cb-what">각 회차 구간에서 얼마나 이탈했는지 비교합니다</p>
+      <p class="cb-finding">3→4회 구간 이탈이 유독 2배 — 이 구간 개입이 가장 중요</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>전년동기</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#E24B4A;"></span>정책변경 후</span>
+      </div>
+      <div class="chart-canvas" style="height:240px;"><canvas id="churnByRoundChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 전체 리텐션 테이블 -->
+  <div class="chart-box" style="margin-bottom:1.5rem;">
+    <p class="cb-title" style="margin-bottom:12px;">전체 리텐션 수치 비교</p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>회차</th>
+          <th class="right">전년동기 (197명)</th>
+          <th class="right">정책변경 후 (678명)</th>
+          <th class="right">차이</th>
+          <th class="right">의미</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1회 (시작)</td><td class="right">100%</td><td class="right">100%</td><td class="right">-</td><td class="right" style="color:#888;">기준점</td></tr>
+        <tr class="alt"><td>2회</td><td class="right">80.7%</td><td class="right">79.9%</td><td class="right" style="color:#1D9E75;">-0.8%p</td><td class="right" style="color:#888;">첫 경험 후 재구매 거의 동일</td></tr>
+        <tr><td>3회</td><td class="right">61.9%</td><td class="right">58.7%</td><td class="right" style="color:#BA7517;">-3.2%p</td><td class="right" style="color:#888;">조금씩 벌어지기 시작</td></tr>
+        <tr class="alt" style="background:#FEF2F2;"><td style="font-weight:700;">4회 ⚠️</td><td class="right" style="font-weight:700;">55.3%</td><td class="right" style="font-weight:700;color:#E24B4A;">45.1%</td><td class="right" style="color:#E24B4A;font-weight:700;">-10.2%p</td><td class="right" style="color:#E24B4A;font-weight:700;">3→4회 이탈이 2배 — 핵심 구간</td></tr>
+        <tr><td>5회</td><td class="right">48.7%</td><td class="right">36.3%</td><td class="right" style="color:#E24B4A;">-12.4%p</td><td class="right" style="color:#888;">격차 확대 중</td></tr>
+        <tr class="alt"><td>6회</td><td class="right">42.1%</td><td class="right">28.9%</td><td class="right" style="color:#E24B4A;">-13.2%p</td><td class="right" style="color:#888;">6개월 생존율 크게 낮음</td></tr>
+        <tr><td>9회</td><td class="right">31.5%</td><td class="right">13.7%</td><td class="right" style="color:#E24B4A;">-17.8%p</td><td class="right" style="color:#888;">격차 더 벌어짐</td></tr>
+        <tr class="alt"><td>12회</td><td class="right" style="font-weight:700;">22.8%</td><td class="right" style="font-weight:700;color:#E24B4A;">7.1%</td><td class="right" style="color:#E24B4A;font-weight:700;">-15.7%p (3배 차이)</td><td class="right" style="color:#888;">장기 구독 전환율 3배 차이</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 인사이트 -->
+  <div class="insight-list">
+    <div class="insight" style="border-left-color:#E24B4A;">
+      <p class="i-title" style="color:#E24B4A;">🔴 3→4회 구간 개입이 가장 중요합니다</p>
+      <p class="i-body">3번 받고 나서 4번째를 결정하는 시점. 이 타이밍에 "다음 배송 예고 + 취향 확인 메시지"를 보내는 것만으로 이탈을 줄일 수 있습니다. 3회 배송 완료 후 3~5일 이내 개입이 핵심입니다.</p>
+    </div>
+    <div class="insight" style="border-left-color:#BA7517;">
+      <p class="i-title" style="color:#BA7517;">🟡 2회까지는 동일한데 그 이후가 다릅니다 — 초기가 아닌 중기 온보딩 문제</p>
+      <p class="i-body">흔히 "1회 이탈"을 막는 데 집중하지만, 이 데이터는 2회(80%)까지는 비슷하다고 말합니다. 오히려 2~4회 구간의 경험 관리가 필요합니다. 3번 받아보고 "이게 내 취향이 아니다"는 결론을 내리기 전에 취향을 재수집하는 플로우가 있어야 합니다.</p>
+    </div>
+    <div class="insight" style="border-left-color:#533AB7;">
+      <p class="i-title" style="color:#533AB7;">🔵 12회 리텐션 3배 차이 — 장기 구독자 만들기가 근본 해결책</p>
+      <p class="i-body">전년동기 정상결제 구독자의 22.8%가 12회까지 유지됐는데, 당기는 7.1%입니다. 장기 구독자 1명이 단기 구독자 3명의 가치를 냅니다. 3→4회 구간을 넘기게 만들면 이후 유지율도 함께 올라갑니다.</p>
+    </div>
+  </div>
+</div>
+
 <div class="footer">
-  <span>데이터: Script-18 (이탈 사유) · Script-19 (모수 지표) · Script-20 (LTV·프로모 분석) · Script-21 (3M LTV)</span>
+  <span>데이터: Script-18 · Script-19 · Script-20 · Script-21 · Script-22 (코호트 리텐션)</span>
   <span>분석 기간: 2025.09.23 ~ 2026.05.13</span>
 </div>
 
@@ -823,6 +949,88 @@ new Chart(document.getElementById('ltv3wayChart'),{type:'bar',data:{labels:['전
 
 /* LTV 성장 궤적 */
 new Chart(document.getElementById('ltvGrowthChart'),{type:'line',data:{labels:['3개월','6개월','8개월'],datasets:[{label:'전년 정상결제 구독자',data:[108402,135595,136915],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.08)',tension:0.3,pointRadius:6,pointBackgroundColor:'#185FA5',fill:true,borderWidth:2},{label:'정책변경 후 구독자 (25.09~26.05)',data:[79400,87013,87013],borderColor:'#E24B4A',backgroundColor:'rgba(226,75,74,0.06)',tension:0.3,pointRadius:6,pointBackgroundColor:'#E24B4A',fill:true,borderWidth:2,borderDash:[5,3]},{label:'전년 프로모 구독자',data:[8800,8800,8800],borderColor:'#F5C97A',backgroundColor:'transparent',tension:0,pointRadius:4,pointBackgroundColor:'#F5C97A',fill:false,borderWidth:1.5,borderDash:[3,3]}]},options:{...base,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ₩${ctx.parsed.y.toLocaleString()}`}}},scales:{x:{ticks:{color:'#555',font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11},callback:v=>'₩'+v.toLocaleString()},grid:{color:gc}}}}});
+
+/* 리텐션 커브 */
+new Chart(document.getElementById('retentionCurveChart'), {
+  type: 'line',
+  data: {
+    labels: ['1회', '2회', '3회', '4회', '5회', '6회', '9회', '12회'],
+    datasets: [
+      {
+        label: '전년동기 정상결제 (197명)',
+        data: [100, 80.7, 61.9, 55.3, 48.7, 42.1, 31.5, 22.8],
+        borderColor: '#185FA5',
+        backgroundColor: 'rgba(24,95,165,0.08)',
+        tension: 0.3, pointRadius: 5, pointBackgroundColor: '#185FA5',
+        fill: true, borderWidth: 2.5
+      },
+      {
+        label: '정책변경 후 (678명)',
+        data: [100, 79.9, 58.7, 45.1, 36.3, 28.9, 13.7, 7.1],
+        borderColor: '#E24B4A',
+        backgroundColor: 'rgba(226,75,74,0.06)',
+        tension: 0.3, pointRadius: 5, pointBackgroundColor: '#E24B4A',
+        fill: true, borderWidth: 2.5, borderDash: [5,3]
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: 'index', intersect: false,
+        callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` }
+      },
+      annotation: {}
+    },
+    scales: {
+      x: { ticks: { color: '#555', font: { size: 11 } }, grid: { color: gc } },
+      y: {
+        ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' },
+        grid: { color: gc }, min: 0, max: 105
+      }
+    }
+  }
+});
+
+/* 구간별 이탈률 */
+new Chart(document.getElementById('churnByRoundChart'), {
+  type: 'bar',
+  data: {
+    labels: ['1→2회', '2→3회', '3→4회 ⚠️', '4→5회', '5→6회'],
+    datasets: [
+      {
+        label: '전년동기',
+        data: [19.3, 18.8, 6.6, 6.6, 6.6],
+        backgroundColor: '#B5D4F4', borderRadius: 4
+      },
+      {
+        label: '정책변경 후',
+        data: [20.1, 21.2, 13.6, 8.8, 7.4],
+        backgroundColor: ctx => ctx.dataIndex === 2 ? '#E24B4A' : '#F5A5A5',
+        borderRadius: 4
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: 'index', intersect: false,
+        callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` }
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#555', font: { size: 10 } }, grid: { color: gc } },
+      y: {
+        ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' },
+        grid: { color: gc }, max: 30
+      }
+    }
+  }
+});
 </script>
 </body>
 </html>
