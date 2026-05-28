@@ -870,7 +870,109 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 </div>
 
 <div class="footer">
-  <span>데이터: Script-18 · Script-19 · Script-20 · Script-21 · Script-22 (코호트 리텐션)</span>
+<!-- ═══════════════════════════════════════
+     SECTION 7. 플랜별 분석
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">Section 7</span>
+    <h2>플랜별 구독 현황 및 이탈 분석</h2>
+    <p class="section-desc">
+      정책변경 후 3개 플랜(럭키박스 / 플로리스트픽 / 펫피투게더)의 구독 현황과 이탈 패턴을 비교합니다.<br>
+      <span style="color:#aaa;">※ 2025년 9월 23일 이후 신규 구독 기준 · 내부 계정 제외</span>
+    </p>
+  </div>
+
+  <div class="banner warn" style="margin-bottom:1.5rem;">
+    <p class="banner-title" style="color:#854F0B;">💡 플랜마다 이탈이 몰리는 구간이 다릅니다</p>
+    <p class="banner-body" style="color:#6B4A1A;">
+      <strong>럭키박스</strong>는 2→3회 구간에서 22% 이탈 — 2번 받아보고 "취향 아니다" 결론 냄<br>
+      <strong>플로리스트픽</strong>은 3→4회 구간에서 13.4% 이탈 — 초반엔 기대감으로 버티다가 3번 받고 실망<br>
+      전체 "3→4회 이탈 2배" 문제는 특정 플랜이 아니라 양쪽 모두에서 발생 중
+    </p>
+  </div>
+
+  <!-- 플랜별 KPI -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1.5rem;">
+    <div style="background:#fff;border:1px solid #e8e8e8;border-top:3px solid #185FA5;border-radius:12px;padding:1.25rem;">
+      <p style="font-size:13px;font-weight:700;color:#185FA5;margin-bottom:12px;">🎲 럭키박스</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">구독자</p><p style="font-size:20px;font-weight:700;">390명</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">이탈율</p><p style="font-size:20px;font-weight:700;color:#BA7517;">45.7%</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 회차</p><p style="font-size:20px;font-weight:700;">3.5회</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">조기이탈율</p><p style="font-size:20px;font-weight:700;color:#E24B4A;">24.8%</p></div>
+      </div>
+      <div style="background:#F7F6F3;border-radius:8px;padding:.75rem;">
+        <p style="font-size:11px;font-weight:600;color:#E24B4A;margin-bottom:3px;">⚠️ 핵심 이탈 구간: 2→3회 (22%)</p>
+        <p style="font-size:11px;color:#888;">2번 받아보고 "취향 아니다" 결론 — 2회 후 취향 재확인 메시지 필요</p>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #e8e8e8;border-top:3px solid #533AB7;border-radius:12px;padding:1.25rem;">
+      <p style="font-size:13px;font-weight:700;color:#533AB7;margin-bottom:12px;">💐 플로리스트픽</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">구독자</p><p style="font-size:20px;font-weight:700;">379명</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">이탈율</p><p style="font-size:20px;font-weight:700;color:#E24B4A;">52.2%</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 회차</p><p style="font-size:20px;font-weight:700;">3.7회</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">조기이탈율</p><p style="font-size:20px;font-weight:700;color:#E24B4A;">28.0%</p></div>
+      </div>
+      <div style="background:#F7F6F3;border-radius:8px;padding:.75rem;">
+        <p style="font-size:11px;font-weight:600;color:#E24B4A;margin-bottom:3px;">⚠️ 핵심 이탈 구간: 3→4회 (13.4%)</p>
+        <p style="font-size:11px;color:#888;">초반 기대감으로 버티다 3번 후 실망 — 기대-경험 갭 관리 필요</p>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #e8e8e8;border-top:3px solid #1D9E75;border-radius:12px;padding:1.25rem;opacity:0.75;">
+      <p style="font-size:13px;font-weight:700;color:#1D9E75;margin-bottom:12px;">🐾 펫피투게더 <span style="font-size:10px;font-weight:400;color:#aaa;">표본 부족</span></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">구독자</p><p style="font-size:20px;font-weight:700;">29명</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">이탈율</p><p style="font-size:20px;font-weight:700;color:#BA7517;">50.0%</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 회차</p><p style="font-size:20px;font-weight:700;">2.1회</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">조기이탈율</p><p style="font-size:20px;font-weight:700;color:#BA7517;">26.7%</p></div>
+      </div>
+      <div style="background:#F7F6F3;border-radius:8px;padding:.75rem;">
+        <p style="font-size:11px;font-weight:600;color:#aaa;margin-bottom:3px;">📊 29명 — 통계적 판단 불가</p>
+        <p style="font-size:11px;color:#aaa;">데이터 축적 후 별도 분석 필요</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 차트 2개 -->
+  <div class="chart-grid col-2">
+    <div class="chart-box">
+      <p class="cb-title">플랜별 리텐션 커브</p>
+      <p class="cb-what">회차별로 얼마나 남아있는지 플랜별로 비교합니다</p>
+      <p class="cb-finding">플로리스트픽이 초반(2회)은 더 높지만 3→4회부터 차이가 역전됨</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>럭키박스 (359명)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#533AB7;"></span>플로리스트픽 (357명)</span>
+      </div>
+      <div class="chart-canvas" style="height:220px;"><canvas id="planRetentionChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <p class="cb-title">구간별 이탈률 비교</p>
+      <p class="cb-what">어느 구간에서 각 플랜이 더 많이 이탈하는지 보여줍니다</p>
+      <p class="cb-finding">럭키박스 2→3회 22% / 플로리스트픽 3→4회 13.4% — 개입 시점이 달라야 함</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>럭키박스</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#533AB7;"></span>플로리스트픽</span>
+      </div>
+      <div class="chart-canvas" style="height:220px;"><canvas id="planChurnChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="insight-list">
+    <div class="insight" style="border-left-color:#185FA5;">
+      <p class="i-title" style="color:#185FA5;">🎲 럭키박스 — 2회 배송 직후 취향 체크가 필요합니다</p>
+      <p class="i-body">2→3회 이탈이 22%로 가장 큰 구간입니다. 2번 받아보고 "내 취향이 아니다"라는 결론을 내리기 전에, 2회 배송 완료 후 "어떠셨나요? 다음 달엔 이런 꽃 어때요?" 메시지 하나가 3회 유지의 핵심 레버가 됩니다.</p>
+    </div>
+    <div class="insight" style="border-left-color:#533AB7;">
+      <p class="i-title" style="color:#533AB7;">💐 플로리스트픽 — 기대치 관리와 스토리텔링이 먼저입니다</p>
+      <p class="i-body">이탈율 52.2%로 두 플랜 중 더 높습니다. "전문가가 골라준다"는 기대가 높아 3번 받고 나서 실망이 더 크게 옵니다. 3회 배송 전 "플로리스트가 이번 달 고른 이유"를 전달하는 스토리텔링이 기대-경험 갭을 줄이는 방법입니다.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>데이터: Script-18 · Script-19 · Script-20 · Script-21 · Script-22 (코호트) · Script-23 (플랜별)</span>
   <span>분석 기간: 2025.09.23 ~ 2026.05.13</span>
 </div>
 
@@ -1028,6 +1130,73 @@ new Chart(document.getElementById('churnByRoundChart'), {
         ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' },
         grid: { color: gc }, max: 30
       }
+    }
+  }
+});
+/* 플랜별 리텐션 커브 */
+new Chart(document.getElementById('planRetentionChart'), {
+  type: 'line',
+  data: {
+    labels: ['1회', '2회', '3회', '4회', '5회', '6회'],
+    datasets: [
+      {
+        label: '럭키박스',
+        data: [100, 72.4, 50.4, 38.4, 32.9, 26.5],
+        borderColor: '#185FA5', backgroundColor: 'rgba(24,95,165,0.07)',
+        tension: 0.3, pointRadius: 5, pointBackgroundColor: '#185FA5',
+        fill: true, borderWidth: 2.5
+      },
+      {
+        label: '플로리스트픽',
+        data: [100, 76.5, 58.5, 45.1, 35.9, 28.3],
+        borderColor: '#533AB7', backgroundColor: 'rgba(83,58,183,0.07)',
+        tension: 0.3, pointRadius: 5, pointBackgroundColor: '#533AB7',
+        fill: true, borderWidth: 2.5, borderDash: [5,3]
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { ticks: { color: '#555', font: { size: 11 } }, grid: { color: gc } },
+      y: { ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gc }, min: 0, max: 105 }
+    }
+  }
+});
+
+/* 플랜별 구간 이탈률 */
+new Chart(document.getElementById('planChurnChart'), {
+  type: 'bar',
+  data: {
+    labels: ['1→2회', '2→3회 ⚠️', '3→4회 ⚠️', '4→5회', '5→6회'],
+    datasets: [
+      {
+        label: '럭키박스',
+        data: [27.6, 22.0, 12.0, 5.5, 6.4],
+        backgroundColor: ctx => ctx.dataIndex === 1 ? '#185FA5' : 'rgba(24,95,165,0.4)',
+        borderRadius: 4
+      },
+      {
+        label: '플로리스트픽',
+        data: [23.5, 17.9, 13.4, 9.2, 6.4],
+        backgroundColor: ctx => ctx.dataIndex === 2 ? '#533AB7' : 'rgba(83,58,183,0.4)',
+        borderRadius: 4
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+    },
+    scales: {
+      x: { ticks: { color: '#555', font: { size: 10 } }, grid: { color: gc } },
+      y: { ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gc }, max: 35 }
     }
   }
 });
