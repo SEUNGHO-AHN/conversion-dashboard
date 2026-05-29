@@ -972,7 +972,144 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
 </div>
 
 <div class="footer">
-  <span>데이터: Script-18 · Script-19 · Script-20 · Script-21 · Script-22 (코호트) · Script-23 (플랜별)</span>
+<!-- ═══════════════════════════════════════
+     SECTION 8. 배송 주기별 유지율 분석
+═══════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">Section 8</span>
+    <h2>배송 주기별 유지율 분석</h2>
+    <p class="section-desc">
+      1주(매주) / 2주(격주) / 4주(월1회) 세 가지 배송 주기별로 유지율을 비교합니다.<br>
+      <strong>핵심:</strong> 회차 기준이 아닌 <strong>실제 기간(개월) 기준</strong>으로 봐야 공정한 비교가 됩니다.<br>
+      <span style="color:#aaa;">※ 정책변경 후(2025.09.23~) 기준 · 내부 계정 제외 · 총 793명</span>
+    </p>
+  </div>
+
+  <!-- 왜 시간 기준으로 봐야 하는지 설명 -->
+  <div class="banner info" style="margin-bottom:1.5rem;">
+    <p class="banner-title" style="color:#185FA5;">📌 "4회 유지"가 주기마다 다른 시간을 의미합니다</p>
+    <p class="banner-body" style="color:#1a3a5c;">
+      1주 구독자 4회 = <strong>1개월</strong> &nbsp;|&nbsp;
+      2주 구독자 4회 = <strong>2개월</strong> &nbsp;|&nbsp;
+      4주 구독자 4회 = <strong>4개월</strong><br>
+      회차 수만 보면 1주 구독자가 가장 충성도 높아 보이지만, 실제 기간으로 보면 다른 그림이 나옵니다.
+    </p>
+  </div>
+
+  <!-- KPI 3개 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem;">
+    <div style="background:#fff;border:1px solid #e8e8e8;border-top:3px solid #1D9E75;border-radius:12px;padding:1.25rem;">
+      <p style="font-size:13px;font-weight:700;color:#1D9E75;margin-bottom:12px;">4주 (월1회) — 가장 오래 유지</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">구독자수</p><p style="font-size:20px;font-weight:700;">227명</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">이탈율</p><p style="font-size:20px;font-weight:700;color:#1D9E75;">42.9%</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 회차</p><p style="font-size:20px;font-weight:700;">2.4회</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 유지기간</p><p style="font-size:20px;font-weight:700;color:#1D9E75;">2.40개월</p></div>
+      </div>
+      <div style="background:#EDF7F2;border-radius:8px;padding:.7rem;">
+        <p style="font-size:11px;color:#1D6A4A;font-weight:600;">✅ 이탈율 최저 · 유지기간 최장</p>
+        <p style="font-size:11px;color:#888;margin-top:2px;">부담이 적어 오래 유지. 2개월 시점 54.3% 생존</p>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #e8e8e8;border-top:3px solid #BA7517;border-radius:12px;padding:1.25rem;">
+      <p style="font-size:13px;font-weight:700;color:#BA7517;margin-bottom:12px;">2주 (격주) ★추천 — 이탈율 최고</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">구독자수</p><p style="font-size:20px;font-weight:700;">511명</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">이탈율</p><p style="font-size:20px;font-weight:700;color:#E24B4A;">52.2%</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 회차</p><p style="font-size:20px;font-weight:700;">3.5회</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 유지기간</p><p style="font-size:20px;font-weight:700;color:#BA7517;">1.75개월</p></div>
+      </div>
+      <div style="background:#FFF8F0;border-radius:8px;padding:.7rem;">
+        <p style="font-size:11px;color:#854F0B;font-weight:600;">⚠️ 구독자 최다인데 이탈율도 최고</p>
+        <p style="font-size:11px;color:#888;margin-top:2px;">"추천" 표시가 맞는지 재검토 필요</p>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #e8e8e8;border-top:3px solid #533AB7;border-radius:12px;padding:1.25rem;">
+      <p style="font-size:13px;font-weight:700;color:#533AB7;margin-bottom:12px;">1주 (매주) — 회차는 많지만 기간은 비슷</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">구독자수</p><p style="font-size:20px;font-weight:700;">55명</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">이탈율</p><p style="font-size:20px;font-weight:700;color:#BA7517;">48.0%</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 회차</p><p style="font-size:20px;font-weight:700;color:#533AB7;">7.2회</p></div>
+        <div><p style="font-size:10px;color:#aaa;margin-bottom:2px;">평균 유지기간</p><p style="font-size:20px;font-weight:700;">1.81개월</p></div>
+      </div>
+      <div style="background:#F5F3FF;border-radius:8px;padding:.7rem;">
+        <p style="font-size:11px;color:#533AB7;font-weight:600;">💡 6회 리텐션 46.7% — 루틴화 효과</p>
+        <p style="font-size:11px;color:#888;margin-top:2px;">한번 정착하면 잘 안 떠남 (표본 55명)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 차트 2개 -->
+  <div class="chart-grid col-2" style="margin-bottom:1.5rem;">
+    <div class="chart-box">
+      <p class="cb-title">회차별 유지율 (원본)</p>
+      <p class="cb-what">각 배송 주기별로 회차가 늘어날수록 얼마나 남아있는지 보여줍니다</p>
+      <p class="cb-finding">1주가 회차 기준으로는 가장 높지만 이건 시간 기준 비교가 아님</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#533AB7;"></span>1주 (매주)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#BA7517;"></span>2주 (격주)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#1D9E75;"></span>4주 (월1회)</span>
+      </div>
+      <div class="chart-canvas" style="height:220px;"><canvas id="cycleRoundChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <p class="cb-title">시간(개월) 기준 유지율 ★</p>
+      <p class="cb-what">같은 시간 기준으로 맞춰서 비교합니다. 이게 실제 구독 지속력의 진짜 비교입니다</p>
+      <p class="cb-finding">4주 구독자가 2개월 시점 54.3% 생존 — 1주·2주(36~37%)보다 훨씬 높음</p>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#533AB7;"></span>1주 (매주)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#BA7517;"></span>2주 (격주)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#1D9E75;"></span>4주 (월1회)</span>
+      </div>
+      <div class="chart-canvas" style="height:220px;"><canvas id="cycleTimeChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 시간 기준 변환 테이블 -->
+  <div class="chart-box" style="margin-bottom:1.5rem;">
+    <p class="cb-title" style="margin-bottom:4px;">회차 → 시간 변환 유지율 비교표</p>
+    <p class="cb-what" style="margin-bottom:12px;">같은 시간대의 유지율을 나란히 비교합니다</p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>시간 기준</th>
+          <th class="right">1주 (매주)</th>
+          <th class="right">2주 (격주)</th>
+          <th class="right">4주 (월1회)</th>
+          <th>해석</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1개월</td><td class="right">4회 = <strong>52.0%</strong></td><td class="right">2회 = <strong>62.6%</strong></td><td class="right" style="color:#aaa;">측정 불가</td><td style="font-size:11px;color:#888;">2주가 1개월 후 더 많이 남아있음</td></tr>
+        <tr class="alt"><td style="font-weight:700;">2개월 ★</td><td class="right">8회 = <strong>36.0%</strong></td><td class="right">4회 = <strong>37.2%</strong></td><td class="right" style="color:#1D9E75;font-weight:700;">2회 = 54.3%</td><td style="font-size:11px;color:#1D9E75;font-weight:600;">4주가 압도적으로 높음</td></tr>
+        <tr><td>3개월</td><td class="right" style="color:#aaa;">측정 불가</td><td class="right">6회 = <strong>22.4%</strong></td><td class="right" style="color:#1D9E75;font-weight:700;">3회 = 32.3%</td><td style="font-size:11px;color:#1D9E75;">4주가 계속 앞섬</td></tr>
+        <tr class="alt"><td>4개월</td><td class="right" style="color:#aaa;">측정 불가</td><td class="right">8회 = <strong>13.0%</strong></td><td class="right" style="color:#1D9E75;font-weight:700;">4회 = 22.0%</td><td style="font-size:11px;color:#1D9E75;">격차 유지</td></tr>
+        <tr><td>6개월</td><td class="right" style="color:#aaa;">—</td><td class="right" style="color:#aaa;">—</td><td class="right">6회 = <strong>13.0%</strong></td><td style="font-size:11px;color:#888;">장기 구독자</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:#aaa;margin-top:10px;">※ 1주·2주의 일부 구간은 현재 데이터(최대 8개월) 내 측정 가능한 회차 한계로 표기 불가</p>
+  </div>
+
+  <!-- 인사이트 -->
+  <div class="insight-list">
+    <div class="insight" style="border-left-color:#E24B4A;">
+      <p class="i-title" style="color:#E24B4A;">🔴 "추천(★)" 표시가 붙은 2주가 이탈율이 가장 높습니다 (52.2%)</p>
+      <p class="i-body">511명으로 가장 많이 선택하는 플랜인데 이탈율도 가장 높습니다. 2주마다 받으면 기대-실망 사이클이 빠르게 돌아가는 구조입니다. "추천" 표시가 오히려 기대치를 높여 실망을 키울 수 있습니다. 추천 설계를 재검토할 필요가 있습니다.</p>
+    </div>
+    <div class="insight" style="border-left-color:#1D9E75;">
+      <p class="i-title" style="color:#1D9E75;">✅ 4주(월1회)가 시간 기준으로 가장 건강합니다</p>
+      <p class="i-body">이탈율 42.9%로 최저, 평균 유지기간 2.40개월로 최장. 한 달에 한 번이라 부담이 적고, 받을 때마다 기대감이 리셋됩니다. 2개월 시점 생존율 54.3%로 1주·2주(36~37%)보다 17%p 높습니다.</p>
+    </div>
+    <div class="insight" style="border-left-color:#533AB7;">
+      <p class="i-title" style="color:#533AB7;">💡 1주와 2주는 시간 기준으로 거의 동일합니다</p>
+      <p class="i-body">회차 수는 1주(7.2회) vs 2주(3.5회)로 2배 차이지만, 기간으로 환산하면 1.81개월 vs 1.75개월로 거의 같습니다. 매주 받는다고 더 오래 구독하는 것이 아닙니다. 다만 1주 구독자는 한번 루틴화되면(6회=1.5개월 생존 46.7%) 이탈이 적은 특성이 있습니다.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>데이터: Script-18 · Script-19 · Script-20 · Script-21 · Script-22 (코호트) · Script-23 (플랜별) · Script-24 (배송주기)</span>
   <span>분석 기간: 2025.09.23 ~ 2026.05.13</span>
 </div>
 
@@ -1199,6 +1336,50 @@ new Chart(document.getElementById('planChurnChart'), {
       y: { ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gc }, max: 35 }
     }
   }
+});
+/* 배송주기 회차별 유지율 */
+new Chart(document.getElementById('cycleRoundChart'), {
+  type: 'line',
+  data: {
+    labels: ['1회', '2회', '3회', '4회', '6회', '8회'],
+    datasets: [
+      { label: '1주 (매주)', data: [100, 70.7, 62.7, 52.0, 46.7, 36.0], borderColor: '#533AB7', backgroundColor: 'rgba(83,58,183,0.07)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 2 },
+      { label: '2주 (격주)', data: [100, 62.6, 47.0, 37.2, 22.4, 13.0], borderColor: '#BA7517', backgroundColor: 'rgba(186,117,23,0.07)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 2, borderDash: [5,3] },
+      { label: '4주 (월1회)', data: [100, 54.3, 32.3, 22.0, 13.0, 4.7], borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.07)', tension: 0.3, pointRadius: 4, fill: true, borderWidth: 2, borderDash: [2,2] }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}%` } } }, scales: { x: { ticks: { color: '#555', font: { size: 11 } }, grid: { color: gc } }, y: { ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gc }, min: 0, max: 105 } } }
+});
+
+/* 배송주기 시간(개월) 기준 유지율 */
+new Chart(document.getElementById('cycleTimeChart'), {
+  type: 'line',
+  data: {
+    labels: ['0개월', '1개월', '1.5개월', '2개월', '3개월', '4개월'],
+    datasets: [
+      {
+        label: '1주 (매주)',
+        data: [100, 52.0, 46.7, 36.0, null, null],
+        borderColor: '#533AB7', backgroundColor: 'rgba(83,58,183,0.07)',
+        tension: 0.3, pointRadius: 5, fill: true, borderWidth: 2,
+        spanGaps: false
+      },
+      {
+        label: '2주 (격주)',
+        data: [100, 62.6, 47.0, 37.2, 22.4, 13.0],
+        borderColor: '#BA7517', backgroundColor: 'rgba(186,117,23,0.07)',
+        tension: 0.3, pointRadius: 5, fill: true, borderWidth: 2, borderDash: [5,3]
+      },
+      {
+        label: '4주 (월1회)',
+        data: [100, null, null, 54.3, 32.3, 22.0],
+        borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.1)',
+        tension: 0.3, pointRadius: 5, fill: true, borderWidth: 2.5,
+        spanGaps: false
+      }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ctx.parsed.y !== null ? ` ${ctx.dataset.label}: ${ctx.parsed.y}%` : '' } } }, scales: { x: { ticks: { color: '#555', font: { size: 11 } }, grid: { color: gc } }, y: { ticks: { color: tc, font: { size: 11 }, callback: v => v + '%' }, grid: { color: gc }, min: 0, max: 105 } } }
 });
 </script>
 </body>
