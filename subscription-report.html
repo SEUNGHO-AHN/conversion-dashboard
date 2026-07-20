@@ -398,6 +398,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
     <p class="cb-title" style="margin-bottom:4px;">이탈율 YoY 비교 — 1.1~7.20 동기간</p>
     <p class="cb-what" style="margin-bottom:4px;">전년 같은 기간과 이탈율을 비교합니다. 전년엔 해지 기능이 없어 정지가 유일한 이탈 수단이었으므로, 정지+자동정지+해지를 합친 "통합 이탈" 기준으로 비교합니다</p>
     <p class="cb-finding" style="margin-bottom:12px;">이탈율 10.2% → 11.6% (+1.4%p) — 단, 전년은 하한 추정치라 실제 격차는 이보다 작거나 없을 수 있음</p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#B5D4F4;"></span>전년 (25.01~07.20) · 512건</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>당기 (26.01~07.20) · 720건</span>
+    </div>
+    <div class="chart-canvas" style="height:200px;margin-bottom:1.25rem;"><canvas id="yoyMonthlyChart"></canvas></div>
     <table class="data-table">
       <thead><tr>
         <th>지표</th>
@@ -1182,6 +1187,8 @@ new Chart(document.getElementById('statusDonutChart'),{
   }
 });
 
+
+new Chart(document.getElementById('yoyMonthlyChart'),{type:'bar',data:{labels:['1월','2월','3월','4월','5월','6월','7월*'],datasets:[{label:'전년 (25.01~07.20)',data:[49,47,65,66,127,77,81],backgroundColor:'#B5D4F4',borderRadius:4},{label:'당기 (26.01~07.20)',data:[66,66,117,92,141,138,100],backgroundColor:'#185FA5',borderRadius:4}]},options:{...base,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},scales:{x:{ticks:{color:'#555',font:{size:11},autoSkip:false,maxRotation:0},grid:{display:false}},y:{beginAtZero:true,ticks:{color:tc,font:{size:11}},grid:{color:gc}}}}});
 
 new Chart(document.getElementById('donutChart'),{type:'doughnut',data:{labels:['정지','해지','자동정지'],datasets:[{data:[723,138,47],backgroundColor:['#185FA5','#A32D2D','#854F0B'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed}건`}}}}});
 
