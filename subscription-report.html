@@ -392,6 +392,36 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'P
       <div class="chart-canvas" style="height:180px;"><canvas id="totalMonthlyChart"></canvas></div>
     </div>
   </div>
+
+  <!-- 이탈율 YoY 비교 -->
+  <div class="chart-box" style="margin-top:1.5rem;">
+    <p class="cb-title" style="margin-bottom:4px;">이탈율 YoY 비교 — 1.1~7.20 동기간</p>
+    <p class="cb-what" style="margin-bottom:4px;">전년 같은 기간과 이탈율을 비교합니다. 전년엔 해지 기능이 없어 정지가 유일한 이탈 수단이었으므로, 정지+자동정지+해지를 합친 "통합 이탈" 기준으로 비교합니다</p>
+    <p class="cb-finding" style="margin-bottom:12px;">이탈율 10.2% → 11.6% (+1.4%p) — 단, 전년은 하한 추정치라 실제 격차는 이보다 작거나 없을 수 있음</p>
+    <table class="data-table">
+      <thead><tr>
+        <th>지표</th>
+        <th class="right">전년 (25.01~25.07)</th>
+        <th class="right">당기 (26.01~26.07)</th>
+        <th class="right">YoY</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>시작 모수 (1.1 기준 미해지)</td><td class="right">4,055건</td><td class="right">5,308건</td><td class="right" style="color:#1D9E75;font-weight:700;">+30.9%</td></tr>
+        <tr class="alt"><td>기간 내 신규</td><td class="right">988건</td><td class="right">926건</td><td class="right" style="color:#888;">-6.3% <span style="font-size:10px;color:#aaa;">(정상결제만 229→775건, 3.4배)</span></td></tr>
+        <tr><td>이탈 가능 모수</td><td class="right">5,043건</td><td class="right">6,234건</td><td class="right" style="color:#888;">+23.6%</td></tr>
+        <tr class="alt highlight"><td style="font-weight:700;">총 이탈</td><td class="right" style="font-weight:700;">512건</td><td class="right" style="font-weight:700;">720건</td><td class="right" style="color:#E24B4A;font-weight:700;">+40.6%</td></tr>
+        <tr><td style="padding-left:1.5rem;color:#888;">﹘ 정지</td><td class="right" style="color:#888;">512건</td><td class="right" style="color:#888;">573건</td><td class="right" style="color:#aaa;">—</td></tr>
+        <tr class="alt"><td style="padding-left:1.5rem;color:#888;">﹘ 자동정지</td><td class="right" style="color:#888;">0건</td><td class="right" style="color:#888;">37건</td><td class="right" style="color:#aaa;">—</td></tr>
+        <tr><td style="padding-left:1.5rem;color:#888;">﹘ 해지</td><td class="right" style="color:#aaa;">0건 (기능 없음)</td><td class="right" style="color:#888;">110건</td><td class="right" style="color:#aaa;">비교 불가</td></tr>
+        <tr class="alt" style="background:#FEF2F2;"><td style="font-weight:700;">이탈율</td><td class="right" style="font-weight:700;">10.2%</td><td class="right" style="font-weight:700;color:#E24B4A;">11.6%</td><td class="right" style="color:#E24B4A;font-weight:700;">+1.4%p</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:11px;color:#aaa;margin-top:10px;line-height:1.6;">
+      ※ 전년 이탈율은 <strong>하한 추정치</strong> — 현재 상태 기준 집계라 25년 상반기 정지 후 재구독·해지로 상태가 바뀐 건은 누락됨. 실제 전년 이탈율은 이보다 높았을 가능성이 큼<br>
+      ※ 해지 기능은 2025.09.23 정책변경과 함께 도입 — 그 이전의 정지는 사실상 해지를 포함한 유일한 이탈 수단. "해지율"은 25.09 이후부터만 추적 가능한 신규 지표<br>
+      ※ 전년 모수는 배송비 프로모 고객 다수 포함 · 당기 이탈 720건 중 완전 이탈(해지)은 110건(15.3%), 나머지 85%는 복귀 가능한 정지
+    </p>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════
