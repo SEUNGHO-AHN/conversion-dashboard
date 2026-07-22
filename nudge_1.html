@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>넛지효과 대시보드</title>
+<style>
+:root{
+  --bg:#F7F6F2; --card:#FFFFFF; --ink:#22301F; --sub:#6E7A68;
+  --stem:#3E6B4A; --stem-soft:#E3EDE5; --rose:#C4526A; --rose-soft:#F7E4E8;
+  --amber:#C9962D; --amber-soft:#F6EDD8; --line:#E4E2D9; --base:#9AA294;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Spoqa Han Sans Neo',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Pretendard','Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;padding:28px 16px 48px}
+.wrap{max-width:1000px;margin:0 auto}
+header{margin-bottom:18px}
+h1{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.meta{font-size:12.5px;color:var(--sub);margin-top:4px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--stem-soft);color:var(--stem)}
+.badge.amber{background:var(--amber-soft);color:#8A6512}
+.badge.rose{background:var(--rose-soft);color:var(--rose)}
+.badge.gray{background:#EDEBE3;color:var(--sub)}
+.verdict{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--stem);border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:13.5px}
+.verdict strong{color:var(--stem)}
+.verdict .warn{color:var(--rose);font-weight:600}
+.sec-title{font-size:14px;font-weight:700;margin:26px 0 10px;letter-spacing:-.2px}
+.kpis{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px;position:relative}
+.kpi.base{border-style:dashed;border-color:var(--base)}
+.kpi .mo{font-size:11.5px;color:var(--sub);font-weight:600}
+.kpi .val{font-size:19px;font-weight:700;margin:2px 0}
+.kpi .delta{font-size:11px;font-weight:600}
+.kpi .delta.up{color:var(--stem)} .kpi .delta.dn{color:var(--rose)} .kpi .delta.zero{color:var(--sub)}
+.kpi .sub{font-size:10px;color:var(--sub);margin-top:2px}
+.kpi .tags{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px}
+.kpi .tags .badge{font-size:9.5px;padding:1px 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.chart-note{font-size:11.5px;color:var(--sub);margin-top:8px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--sub);margin-bottom:8px;flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-size:11px;color:var(--sub);text-align:right;padding:8px 6px;border-bottom:2px solid var(--line);font-weight:600;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:7px 6px;border-bottom:1px solid #F0EEE7;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:none}
+td .cell{display:inline-block;min-width:48px;padding:2px 5px;border-radius:6px}
+td small{color:var(--sub);font-size:10px;display:block}
+tr.hl td:first-child{font-weight:700;color:var(--stem)}
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px 15px;font-size:12.5px}
+.note b{display:block;margin-bottom:4px}
+footer{margin-top:30px;font-size:11.5px;color:var(--sub);text-align:center}
+@media(max-width:860px){.kpis{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:600px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .notes{grid-template-columns:1fr}
+  body{padding:20px 12px 40px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>🎯 넛지효과 대시보드</h1>
+  <div class="meta">
+    <span>신규 가입자 당일 구매전환율 · 월별 트렌드</span>
+    <span>기간 2026-01-01 ~ 2026-07-20</span>
+    <span class="badge">4/1 넛지 배포</span>
+    <span class="badge rose">100원딜 2/5~4/15</span>
+    <span class="badge amber">2/4 산당화 공동구매</span>
+    <span>데이터 기준: 2026-07-20</span>
+  </div>
+</header>
+
+<div class="verdict" id="verdict"></div>
+
+<div class="sec-title">월별 당일 전환율 · 베이스라인 = 1월 (딜·넛지·공동구매 없는 유일한 순수 구간)</div>
+<div class="kpis" id="kpis"></div>
+<div class="chart-note" id="febNote"></div>
+
+<div class="sec-title">📈 월별 트렌드 + 채널 믹스</div>
+<div class="card">
+  <div class="legend">
+    <span><i class="sw" style="background:var(--stem-soft);border:1px solid var(--stem)"></i>가입자 수</span>
+    <span><i class="sw" style="background:var(--stem)"></i>당일 전환율</span>
+    <span><i class="sw" style="background:#B8AECF"></i>paid_meta 가입 비중</span>
+    <span><i class="sw" style="background:none;border-top:2px dashed var(--base);height:0;border-radius:0"></i>1월 베이스라인</span>
+  </div>
+  <div id="monthlyChart"></div>
+  <div class="chart-note">※ 7월은 1~20일 부분 집계(가입자 절대량 비교 불가) · paid_meta 비중이 1월 15% → 7월 57%로 급증 — <b>전환율이 낮은 채널의 비중 증가가 전체 평균을 끌어내리므로, 전체 평균만으로 넛지를 판정할 수 없음</b></div>
+</div>
+
+<div class="sec-title">📉 일별 전환율 추이 (7일 이동평균)</div>
+<div class="card">
+  <div class="legend">
+    <span><i class="sw" style="background:#D8DED4"></i>일별 전환율</span>
+    <span><i class="sw" style="background:var(--stem)"></i>7일 이동평균</span>
+    <span><i class="sw" style="background:var(--rose-soft)"></i>100원딜 기간</span>
+    <span><i class="sw" style="background:var(--amber-soft)"></i>5월 성수기</span>
+  </div>
+  <div id="dailyChart"></div>
+</div>
+
+<div class="sec-title">📊 채널별 월별 당일 전환율 — 믹스 통제 뷰 (핵심)</div>
+<div class="card" style="overflow-x:auto">
+  <table id="chTable"></table>
+  <div class="chart-note">셀 색: 해당 채널의 <b>1월 대비</b> ±3%p 이상 증감 (초록=개선 / 빨강=하락) · 괄호는 가입자 수 · 기준월 표본 30명 미만이거나 해당 셀 표본 30명 미만이면 회색(해석 주의) · partner_code 2월 수치는 산당화 공동구매 유입</div>
+</div>
+
+<div class="sec-title">🔍 해석 노트</div>
+<div class="notes">
+  <div class="note"><b>① 전체 평균으로는 판정 불가 — 믹스가 다 바꿔놨다</b>
+  1월 35.8% → 6월 29.4% 하락은 넛지 실패가 아니라 paid_meta 가입 비중이 15%→54%로 늘어난 믹스 효과가 지배적. 넛지 판정은 반드시 채널 내부 비교로 해야 한다.</div>
+  <div class="note"><b>② 넛지 효과의 증거는 organic_product에 있다</b>
+  넛지 전 3개월(1~3월) 46~49%로 평평 → 4월 55% → 5~7월 69~73%로 계단식 상승 후 유지. 상품상세 하단 넛지 배너와 위치·시점이 정합하는 유일한 지속 패턴. 단 월 표본 36~108명 — 확정하려면 배너 노출·클릭 로그와 결합 필요.</div>
+  <div class="note"><b>③ 100원딜은 당일 전환을 올리지 못했다</b>
+  딜 기간(2~3월) 채널 내 전환율이 1월과 유사(공동구매 제외 2월 37.6% vs 1월 35.8%). 딜의 가치가 있었다면 당일 전환이 아니라 유입량·재구매 쪽 — 별도 분석 필요.</div>
+  <div class="note"><b>④ 5월 고점은 성수기, 2/4 스파이크는 공동구매</b>
+  5월 39.9%는 가정의달 수요. 2/4 전환 70.5%는 산당화 공동구매(partner_code 563명·75.8%)의 일회성 이벤트로, 베이스라인 산정에서 맥락 분리가 필요하다.</div>
+  <div class="note"><b>⑤ paid_meta는 넛지가 안 통한다</b>
+  최대 채널(비중 50%+)인데 1~7월 내내 21~29% 횡보. 넛지 배너가 광고 유입 동선에서 노출되지 않거나 소구가 안 맞을 가능성 — 광고 랜딩 동선에서 넛지 노출 여부부터 확인할 것.</div>
+  <div class="note"><b>⑥ 다음 검증</b>
+  (1) organic_product 유입자의 넛지 배너 노출·클릭 로그 결합 → 인과 확인 (2) 100원딜 코호트의 60일 재구매율 → 딜의 진짜 성과 판정 (3) paid_meta 랜딩 동선 내 넛지 노출 점검.</div>
+</div>
+
+<footer>넛지효과 대시보드 · 데이터 기준: 2026-07-20 · 외부 라이브러리 없음</footer>
+</div>
+
+<script>
+const DATA = {"daily": [{"d": "2026-01-01", "s": 32, "b": 13, "c": 40.62, "m": null}, {"d": "2026-01-02", "s": 45, "b": 21, "c": 46.67, "m": null}, {"d": "2026-01-03", "s": 51, "b": 18, "c": 35.29, "m": null}, {"d": "2026-01-04", "s": 35, "b": 13, "c": 37.14, "m": null}, {"d": "2026-01-05", "s": 68, "b": 36, "c": 52.94, "m": null}, {"d": "2026-01-06", "s": 50, "b": 24, "c": 48.0, "m": null}, {"d": "2026-01-07", "s": 31, "b": 11, "c": 35.48, "m": 43.59}, {"d": "2026-01-08", "s": 31, "b": 15, "c": 48.39, "m": 44.37}, {"d": "2026-01-09", "s": 31, "b": 16, "c": 51.61, "m": 44.78}, {"d": "2026-01-10", "s": 16, "b": 5, "c": 31.25, "m": 45.8}, {"d": "2026-01-11", "s": 38, "b": 13, "c": 34.21, "m": 45.28}, {"d": "2026-01-12", "s": 29, "b": 9, "c": 31.03, "m": 41.15}, {"d": "2026-01-13", "s": 52, "b": 20, "c": 38.46, "m": 39.04}, {"d": "2026-01-14", "s": 68, "b": 17, "c": 25.0, "m": 35.85}, {"d": "2026-01-15", "s": 39, "b": 13, "c": 33.33, "m": 34.07}, {"d": "2026-01-16", "s": 39, "b": 18, "c": 46.15, "m": 33.81}, {"d": "2026-01-17", "s": 29, "b": 10, "c": 34.48, "m": 34.01}, {"d": "2026-01-18", "s": 36, "b": 14, "c": 38.89, "m": 34.59}, {"d": "2026-01-19", "s": 32, "b": 11, "c": 34.38, "m": 34.92}, {"d": "2026-01-20", "s": 31, "b": 4, "c": 12.9, "m": 31.75}, {"d": "2026-01-21", "s": 24, "b": 6, "c": 25.0, "m": 33.04}, {"d": "2026-01-22", "s": 31, "b": 11, "c": 35.48, "m": 33.33}, {"d": "2026-01-23", "s": 32, "b": 9, "c": 28.12, "m": 30.23}, {"d": "2026-01-24", "s": 33, "b": 9, "c": 27.27, "m": 29.22}, {"d": "2026-01-25", "s": 49, "b": 14, "c": 28.57, "m": 27.59}, {"d": "2026-01-26", "s": 31, "b": 14, "c": 45.16, "m": 29.0}, {"d": "2026-01-27", "s": 45, "b": 16, "c": 35.56, "m": 32.24}, {"d": "2026-01-28", "s": 54, "b": 18, "c": 33.33, "m": 33.09}, {"d": "2026-01-29", "s": 32, "b": 11, "c": 34.38, "m": 32.97}, {"d": "2026-01-30", "s": 43, "b": 6, "c": 13.95, "m": 30.66}, {"d": "2026-01-31", "s": 33, "b": 11, "c": 33.33, "m": 31.36}, {"d": "2026-02-01", "s": 47, "b": 16, "c": 34.04, "m": 32.28}, {"d": "2026-02-02", "s": 58, "b": 23, "c": 39.66, "m": 32.37}, {"d": "2026-02-03", "s": 62, "b": 22, "c": 35.48, "m": 32.52}, {"d": "2026-02-04", "s": 681, "b": 480, "c": 70.48, "m": 59.52}, {"d": "2026-02-05", "s": 245, "b": 140, "c": 57.14, "m": 59.71}, {"d": "2026-02-06", "s": 107, "b": 42, "c": 39.25, "m": 59.53}, {"d": "2026-02-07", "s": 80, "b": 34, "c": 42.5, "m": 59.14}, {"d": "2026-02-08", "s": 100, "b": 35, "c": 35.0, "m": 58.21}, {"d": "2026-02-09", "s": 135, "b": 57, "c": 42.22, "m": 57.45}, {"d": "2026-02-10", "s": 102, "b": 48, "c": 47.06, "m": 57.66}, {"d": "2026-02-11", "s": 61, "b": 25, "c": 40.98, "m": 45.9}, {"d": "2026-02-12", "s": 102, "b": 40, "c": 39.22, "m": 40.9}, {"d": "2026-02-13", "s": 71, "b": 15, "c": 21.13, "m": 39.02}, {"d": "2026-02-14", "s": 76, "b": 20, "c": 26.32, "m": 37.09}, {"d": "2026-02-15", "s": 82, "b": 15, "c": 18.29, "m": 34.98}, {"d": "2026-02-16", "s": 73, "b": 14, "c": 19.18, "m": 31.22}, {"d": "2026-02-17", "s": 66, "b": 27, "c": 40.91, "m": 29.38}, {"d": "2026-02-18", "s": 78, "b": 21, "c": 26.92, "m": 27.74}, {"d": "2026-02-19", "s": 46, "b": 20, "c": 43.48, "m": 26.83}, {"d": "2026-02-20", "s": 62, "b": 26, "c": 41.94, "m": 29.61}, {"d": "2026-02-21", "s": 80, "b": 28, "c": 35.0, "m": 31.01}, {"d": "2026-02-22", "s": 128, "b": 42, "c": 32.81, "m": 33.4}, {"d": "2026-02-23", "s": 118, "b": 45, "c": 38.14, "m": 36.16}, {"d": "2026-02-24", "s": 110, "b": 47, "c": 42.73, "m": 36.82}, {"d": "2026-02-25", "s": 89, "b": 23, "c": 25.84, "m": 36.49}, {"d": "2026-02-26", "s": 94, "b": 30, "c": 31.91, "m": 35.39}, {"d": "2026-02-27", "s": 79, "b": 23, "c": 29.11, "m": 34.1}, {"d": "2026-02-28", "s": 67, "b": 22, "c": 32.84, "m": 33.87}, {"d": "2026-03-01", "s": 89, "b": 25, "c": 28.09, "m": 33.28}, {"d": "2026-03-02", "s": 98, "b": 41, "c": 41.84, "m": 33.71}, {"d": "2026-03-03", "s": 64, "b": 21, "c": 32.81, "m": 31.9}, {"d": "2026-03-04", "s": 102, "b": 34, "c": 33.33, "m": 33.05}, {"d": "2026-03-05", "s": 130, "b": 44, "c": 33.85, "m": 33.39}, {"d": "2026-03-06", "s": 105, "b": 21, "c": 20.0, "m": 31.76}, {"d": "2026-03-07", "s": 113, "b": 22, "c": 19.47, "m": 29.67}, {"d": "2026-03-08", "s": 163, "b": 46, "c": 28.22, "m": 29.55}, {"d": "2026-03-09", "s": 112, "b": 33, "c": 29.46, "m": 28.01}, {"d": "2026-03-10", "s": 126, "b": 49, "c": 38.89, "m": 29.26}, {"d": "2026-03-11", "s": 102, "b": 19, "c": 18.63, "m": 27.5}, {"d": "2026-03-12", "s": 162, "b": 48, "c": 29.63, "m": 26.95}, {"d": "2026-03-13", "s": 144, "b": 32, "c": 22.22, "m": 27.01}, {"d": "2026-03-14", "s": 158, "b": 39, "c": 24.68, "m": 27.51}, {"d": "2026-03-15", "s": 165, "b": 33, "c": 20.0, "m": 26.11}, {"d": "2026-03-16", "s": 106, "b": 30, "c": 28.3, "m": 25.96}, {"d": "2026-03-17", "s": 109, "b": 37, "c": 33.94, "m": 25.16}, {"d": "2026-03-18", "s": 122, "b": 43, "c": 35.25, "m": 27.12}, {"d": "2026-03-19", "s": 97, "b": 24, "c": 24.74, "m": 26.42}, {"d": "2026-03-20", "s": 97, "b": 34, "c": 35.05, "m": 28.1}, {"d": "2026-03-21", "s": 125, "b": 35, "c": 28.0, "m": 28.75}, {"d": "2026-03-22", "s": 139, "b": 48, "c": 34.53, "m": 31.57}, {"d": "2026-03-23", "s": 105, "b": 35, "c": 33.33, "m": 32.24}, {"d": "2026-03-24", "s": 101, "b": 39, "c": 38.61, "m": 32.82}, {"d": "2026-03-25", "s": 122, "b": 39, "c": 31.97, "m": 32.32}, {"d": "2026-03-26", "s": 97, "b": 42, "c": 43.3, "m": 34.61}, {"d": "2026-03-27", "s": 89, "b": 25, "c": 28.09, "m": 33.8}, {"d": "2026-03-28", "s": 88, "b": 25, "c": 28.41, "m": 34.14}, {"d": "2026-03-29", "s": 127, "b": 52, "c": 40.94, "m": 35.25}, {"d": "2026-03-30", "s": 74, "b": 21, "c": 28.38, "m": 34.81}, {"d": "2026-03-31", "s": 101, "b": 38, "c": 37.62, "m": 34.67}, {"d": "2026-04-01", "s": 113, "b": 45, "c": 39.82, "m": 35.99}, {"d": "2026-04-02", "s": 93, "b": 32, "c": 34.41, "m": 34.74}, {"d": "2026-04-03", "s": 66, "b": 21, "c": 31.82, "m": 35.35}, {"d": "2026-04-04", "s": 108, "b": 28, "c": 25.93, "m": 34.75}, {"d": "2026-04-05", "s": 181, "b": 59, "c": 32.6, "m": 33.15}, {"d": "2026-04-06", "s": 145, "b": 54, "c": 37.24, "m": 34.32}, {"d": "2026-04-07", "s": 153, "b": 59, "c": 38.56, "m": 34.69}, {"d": "2026-04-08", "s": 134, "b": 57, "c": 42.54, "m": 35.23}, {"d": "2026-04-09", "s": 134, "b": 40, "c": 29.85, "m": 34.53}, {"d": "2026-04-10", "s": 115, "b": 33, "c": 28.7, "m": 34.02}, {"d": "2026-04-11", "s": 124, "b": 25, "c": 20.16, "m": 33.16}, {"d": "2026-04-12", "s": 179, "b": 71, "c": 39.66, "m": 34.45}, {"d": "2026-04-13", "s": 144, "b": 44, "c": 30.56, "m": 33.47}, {"d": "2026-04-14", "s": 117, "b": 45, "c": 38.46, "m": 33.26}, {"d": "2026-04-15", "s": 189, "b": 69, "c": 36.51, "m": 32.63}, {"d": "2026-04-16", "s": 156, "b": 46, "c": 29.49, "m": 32.52}, {"d": "2026-04-17", "s": 158, "b": 40, "c": 25.32, "m": 31.87}, {"d": "2026-04-18", "s": 104, "b": 38, "c": 36.54, "m": 33.72}, {"d": "2026-04-19", "s": 183, "b": 57, "c": 31.15, "m": 32.25}, {"d": "2026-04-20", "s": 171, "b": 51, "c": 29.82, "m": 32.1}, {"d": "2026-04-21", "s": 135, "b": 50, "c": 37.04, "m": 32.03}, {"d": "2026-04-22", "s": 102, "b": 31, "c": 30.39, "m": 31.02}, {"d": "2026-04-23", "s": 122, "b": 36, "c": 29.51, "m": 31.08}, {"d": "2026-04-24", "s": 144, "b": 34, "c": 23.61, "m": 30.91}, {"d": "2026-04-25", "s": 130, "b": 36, "c": 27.69, "m": 29.89}, {"d": "2026-04-26", "s": 174, "b": 52, "c": 29.89, "m": 29.65}, {"d": "2026-04-27", "s": 177, "b": 64, "c": 36.16, "m": 30.79}, {"d": "2026-04-28", "s": 173, "b": 67, "c": 38.73, "m": 31.31}, {"d": "2026-04-29", "s": 192, "b": 79, "c": 41.15, "m": 33.09}, {"d": "2026-04-30", "s": 195, "b": 91, "c": 46.67, "m": 35.7}, {"d": "2026-05-01", "s": 189, "b": 86, "c": 45.5, "m": 38.62}, {"d": "2026-05-02", "s": 160, "b": 78, "c": 48.75, "m": 41.03}, {"d": "2026-05-03", "s": 256, "b": 116, "c": 45.31, "m": 43.29}, {"d": "2026-05-04", "s": 285, "b": 153, "c": 53.68, "m": 46.21}, {"d": "2026-05-05", "s": 339, "b": 214, "c": 63.13, "m": 50.56}, {"d": "2026-05-06", "s": 429, "b": 284, "c": 66.2, "m": 55.15}, {"d": "2026-05-07", "s": 197, "b": 104, "c": 52.79, "m": 55.8}, {"d": "2026-05-08", "s": 100, "b": 35, "c": 35.0, "m": 55.72}, {"d": "2026-05-09", "s": 73, "b": 21, "c": 28.77, "m": 55.21}, {"d": "2026-05-10", "s": 88, "b": 12, "c": 13.64, "m": 54.47}, {"d": "2026-05-11", "s": 84, "b": 16, "c": 19.05, "m": 52.37}, {"d": "2026-05-12", "s": 77, "b": 17, "c": 22.08, "m": 46.66}, {"d": "2026-05-13", "s": 93, "b": 25, "c": 26.88, "m": 32.3}, {"d": "2026-05-14", "s": 75, "b": 18, "c": 24.0, "m": 24.41}, {"d": "2026-05-15", "s": 73, "b": 14, "c": 19.18, "m": 21.85}, {"d": "2026-05-16", "s": 50, "b": 7, "c": 14.0, "m": 20.19}, {"d": "2026-05-17", "s": 83, "b": 11, "c": 13.25, "m": 20.19}, {"d": "2026-05-18", "s": 79, "b": 18, "c": 22.78, "m": 20.75}, {"d": "2026-05-19", "s": 62, "b": 12, "c": 19.35, "m": 20.39}, {"d": "2026-05-20", "s": 87, "b": 30, "c": 34.48, "m": 21.61}, {"d": "2026-05-21", "s": 107, "b": 37, "c": 34.58, "m": 23.84}, {"d": "2026-05-22", "s": 95, "b": 37, "c": 38.95, "m": 27.0}, {"d": "2026-05-23", "s": 100, "b": 29, "c": 29.0, "m": 28.38}, {"d": "2026-05-24", "s": 120, "b": 35, "c": 29.17, "m": 30.46}, {"d": "2026-05-25", "s": 156, "b": 51, "c": 32.69, "m": 31.77}, {"d": "2026-05-26", "s": 119, "b": 33, "c": 27.73, "m": 32.14}, {"d": "2026-05-27", "s": 110, "b": 32, "c": 29.09, "m": 31.47}, {"d": "2026-05-28", "s": 99, "b": 24, "c": 24.24, "m": 30.16}, {"d": "2026-05-29", "s": 101, "b": 35, "c": 34.65, "m": 29.69}, {"d": "2026-05-30", "s": 93, "b": 22, "c": 23.66, "m": 29.07}, {"d": "2026-05-31", "s": 108, "b": 25, "c": 23.15, "m": 28.24}, {"d": "2026-06-01", "s": 105, "b": 31, "c": 29.52, "m": 27.48}, {"d": "2026-06-02", "s": 113, "b": 35, "c": 30.97, "m": 27.98}, {"d": "2026-06-03", "s": 118, "b": 27, "c": 22.88, "m": 27.0}, {"d": "2026-06-04", "s": 72, "b": 22, "c": 30.56, "m": 27.75}, {"d": "2026-06-05", "s": 66, "b": 14, "c": 21.21, "m": 26.07}, {"d": "2026-06-06", "s": 74, "b": 11, "c": 14.86, "m": 25.15}, {"d": "2026-06-07", "s": 92, "b": 24, "c": 26.09, "m": 25.62}, {"d": "2026-06-08", "s": 71, "b": 16, "c": 22.54, "m": 24.59}, {"d": "2026-06-09", "s": 106, "b": 33, "c": 31.13, "m": 24.54}, {"d": "2026-06-10", "s": 116, "b": 36, "c": 31.03, "m": 26.13}, {"d": "2026-06-11", "s": 99, "b": 32, "c": 32.32, "m": 26.6}, {"d": "2026-06-12", "s": 106, "b": 31, "c": 29.25, "m": 27.56}, {"d": "2026-06-13", "s": 86, "b": 31, "c": 36.05, "m": 30.03}, {"d": "2026-06-14", "s": 105, "b": 28, "c": 26.67, "m": 30.04}, {"d": "2026-06-15", "s": 115, "b": 42, "c": 36.52, "m": 31.79}, {"d": "2026-06-16", "s": 91, "b": 31, "c": 34.07, "m": 32.17}, {"d": "2026-06-17", "s": 95, "b": 37, "c": 38.95, "m": 33.29}, {"d": "2026-06-18", "s": 99, "b": 35, "c": 35.35, "m": 33.72}, {"d": "2026-06-19", "s": 61, "b": 13, "c": 21.31, "m": 33.28}, {"d": "2026-06-20", "s": 66, "b": 16, "c": 24.24, "m": 31.96}, {"d": "2026-06-21", "s": 76, "b": 24, "c": 31.58, "m": 32.84}, {"d": "2026-06-22", "s": 115, "b": 32, "c": 27.83, "m": 31.18}, {"d": "2026-06-23", "s": 96, "b": 38, "c": 39.58, "m": 32.07}, {"d": "2026-06-24", "s": 85, "b": 25, "c": 29.41, "m": 30.6}, {"d": "2026-06-25", "s": 67, "b": 11, "c": 16.42, "m": 28.09}, {"d": "2026-06-26", "s": 95, "b": 29, "c": 30.53, "m": 29.17}, {"d": "2026-06-27", "s": 91, "b": 20, "c": 21.98, "m": 28.64}, {"d": "2026-06-28", "s": 100, "b": 34, "c": 34.0, "m": 29.12}, {"d": "2026-06-29", "s": 104, "b": 25, "c": 24.04, "m": 28.53}, {"d": "2026-06-30", "s": 103, "b": 36, "c": 34.95, "m": 27.91}, {"d": "2026-07-01", "s": 89, "b": 29, "c": 32.58, "m": 28.35}, {"d": "2026-07-02", "s": 85, "b": 25, "c": 29.41, "m": 29.69}, {"d": "2026-07-03", "s": 83, "b": 31, "c": 37.35, "m": 30.53}, {"d": "2026-07-04", "s": 63, "b": 23, "c": 36.51, "m": 32.38}, {"d": "2026-07-05", "s": 65, "b": 20, "c": 30.77, "m": 31.93}, {"d": "2026-07-06", "s": 93, "b": 35, "c": 37.63, "m": 34.25}, {"d": "2026-07-07", "s": 88, "b": 31, "c": 35.23, "m": 34.28}, {"d": "2026-07-08", "s": 109, "b": 36, "c": 33.03, "m": 34.3}, {"d": "2026-07-09", "s": 100, "b": 39, "c": 39.0, "m": 35.77}, {"d": "2026-07-10", "s": 67, "b": 21, "c": 31.34, "m": 35.04}, {"d": "2026-07-11", "s": 46, "b": 9, "c": 19.57, "m": 33.63}, {"d": "2026-07-12", "s": 68, "b": 14, "c": 20.59, "m": 32.4}, {"d": "2026-07-13", "s": 50, "b": 18, "c": 36.0, "m": 31.82}, {"d": "2026-07-14", "s": 55, "b": 21, "c": 38.18, "m": 31.92}, {"d": "2026-07-15", "s": 46, "b": 12, "c": 26.09, "m": 31.02}, {"d": "2026-07-16", "s": 51, "b": 13, "c": 25.49, "m": 28.2}, {"d": "2026-07-17", "s": 47, "b": 12, "c": 25.53, "m": 27.27}, {"d": "2026-07-18", "s": 53, "b": 11, "c": 20.75, "m": 27.3}, {"d": "2026-07-19", "s": 56, "b": 10, "c": 17.86, "m": 27.09}, {"d": "2026-07-20", "s": 50, "b": 15, "c": 30.0, "m": 26.26}], "monthly": [{"m": "2026-01", "s": 1190, "b": 426, "c": 35.8}, {"m": "2026-02", "s": 3099, "b": 1380, "c": 44.53}, {"m": "2026-03", "s": 3532, "b": 1074, "c": 30.41}, {"m": "2026-04", "s": 4311, "b": 1454, "c": 33.73}, {"m": "2026-05", "s": 4087, "b": 1631, "c": 39.91}, {"m": "2026-06", "s": 2788, "b": 819, "c": 29.38}, {"m": "2026-07", "s": 1364, "b": 425, "c": 31.16}], "channels": {"paid_meta": {"2026-01": {"s": 180, "b": 65, "c": 36.1}, "2026-02": {"s": 689, "b": 170, "c": 24.7}, "2026-03": {"s": 1847, "b": 443, "c": 24.0}, "2026-04": {"s": 1588, "b": 375, "c": 23.6}, "2026-05": {"s": 2056, "b": 604, "c": 29.4}, "2026-06": {"s": 1511, "b": 318, "c": 21.0}, "2026-07": {"s": 774, "b": 188, "c": 24.3}}, "organic_naver": {"2026-01": {"s": 405, "b": 162, "c": 40.0}, "2026-02": {"s": 474, "b": 204, "c": 43.0}, "2026-03": {"s": 514, "b": 260, "c": 50.6}, "2026-04": {"s": 737, "b": 340, "c": 46.1}, "2026-05": {"s": 660, "b": 346, "c": 52.4}, "2026-06": {"s": 353, "b": 164, "c": 46.5}, "2026-07": {"s": 179, "b": 87, "c": 48.6}}, "none": {"2026-01": {"s": 236, "b": 71, "c": 30.1}, "2026-02": {"s": 366, "b": 111, "c": 30.3}, "2026-03": {"s": 516, "b": 112, "c": 21.7}, "2026-04": {"s": 519, "b": 161, "c": 31.0}, "2026-05": {"s": 521, "b": 211, "c": 40.5}, "2026-06": {"s": 330, "b": 95, "c": 28.8}, "2026-07": {"s": 141, "b": 31, "c": 22.0}}, "organic_insta": {"2026-01": {"s": 109, "b": 44, "c": 40.4}, "2026-02": {"s": 167, "b": 67, "c": 40.1}, "2026-03": {"s": 229, "b": 86, "c": 37.6}, "2026-04": {"s": 449, "b": 183, "c": 40.8}, "2026-05": {"s": 431, "b": 245, "c": 56.8}, "2026-06": {"s": 346, "b": 125, "c": 36.1}, "2026-07": {"s": 145, "b": 58, "c": 40.0}}, "partner_code": {"2026-01": {"s": 8, "b": 4, "c": 50.0}, "2026-02": {"s": 1101, "b": 731, "c": 66.4}, "2026-03": {"s": 32, "b": 16, "c": 50.0}, "2026-04": {"s": 13, "b": 6, "c": 46.2}, "2026-05": {"s": 21, "b": 9, "c": 42.9}, "2026-06": {"s": 6, "b": 2, "c": 33.3}, "2026-07": {"s": 3, "b": 1, "c": 33.3}}, "affiliate": {"2026-01": null, "2026-02": null, "2026-03": {"s": 1, "b": 0, "c": 0.0}, "2026-04": {"s": 594, "b": 223, "c": 37.5}, "2026-05": {"s": 52, "b": 23, "c": 44.2}, "2026-06": {"s": 19, "b": 4, "c": 21.1}, "2026-07": {"s": 4, "b": 3, "c": 75.0}}, "organic_google": {"2026-01": {"s": 69, "b": 22, "c": 31.9}, "2026-02": {"s": 85, "b": 28, "c": 32.9}, "2026-03": {"s": 99, "b": 44, "c": 44.4}, "2026-04": {"s": 137, "b": 54, "c": 39.4}, "2026-05": {"s": 133, "b": 62, "c": 46.6}, "2026-06": {"s": 74, "b": 30, "c": 40.5}, "2026-07": {"s": 45, "b": 17, "c": 37.8}}, "organic_product": {"2026-01": {"s": 54, "b": 25, "c": 46.3}, "2026-02": {"s": 77, "b": 38, "c": 49.4}, "2026-03": {"s": 108, "b": 52, "c": 48.1}, "2026-04": {"s": 101, "b": 56, "c": 55.4}, "2026-05": {"s": 106, "b": 77, "c": 72.6}, "2026-06": {"s": 40, "b": 28, "c": 70.0}, "2026-07": {"s": 36, "b": 25, "c": 69.4}}, "기타": {"2026-01": {"s": 129, "b": 33, "c": 25.6}, "2026-02": {"s": 140, "b": 31, "c": 22.1}, "2026-03": {"s": 186, "b": 61, "c": 32.8}, "2026-04": {"s": 173, "b": 56, "c": 32.4}, "2026-05": {"s": 107, "b": 54, "c": 50.5}, "2026-06": {"s": 109, "b": 53, "c": 48.6}, "2026-07": {"s": 37, "b": 15, "c": 40.5}}}, "channelOrder": ["paid_meta", "organic_naver", "none", "organic_insta", "partner_code", "affiliate", "organic_google", "organic_product", "기타"], "paidShare": [15.1, 22.2, 52.3, 36.8, 50.3, 54.2, 56.7], "febExcl": {"s": 2536, "b": 953, "c": 37.58}};
+
+const MONTHS = ['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07'];
+const MLABEL = {'2026-01':'1월','2026-02':'2월','2026-03':'3월','2026-04':'4월','2026-05':'5월','2026-06':'6월','2026-07':'7월'};
+const MTAGS = {'2026-02':[['rose','공동구매·딜']],'2026-03':[['rose','100원딜']],'2026-04':[['rose','딜+넛지']],'2026-05':[['amber','성수기']],'2026-07':[['gray','~7/20']]};
+const BASE = DATA.monthly[0].c;
+const fmt = n => n.toLocaleString('ko-KR');
+
+/* ---------- verdict ---------- */
+(function(){
+  document.getElementById('verdict').innerHTML =
+    `<strong>판정: 전체 평균으로는 넛지 효과를 판정할 수 없다 — 채널 믹스 변화(paid_meta 15%→57%)가 평균을 지배.</strong> `+
+    `채널 내부로 들어가면 <strong>organic_product만 넛지 시점(4월)부터 +20%p 계단식 상승 후 4개월 지속</strong>되는 명확한 패턴이 있고, `+
+    `paid_meta·insta·none은 <span class="warn">전후 변화 없음</span>. 100원딜(2/5~4/15)은 당일 전환 기준 효과 미검출. 5월 고점은 성수기 효과.`;
+})();
+
+/* ---------- KPI cards ---------- */
+(function(){
+  const el = document.getElementById('kpis');
+  el.innerHTML = DATA.monthly.map((m,i)=>{
+    const d = m.c - BASE;
+    const cls = i===0 ? 'zero' : (d>0.05?'up':(d<-0.05?'dn':'zero'));
+    const arrow = i===0 ? '' : (d>0.05?'▲':(d<-0.05?'▼':'—'));
+    const delta = i===0 ? '베이스라인' : `${arrow} ${d>=0?'+':''}${d.toFixed(1)}%p`;
+    const tags = (MTAGS[m.m]||[]).map(t=>`<span class="badge ${t[0]}">${t[1]}</span>`).join('');
+    return `<div class="kpi${i===0?' base':''}">
+      <div class="mo">${MLABEL[m.m]}</div>
+      <div class="val">${m.c}%</div>
+      <div class="delta ${cls}">${delta}</div>
+      <div class="sub">가입 ${fmt(m.s)} · 구매 ${fmt(m.b)}</div>
+      <div class="tags">${tags}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('febNote').textContent =
+    `※ 2월 44.5%는 2/4 산당화 공동구매(partner_code 563명·전환 75.8%) 포함 수치 — 제외 시 ${DATA.febExcl.c}% (가입 ${fmt(DATA.febExcl.s)}명)로 1월과 유사`;
+})();
+
+/* ---------- monthly chart ---------- */
+(function(){
+  const W=960,H=310,P={t:26,r:56,b:34,l:56};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b;
+  const maxS=Math.max(...DATA.monthly.map(m=>m.s))*1.14;
+  const maxC=60;
+  const n=DATA.monthly.length;
+  const bw=iw/n*0.46;
+  const x=i=>P.l+iw/n*(i+0.5);
+  const yS=v=>P.t+ih-(v/maxS*ih);
+  const yC=v=>P.t+ih-(v/maxC*ih);
+  let s='';
+  for(let g=0;g<=60;g+=20){
+    s+=`<line x1="${P.l}" y1="${yC(g)}" x2="${W-P.r}" y2="${yC(g)}" stroke="#EEECe3"/>`;
+    s+=`<text x="${W-P.r+8}" y="${yC(g)+4}" font-size="10" fill="#6E7A68">${g}%</text>`;
+  }
+  s+=`<line x1="${P.l}" y1="${yC(BASE)}" x2="${W-P.r}" y2="${yC(BASE)}" stroke="#9AA294" stroke-dasharray="5 4" stroke-width="1.5"/>`;
+  DATA.monthly.forEach((m,i)=>{
+    s+=`<rect x="${x(i)-bw/2}" y="${yS(m.s)}" width="${bw}" height="${P.t+ih-yS(m.s)}" rx="4" fill="#E3EDE5" stroke="#B9CFBE"/>`;
+    s+=`<text x="${x(i)}" y="${yS(m.s)-6}" font-size="10" fill="#6E7A68" text-anchor="middle">${fmt(m.s)}${m.m==='2026-07'?'*':''}</text>`;
+    s+=`<text x="${x(i)}" y="${H-12}" font-size="12" font-weight="600" fill="#22301F" text-anchor="middle">${MLABEL[m.m]}</text>`;
+  });
+  // paid share line (lavender)
+  s+=`<polyline points="${DATA.paidShare.map((v,i)=>`${x(i)},${yC(v)}`).join(' ')}" fill="none" stroke="#B8AECF" stroke-width="2" stroke-dasharray="2 3"/>`;
+  DATA.paidShare.forEach((v,i)=>{ s+=`<circle cx="${x(i)}" cy="${yC(v)}" r="3" fill="#B8AECF"/>`; });
+  // conv line
+  s+=`<polyline points="${DATA.monthly.map((m,i)=>`${x(i)},${yC(m.c)}`).join(' ')}" fill="none" stroke="#3E6B4A" stroke-width="2.5"/>`;
+  DATA.monthly.forEach((m,i)=>{
+    const dn = i>0 && m.c<BASE;
+    s+=`<circle cx="${x(i)}" cy="${yC(m.c)}" r="4.5" fill="${dn?'#C4526A':'#3E6B4A'}"/>`;
+    s+=`<text x="${x(i)}" y="${yC(m.c)-11}" font-size="11.5" font-weight="700" fill="${dn?'#C4526A':'#3E6B4A'}" text-anchor="middle">${m.c}%</text>`;
+  });
+  document.getElementById('monthlyChart').innerHTML=
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="월별 가입자 수, 당일 전환율, paid_meta 비중">${s}</svg>`;
+})();
+
+/* ---------- daily chart ---------- */
+(function(){
+  const D=DATA.daily;
+  const W=960,H=280,P={t:20,r:16,b:30,l:42};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b;
+  const maxC=80;
+  const x=i=>P.l+iw*(i/(D.length-1));
+  const y=v=>P.t+ih-(Math.min(v,maxC)/maxC*ih);
+  const idx=dstr=>D.findIndex(d=>d.d===dstr);
+  let s='';
+  // 100원딜 shading
+  s+=`<rect x="${x(idx('2026-02-05'))}" y="${P.t}" width="${x(idx('2026-04-15'))-x(idx('2026-02-05'))}" height="${ih}" fill="#F7E4E8" opacity="0.5"/>`;
+  // May season shading
+  s+=`<rect x="${x(idx('2026-05-01'))}" y="${P.t}" width="${x(idx('2026-05-31'))-x(idx('2026-05-01'))}" height="${ih}" fill="#F6EDD8" opacity="0.55"/>`;
+  for(let g=0;g<=80;g+=20){
+    s+=`<line x1="${P.l}" y1="${y(g)}" x2="${W-P.r}" y2="${y(g)}" stroke="#EEECe3"/>`;
+    s+=`<text x="${P.l-8}" y="${y(g)+4}" font-size="10" fill="#6E7A68" text-anchor="end">${g}%</text>`;
+  }
+  s+=`<line x1="${P.l}" y1="${y(BASE)}" x2="${W-P.r}" y2="${y(BASE)}" stroke="#9AA294" stroke-dasharray="5 4"/>`;
+  s+=`<polyline points="${D.map((d,i)=>`${x(i)},${y(d.c)}`).join(' ')}" fill="none" stroke="#D8DED4" stroke-width="1"/>`;
+  const ma=D.map((d,i)=>d.m==null?null:`${x(i)},${y(d.m)}`).filter(Boolean).join(' ');
+  s+=`<polyline points="${ma}" fill="none" stroke="#3E6B4A" stroke-width="2.2"/>`;
+  // 2/4 공동구매 marker
+  const iG=idx('2026-02-04');
+  s+=`<line x1="${x(iG)}" y1="${P.t}" x2="${x(iG)}" y2="${P.t+ih}" stroke="#C9962D" stroke-width="1.3" stroke-dasharray="3 3"/>`;
+  s+=`<text x="${x(iG)+4}" y="${P.t+10}" font-size="10" font-weight="700" fill="#8A6512">2/4 공동구매</text>`;
+  // 4/1 nudge marker
+  const iN=idx('2026-04-01');
+  s+=`<line x1="${x(iN)}" y1="${P.t-4}" x2="${x(iN)}" y2="${P.t+ih}" stroke="#22301F" stroke-width="1.5"/>`;
+  s+=`<text x="${x(iN)+5}" y="${P.t+10}" font-size="10.5" font-weight="700" fill="#22301F">4/1 넛지 배포</text>`;
+  // 4/15 deal end
+  const iE=idx('2026-04-15');
+  s+=`<text x="${x(iE)+4}" y="${P.t+ih-6}" font-size="9.5" fill="#A33A52">4/15 딜 종료</text>`;
+  MONTHS.forEach(mm=>{
+    const i=idx(mm+'-01');
+    s+=`<text x="${x(i)}" y="${H-10}" font-size="11" fill="#6E7A68">${MLABEL[mm]}</text>`;
+  });
+  document.getElementById('dailyChart').innerHTML=
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="일별 당일 전환율 추이">${s}</svg>`;
+})();
+
+/* ---------- channel table ---------- */
+(function(){
+  const t=document.getElementById('chTable');
+  let html='<thead><tr><th>채널</th>'+MONTHS.map(m=>`<th>${MLABEL[m]}${m==='2026-07'?' (~20일)':''}</th>`).join('')+'</tr></thead><tbody>';
+  DATA.channelOrder.forEach(ch=>{
+    const row=DATA.channels[ch];
+    const b=row['2026-01'];
+    const base=(b && b.s>=30)?b.c:null;
+    const hl = ch==='organic_product' ? ' class="hl"' : '';
+    html+=`<tr${hl}><td>${ch}</td>`;
+    MONTHS.forEach(m=>{
+      const c=row[m];
+      if(!c){ html+='<td>—</td>'; return; }
+      let bg='transparent', col='inherit';
+      if(c.s<30 || base==null){ bg='#F1F0EA'; col='#8A917F'; }
+      else if(m!=='2026-01'){
+        const d=c.c-base;
+        if(d>=3){ bg='#E3EDE5'; col='#2C5238'; }
+        else if(d<=-3){ bg='#F7E4E8'; col='#A33A52'; }
+      }
+      html+=`<td><span class="cell" style="background:${bg};color:${col}">${c.c}%</span><small>(${fmt(c.s)})</small></td>`;
+    });
+    html+='</tr>';
+  });
+  t.innerHTML=html+'</tbody>';
+})();
+</script>
+</body>
+</html>
